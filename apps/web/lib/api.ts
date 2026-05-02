@@ -1,6 +1,6 @@
 import type { OCEANScores } from "@whyme/shared"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
 
 export type { OCEANScores }
 
@@ -80,6 +80,41 @@ export type CandidateMatchData = {
   created_at: string
 }
 
+export type CompanyData = {
+  id: string
+  user_id: string
+  name: string
+  description: string | null
+  industry: string | null
+  created_at: string
+}
+
+export type TopCandidateItem = {
+  candidate_id: string
+  candidate_name: string
+  score: number
+  job_id: string
+  job_title: string
+}
+
+export type CompanySummaryData = {
+  total_matches: number
+  avg_match_score: number
+  top_candidates: TopCandidateItem[]
+  matches_by_job: Record<string, number>
+}
+
+export type NotificationData = {
+  id: string
+  user_id: string
+  match_id: string | null
+  type: string
+  title: string
+  message: string | null
+  is_read: boolean
+  created_at: string
+}
+
 export type MatchDetailItem = {
   id: string
   job_id: string
@@ -147,6 +182,18 @@ export function getCandidateProfile(candidateId: string): Promise<CandidateProfi
 
 export function getCandidateMatchDetails(candidateId: string): Promise<MatchDetailItem[]> {
   return apiFetch(`/matches/candidate/${encodeURIComponent(candidateId)}/details`)
+}
+
+export function getCompany(companyId: string, authToken: string): Promise<CompanyData> {
+  return apiFetch(`/companies/${encodeURIComponent(companyId)}`, undefined, authToken)
+}
+
+export function getCompanySummary(companyId: string, authToken: string): Promise<CompanySummaryData> {
+  return apiFetch(`/matches/company/${encodeURIComponent(companyId)}/summary`, undefined, authToken)
+}
+
+export function getUserNotifications(userId: string, authToken: string): Promise<NotificationData[]> {
+  return apiFetch(`/api/v1/notifications/user/${encodeURIComponent(userId)}`, undefined, authToken)
 }
 
 export function updateMatchStatus(
