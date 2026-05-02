@@ -129,6 +129,7 @@ export default function Home() {
           <span className="text-sm text-zinc-600">Whyme © 2026</span>
           <div className="flex gap-6 text-sm text-zinc-500">
             <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacidade</Link>
+            <Link href="/terms" className="hover:text-zinc-300 transition-colors">Termos</Link>
             <Link href="/faq" className="hover:text-zinc-300 transition-colors">FAQ</Link>
           </div>
         </div>
