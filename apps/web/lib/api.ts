@@ -225,3 +225,32 @@ export function updateMatchStatus(
     authToken,
   )
 }
+
+export type JobCreateRequest = {
+  company_id: string
+  title: string
+  description?: string | null
+  ocean_ideal?: Record<string, number> | null
+}
+
+export type JobUpdateRequest = {
+  title?: string
+  description?: string | null
+  ocean_ideal?: Record<string, number> | null
+}
+
+export function createJob(data: JobCreateRequest, authToken: string): Promise<JobData> {
+  return apiFetch("/jobs", { method: "POST", body: JSON.stringify(data) }, authToken)
+}
+
+export function updateJob(jobId: string, data: JobUpdateRequest, authToken: string): Promise<JobData> {
+  return apiFetch(`/jobs/${encodeURIComponent(jobId)}`, { method: "PUT", body: JSON.stringify(data) }, authToken)
+}
+
+export function updateJobStatus(jobId: string, jobStatus: string, authToken: string): Promise<JobData> {
+  return apiFetch(
+    `/jobs/${encodeURIComponent(jobId)}/status`,
+    { method: "PATCH", body: JSON.stringify({ status: jobStatus }) },
+    authToken,
+  )
+}
