@@ -40,8 +40,18 @@ export type UserData = {
   name: string
   role: string
   company_id?: string
+  candidate_id?: string
   created_at: string
 }
+
+export type LoginRequest = { email: string; password: string }
+export type LoginResponse = {
+  access_token: string
+  token_type: string
+  user: { id: string; email: string; name: string; role: string }
+}
+export type RegisterRequest = { email: string; password: string; name: string; role: string }
+export type RegisterResponse = { id: string; email: string; name: string; role: string }
 
 export type JobData = {
   id: string
@@ -147,6 +157,14 @@ async function apiFetch<T>(path: string, options?: RequestInit, token?: string):
     throw new Error((body as { detail?: string }).detail ?? `API error ${res.status}`)
   }
   return res.json() as Promise<T>
+}
+
+export function loginUser(data: LoginRequest): Promise<LoginResponse> {
+  return apiFetch("/auth/login", { method: "POST", body: JSON.stringify(data) })
+}
+
+export function registerUser(data: RegisterRequest): Promise<RegisterResponse> {
+  return apiFetch("/auth/register", { method: "POST", body: JSON.stringify(data) })
 }
 
 export function validateToken(token: string): Promise<ValidateTokenResponse> {
