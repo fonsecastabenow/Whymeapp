@@ -39,6 +39,7 @@ export default function CandidateOrbitaPage() {
     let cancelled = false
 
     async function load() {
+      if (!candidateId) return
       try {
         const data = await getCandidateMatchDetails(candidateId)
         if (cancelled) return

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { getAccommodations, updateAccommodations } from "@/lib/api"
@@ -15,222 +15,201 @@ const ACCOMMODATION_ITEMS: {
   icon: string
 }[] = [
   {
-    key: "large_text",
-    label: "Fonte grande",
-    description: "Aumentar o tamanho da fonte em todas as telas do questionário",
-    icon: "Aa",
+    key: "extra_time",
+    label: "Tempo Extra",
+    description: "Mais tempo para responder o questionário",
+    icon: "⏱️",
+  },
+  {
+    key: "font_size",
+    label: "Fonte Ampliada",
+    description: "Texto maior e mais legível",
+    icon: "🔤",
   },
   {
     key: "high_contrast",
-    label: "Alto contraste",
-    description: "Usar cores de alto contraste para melhorar a legibilidade",
-    icon: "◐",
+    label: "Alto Contraste",
+    description: "Cores de alto contraste para melhor visualização",
+    icon: "🎨",
   },
   {
-    key: "reduced_animations",
-    label: "Reduzir animações",
-    description: "Desativar animações e transições visuais",
-    icon: "►",
+    key: "screen_reader",
+    label: "Leitor de Tela",
+    description: "Compatível com NVDA, VoiceOver e TalkBack",
+    icon: "♿",
   },
   {
-    key: "extra_time",
-    label: "Tempo extra",
-    description: "Mais tempo para responder cada pergunta do questionário",
-    icon: "⏱",
+    key: "simplified_language",
+    label: "Linguagem Simples",
+    description: "Perguntas em linguagem mais direta e objetiva",
+    icon: "📝",
   },
   {
-    key: "auditory",
-    label: "Apoio auditivo",
-    description: "Ativar leitura em voz alta das perguntas e opções de resposta",
-    icon: "♪",
-  },
-  {
-    key: "visual",
-    label: "Apoio visual",
-    description: "Mostrar imagens, ícones e dicas visuais junto com as perguntas",
-    icon: "👁",
-  },
-  {
-    key: "motor",
-    label: "Suporte motor",
-    description: "Aumentar área de clique dos botões e facilitar a navegação",
-    icon: "✋",
-  },
-  {
-    key: "cognitive",
-    label: "Adaptação cognitiva",
-    description: "Simplificar a linguagem e oferecer explicações adicionais",
-    icon: "🧠",
+    key: "reduced_questions",
+    label: "Menos Perguntas",
+    description: "Versão reduzida do questionário (15 perguntas)",
+    icon: "🔢",
   },
 ]
 
-const DEFAULT_ACCOMMODATIONS: AccommodationsData = {
-  visual: false,
-  auditory: false,
-  motor: false,
-  cognitive: false,
-  large_text: false,
-  high_contrast: false,
-  reduced_animations: false,
-  extra_time: false,
-}
-
-export default function AccessibilityPage() {
+function AccessibilityContent() {
   const searchParams = useSearchParams()
-  const candidateId = searchParams.get("candidate_id") ?? ""
+  const interviewId = searchParams.get("interview_id")
+  const candidateId = searchParams.get("candidate_id")
 
-  const [pageState, setPageState] = useState<PageState>("loading")
-  const [accommodations, setAccommodations] = useState<AccommodationsData>(DEFAULT_ACCOMMODATIONS)
-  const [saveError, setSaveError] = useState("")
+  const [state, setState] = useState<PageState>("loading")
+  const [selected, setSelected] = useState<AccommodationsData>({})
+  const [errorMsg, setErrorMsg] = useState("")
 
   useEffect(() => {
-    if (!candidateId) {
-      setPageState("ready")
-      return
-    }
-
-    let cancelled = false
-
     async function load() {
       try {
-        const data = await getAccommodations(candidateId)
-        if (!cancelled) {
-          if (data.accommodations) {
-            setAccommodations({ ...DEFAULT_ACCOMMODATIONS, ...data.accommodations })
-          }
-          setPageState("ready")
+        let data: AccommodationsData = {}
+        if (candidateId) {
+          const res: AccommodationsResponse = await getAccommodations(candidateId)
+          data = res.accommodations || {}
         }
+        setSelected(data)
+        setState("ready")
       } catch {
-        if (!cancelled) setPageState("ready")
+        setState("ready")
       }
     }
-
     load()
-    return () => { cancelled = true }
   }, [candidateId])
 
   function toggle(key: keyof AccommodationsData) {
-    setAccommodations((prev) => ({ ...prev, [key]: !prev[key] }))
+    setSelected((prev) => {
+      const next = { ...prev }
+      if (next[key]) {
+        delete next[key]
+      } else {
+        ;(next as Record<string, boolean>)[key] = true
+      }
+      return next
+    })
   }
 
   async function handleSave() {
     if (!candidateId) return
-    setPageState("saving")
-    setSaveError("")
+    setState("saving")
     try {
-      await updateAccommodations(candidateId, accommodations)
-      setPageState("saved")
+      await updateAccommodations(candidateId, selected)
+      setState("saved")
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Erro ao salvar preferências")
-      setPageState("error")
+      setErrorMsg(err instanceof Error ? err.message : "Erro ao salvar")
+      setState("error")
     }
   }
 
-  if (pageState === "loading") {
+  const containerClass =
+    "min-h-screen bg-zinc-950 text-zinc-100 p-4 md:p-8 flex flex-col items-center"
+
+  if (state === "loading") {
     return (
-      <main className="flex min-h-screen items-center justify-center">
-        <div className="space-y-4 text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
-          <p className="text-muted-foreground">Carregando preferencias...</p>
-        </div>
-      </main>
+      <div className={containerClass}>
+        <div className="animate-pulse text-zinc-400 mt-20">Carregando...</div>
+      </div>
     )
   }
 
   return (
-    <main className="min-h-screen bg-background">
-      <header className="border-b px-6 py-4">
-        <div className="mx-auto flex max-w-4xl items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight">
-            Whyme
-          </Link>
-          {candidateId && (
-            <Link
-              href={`/interview/${candidateId}${searchParams.toString() ? "?" + searchParams.toString() : ""}`}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Voltar ao questionario
-            </Link>
-          )}
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-2xl px-4 py-12">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-3xl">
-            ♿
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+    <div className={containerClass}>
+      <div className="w-full max-w-2xl">
+        <div className="text-center mb-8">
+          <div className="text-4xl mb-2">♿</div>
+          <h1 className="text-2xl md:text-3xl font-bold text-zinc-100">
             Acessibilidade
           </h1>
-          <p className="mt-2 text-muted-foreground">
+          <p className="text-zinc-400 mt-2">
             Escolha as adaptacoes que tornam o questionario mais confortavel para voce.
-            Todas as informacoes sao confidenciais e usadas apenas para personalizar sua experiencia.
           </p>
         </div>
 
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="mb-6 space-y-1">
-            <h2 className="text-lg font-semibold">Preferencias de acesso</h2>
-            <p className="text-sm text-muted-foreground">
-              Selecione todas as opcoes que voce precisa:
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            {ACCOMMODATION_ITEMS.map((item) => (
-              <label
+        <div className="grid gap-3 mb-8">
+          {ACCOMMODATION_ITEMS.map((item) => {
+            const isActive = !!selected[item.key]
+            return (
+              <button
                 key={item.key}
-                className="flex cursor-pointer items-start gap-4 rounded-lg border border-input bg-background p-4 transition-colors hover:bg-accent/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5"
+                onClick={() => toggle(item.key)}
+                className={`flex items-start gap-4 p-4 rounded-xl border text-left transition-all ${
+                  isActive
+                    ? "bg-amber-500/10 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.15)]"
+                    : "bg-zinc-900/50 border-zinc-800 hover:border-zinc-600"
+                }`}
               >
-                <input
-                  type="checkbox"
-                  checked={accommodations[item.key]}
-                  onChange={() => toggle(item.key)}
-                  className="mt-1 h-5 w-5 shrink-0 rounded border-gray-300 text-primary focus:ring-primary"
-                />
+                <span className="text-2xl mt-0.5">{item.icon}</span>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg" aria-hidden="true">{item.icon}</span>
-                    <span className="font-medium">{item.label}</span>
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground">{item.description}</p>
+                  <div className="font-medium text-zinc-100">{item.label}</div>
+                  <div className="text-sm text-zinc-400">{item.description}</div>
                 </div>
-              </label>
-            ))}
+                <div
+                  className={`w-5 h-5 rounded border-2 mt-1 flex items-center justify-center transition-all ${
+                    isActive
+                      ? "bg-amber-500 border-amber-500"
+                      : "border-zinc-600"
+                  }`}
+                >
+                  {isActive && (
+                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+              </button>
+            )
+          })}
+        </div>
+
+        {state === "error" && (
+          <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg mb-4 text-sm">
+            {errorMsg}
           </div>
+        )}
 
-          {pageState === "error" && (
-            <div className="mt-4 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              {saveError}
-            </div>
-          )}
+        {state === "saved" && (
+          <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-3 rounded-lg mb-4 text-sm">
+            Preferencias salvas!
+          </div>
+        )}
 
-          {pageState === "saved" && (
-            <div className="mt-4 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-600 dark:text-green-400">
-              Preferencias salvas com sucesso!
-            </div>
-          )}
-
+        <div className="flex gap-3">
           {candidateId && (
             <button
               onClick={handleSave}
-              disabled={pageState === "saving"}
-              className="mt-6 w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={state === "saving"}
+              className="flex-1 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-zinc-950 font-medium py-3 px-6 rounded-xl transition-all"
             >
-              {pageState === "saving" ? "Salvando..." : "Salvar preferencias"}
+              {state === "saving" ? "Salvando..." : "Salvar Preferencias"}
             </button>
           )}
+          <Link
+            href={interviewId ? `/questionnaire/${interviewId}` : "/"}
+            className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-100 font-medium py-3 px-6 rounded-xl text-center transition-all"
+          >
+            Voltar ao questionario
+          </Link>
         </div>
 
         {!candidateId && (
-          <div className="mt-6 rounded-lg border border-dashed p-6 text-center">
-            <p className="text-sm text-muted-foreground">
-              Para salvar suas preferencias, acesse esta pagina pelo link do seu questionario.
-            </p>
-          </div>
+          <p className="text-zinc-500 text-sm text-center mt-4">
+            Para salvar suas preferencias, acesse esta pagina pelo link do seu questionario.
+          </p>
         )}
       </div>
-    </main>
+    </div>
+  )
+}
+
+export default function AccessibilityPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 p-4 md:p-8 flex flex-col items-center">
+        <div className="animate-pulse text-zinc-400 mt-20">Carregando...</div>
+      </div>
+    }>
+      <AccessibilityContent />
+    </Suspense>
   )
 }

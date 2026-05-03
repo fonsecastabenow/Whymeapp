@@ -160,14 +160,17 @@ export type MatchDetailItem = {
 }
 
 export type AccommodationsData = {
-  visual: boolean
-  auditory: boolean
-  motor: boolean
-  cognitive: boolean
-  large_text: boolean
-  high_contrast: boolean
-  reduced_animations: boolean
-  extra_time: boolean
+  visual?: boolean
+  auditory?: boolean
+  motor?: boolean
+  cognitive?: boolean
+  extra_time?: boolean
+  font_size?: boolean
+  high_contrast?: boolean
+  screen_reader?: boolean
+  simplified_language?: boolean
+  reduced_questions?: boolean
+  [key: string]: boolean | undefined
 }
 
 export type AccommodationsResponse = {
