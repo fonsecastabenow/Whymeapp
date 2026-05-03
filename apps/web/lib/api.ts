@@ -215,6 +215,30 @@ export function getCandidateInterview(candidateId: string): Promise<InterviewDat
   return apiFetch(`/candidates/${encodeURIComponent(candidateId)}/interview`)
 }
 
+export function getInterviewById(interviewId: string): Promise<InterviewData> {
+  return apiFetch(`/interviews/${encodeURIComponent(interviewId)}`)
+}
+
+export function updateInterviewStatus(
+  interviewId: string,
+  status: string,
+): Promise<{ id: string; status: string; message: string }> {
+  return apiFetch(`/interviews/${encodeURIComponent(interviewId)}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  })
+}
+
+export function submitQuestionnaire(
+  interviewId: string,
+  respostas: number[],
+): Promise<{ id: string; status: string; ocean_scores: OCEANScores; message: string }> {
+  return apiFetch(`/interviews/${encodeURIComponent(interviewId)}/questionnaire`, {
+    method: "POST",
+    body: JSON.stringify({ respostas }),
+  })
+}
+
 export function convertCandidate(data: ConvertCandidateData): Promise<ConvertCandidateResponse> {
   return apiFetch("/candidates/convert", {
     method: "POST",

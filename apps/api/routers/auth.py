@@ -11,6 +11,7 @@ from auth import (
 )
 from database import get_session
 from models.user import User
+from models.company import Company
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -45,6 +46,7 @@ class UserResponse(BaseModel):
     email: str
     name: str
     role: str
+    company_id: str | None = None
     created_at: str
 
 
@@ -110,11 +112,24 @@ async def login(request: LoginRequest, session: AsyncSession = Depends(get_sessi
 
 
 @router.get("/me", response_model=UserResponse)
-async def me(current_user: User = Depends(get_current_user)):
+async def me(
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    company_id = None
+    if current_user.role == "company":
+        result = await session.execute(
+            select(Company).where(Company.user_id == current_user.id)
+        )
+        company = result.scalar_one_or_none()
+        if company:
+            company_id = str(company.id)
+
     return UserResponse(
         id=str(current_user.id),
         email=current_user.email,
         name=current_user.name,
         role=current_user.role,
+        company_id=company_id,
         created_at=current_user.created_at.isoformat(),
     )

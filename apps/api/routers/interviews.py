@@ -76,6 +76,60 @@ class SaveScoresResponse(BaseModel):
     message: str
 
 
+# ─── Questionnaire Models & Logic ─────────────────────────────────────────
+
+
+class SubmitQuestionnaireRequest(BaseModel):
+    respostas: list[int]
+
+
+class SubmitQuestionnaireResponse(BaseModel):
+    id: str
+    status: str
+    ocean_scores: dict[str, float]
+    message: str
+
+
+REVERSED_ITEMS: set[int] = {3, 6, 9, 12, 14, 16, 18, 20, 22, 25, 27, 30}
+
+DIMENSION_MAP: dict[int, str] = {}
+for i in range(1, 7):
+    DIMENSION_MAP[i] = "openness"
+for i in range(7, 13):
+    DIMENSION_MAP[i] = "conscientiousness"
+for i in range(13, 19):
+    DIMENSION_MAP[i] = "extraversion"
+for i in range(19, 25):
+    DIMENSION_MAP[i] = "agreeableness"
+for i in range(25, 31):
+    DIMENSION_MAP[i] = "neuroticism"
+
+
+def compute_ocean_score(respostas: list[int]) -> dict[str, float]:
+    """Calculate OCEAN scores from 30 Likert [1-5] responses."""
+    if len(respostas) != 30:
+        raise ValueError(f"Expected 30 responses, got {len(respostas)}")
+
+    processed: list[int] = []
+    for idx, raw in enumerate(respostas, start=1):
+        if raw < 1 or raw > 5:
+            raise ValueError(f"Response at question {idx} is {raw}, expected 1-5")
+        if idx in REVERSED_ITEMS:
+            processed.append(6 - raw)
+        else:
+            processed.append(raw)
+
+    scores: dict[str, float] = {}
+    dims = ["openness", "conscientiousness", "extraversion", "agreeableness", "neuroticism"]
+    for dim in dims:
+        dim_indices = [i for i in range(30) if DIMENSION_MAP[i + 1] == dim]
+        raw_mean = sum(processed[i] for i in dim_indices) / len(dim_indices)
+        scaled = ((raw_mean - 1.0) / 4.0) * 100.0
+        scores[dim] = round(max(0.0, min(100.0, scaled)), 2)
+
+    return scores
+
+
 # --- Helper ---
 
 
@@ -229,4 +283,63 @@ async def save_interview_scores(
         id=str(interview.id),
         status=interview.status,
         message="OCEAN scores saved successfully",
+    )
+
+
+@router.post("/{interview_id}/questionnaire", response_model=SubmitQuestionnaireResponse)
+async def submit_questionnaire(
+    interview_id: str,
+    request: SubmitQuestionnaireRequest,
+    session: AsyncSession = Depends(get_session),
+):
+    result = await session.execute(
+        select(Interview).where(Interview.id == interview_id)
+    )
+    interview = result.scalar_one_or_none()
+    if not interview:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Interview not found",
+        )
+
+    if interview.status not in ("started", "ocean_pending"):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=(
+                f"Questionnaire can only be submitted when status is 'started' "
+                f"or 'ocean_pending'. Current status: '{interview.status}'"
+            ),
+        )
+
+    if len(request.respostas) != 30:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Expected exactly 30 responses, got {len(request.respostas)}",
+        )
+
+    for idx, val in enumerate(request.respostas, start=1):
+        if val < 1 or val > 5:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Response at question {idx} is {val}, expected 1-5",
+            )
+
+    try:
+        ocean_scores = compute_ocean_score(request.respostas)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e),
+        )
+
+    interview.ocean_scores = ocean_scores
+    interview.status = "ocean_completed"
+    await session.flush()
+    await session.refresh(interview)
+
+    return SubmitQuestionnaireResponse(
+        id=str(interview.id),
+        status=interview.status,
+        ocean_scores=ocean_scores,
+        message="Questionnaire submitted successfully",
     )
