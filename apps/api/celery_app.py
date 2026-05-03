@@ -11,7 +11,7 @@ celery_app = Celery(
     "whyme",
     broker=settings.redis_url,
     backend=settings.redis_url,
-    include=["celery_app"],
+    include=["tasks.matching"],
 )
 
 celery_app.conf.update(

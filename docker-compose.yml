@@ -55,6 +55,47 @@ services:
     depends_on:
       - api
 
+  telegram-bot:
+    build:
+      context: ./services/telegram-bot
+      dockerfile: Dockerfile
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      API_BASE_URL: http://api:8000
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  ml:
+    build:
+      context: ./services/ml
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      ML_REDIS_URL: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  celery-worker:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    command: celery -A celery_app worker --loglevel=info --concurrency=2
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-whyme}:${POSTGRES_PASSWORD:-whyme}@postgres:5432/${POSTGRES_DB:-whyme}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./apps/api:/app
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:

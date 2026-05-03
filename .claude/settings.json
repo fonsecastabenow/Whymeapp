@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Edit",
+      "Write",
+      "Read",
+      "Agent"
+    ],
+    "autoAllowPatterns": [
+      "apps/api/**",
+      "apps/web/**",
+      ".claude/**"
+    ],
+    "writeApprovalRequired": false
+  }
+}

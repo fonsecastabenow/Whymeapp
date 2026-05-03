@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from routers import health, auth, candidates, companies, interviews, jobs, matches, notifications
+from routers import health, auth, candidates, companies, interviews, jobs, matches, notifications, accessibility, resumes
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
 
@@ -32,6 +32,8 @@ app.include_router(interviews.router)
 app.include_router(jobs.router)
 app.include_router(matches.router)
 app.include_router(notifications.router, prefix="/api/v1")
+app.include_router(accessibility.router)
+app.include_router(resumes.router)
 
 
 @app.get("/")

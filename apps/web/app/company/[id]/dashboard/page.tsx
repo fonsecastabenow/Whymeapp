@@ -162,6 +162,12 @@ export default function CompanyDashboardPage() {
                   {company.industry}
                 </span>
               )}
+              <a
+                href={`/company/${companyId}/profile`}
+                className="rounded-full border border-zinc-700 bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400 transition-colors hover:border-zinc-600 hover:text-zinc-200"
+              >
+                Perfil
+              </a>
             </div>
             <p className="mt-0.5 text-xs text-zinc-500">Dashboard RH</p>
           </div>

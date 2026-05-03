@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     api_secret_key: str = "super-secret-key-change-in-production"
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 1440  # 24 hours
+    r2_account_id: str = ""
+    r2_access_key: str = ""
+    r2_secret_key: str = ""
+    r2_bucket_name: str = "whyme-resumes"
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 

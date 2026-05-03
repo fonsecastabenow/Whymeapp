@@ -15,6 +15,7 @@ export type InterviewData = {
   status: string
   current_step: string | null
   ocean_scores: OCEANScores | null
+  accommodations: Record<string, unknown> | null
   created_at: string
   updated_at: string
 }
@@ -75,6 +76,14 @@ export type CandidateProfileData = {
   created_at: string
 }
 
+export type CandidateUpdateRequest = {
+  name?: string | null
+  headline?: string | null
+  location?: string | null
+  experience_years?: number | null
+  skills?: Record<string, unknown> | null
+}
+
 export type CandidateMatchData = {
   id: string
   job_id: string
@@ -96,7 +105,15 @@ export type CompanyData = {
   name: string
   description: string | null
   industry: string | null
+  culture_vector: string | null
   created_at: string
+}
+
+export type CompanyUpdateRequest = {
+  name?: string | null
+  description?: string | null
+  industry?: string | null
+  culture_vector?: string | null
 }
 
 export type TopCandidateItem = {
@@ -139,6 +156,28 @@ export type MatchDetailItem = {
   ocean_breakdown: Record<string, number> | null
   status: string
   created_at: string
+}
+
+export type AccommodationsData = {
+  visual: boolean
+  auditory: boolean
+  motor: boolean
+  cognitive: boolean
+  large_text: boolean
+  high_contrast: boolean
+  reduced_animations: boolean
+  extra_time: boolean
+}
+
+export type AccommodationsResponse = {
+  candidate_id: string
+  accommodations: AccommodationsData | null
+}
+
+export type ResumeData = {
+  candidate_id: string
+  resume_url: string | null
+  resume_text: string | null
 }
 
 async function apiFetch<T>(path: string, options?: RequestInit, token?: string): Promise<T> {
@@ -202,8 +241,24 @@ export function getCandidateMatchDetails(candidateId: string): Promise<MatchDeta
   return apiFetch(`/matches/candidate/${encodeURIComponent(candidateId)}/details`)
 }
 
+export function updateCandidateProfile(
+  candidateId: string,
+  data: CandidateUpdateRequest,
+  authToken: string,
+): Promise<CandidateProfileData> {
+  return apiFetch(
+    `/candidates/${encodeURIComponent(candidateId)}`,
+    { method: "PATCH", body: JSON.stringify(data) },
+    authToken,
+  )
+}
+
 export function getCompany(companyId: string, authToken: string): Promise<CompanyData> {
   return apiFetch(`/companies/${encodeURIComponent(companyId)}`, undefined, authToken)
+}
+
+export function updateCompany(companyId: string, data: CompanyUpdateRequest, authToken: string): Promise<CompanyData> {
+  return apiFetch(`/companies/${encodeURIComponent(companyId)}`, { method: "PATCH", body: JSON.stringify(data) }, authToken)
 }
 
 export function getCompanySummary(companyId: string, authToken: string): Promise<CompanySummaryData> {
@@ -253,4 +308,49 @@ export function updateJobStatus(jobId: string, jobStatus: string, authToken: str
     { method: "PATCH", body: JSON.stringify({ status: jobStatus }) },
     authToken,
   )
+}
+
+export function getAccommodations(candidateId: string): Promise<AccommodationsResponse> {
+  return apiFetch(`/candidates/${encodeURIComponent(candidateId)}/accommodations`)
+}
+
+export function updateAccommodations(
+  candidateId: string,
+  accommodations: AccommodationsData,
+): Promise<AccommodationsResponse> {
+  return apiFetch(`/candidates/${encodeURIComponent(candidateId)}/accommodations`, {
+    method: "PATCH",
+    body: JSON.stringify({ accommodations }),
+  })
+}
+
+// ─── Resume ──────────────────────────────────────────────────────────────────
+
+export async function uploadResume(candidateId: string, file: File): Promise<ResumeData> {
+  const formData = new FormData()
+  formData.append("file", file)
+
+  const res = await fetch(`${API_BASE}/candidates/${encodeURIComponent(candidateId)}/resume/upload`, {
+    method: "POST",
+    body: formData,
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error((body as { detail?: string }).detail ?? `API error ${res.status}`)
+  }
+  return res.json() as Promise<ResumeData>
+}
+
+export function getResume(candidateId: string): Promise<ResumeData> {
+  return apiFetch(`/candidates/${encodeURIComponent(candidateId)}/resume`)
+}
+
+export async function deleteResume(candidateId: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/candidates/${encodeURIComponent(candidateId)}/resume`, {
+    method: "DELETE",
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error((body as { detail?: string }).detail ?? `API error ${res.status}`)
+  }
 }

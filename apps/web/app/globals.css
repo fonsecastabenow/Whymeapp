@@ -57,3 +57,70 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ============================================================ */
+/* Accessibility mode classes (applied to <main> elements)      */
+/* ============================================================ */
+
+.high-contrast-mode {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 0%;
+  --primary: 0 0% 0%;
+  --primary-foreground: 0 0% 100%;
+  --muted: 0 0% 93%;
+  --muted-foreground: 0 0% 20%;
+  --border: 0 0% 60%;
+  --input: 0 0% 60%;
+  --ring: 0 0% 0%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+}
+
+.high-contrast-mode img,
+.high-contrast-mode svg {
+  filter: contrast(1.3) brightness(1.05);
+}
+
+.large-text-mode {
+  font-size: 1.125rem;
+  line-height: 1.75;
+}
+
+.large-text-mode h1 {
+  font-size: 2.25rem;
+  line-height: 1.2;
+}
+
+.large-text-mode h2 {
+  font-size: 1.75rem;
+  line-height: 1.3;
+}
+
+.large-text-mode input,
+.large-text-mode button,
+.large-text-mode select,
+.large-text-mode textarea {
+  font-size: 1.125rem;
+}
+
+.reduced-animations-mode *,
+.reduced-animations-mode *::before,
+.reduced-animations-mode *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

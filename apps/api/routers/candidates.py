@@ -6,7 +6,7 @@ from pydantic import BaseModel, EmailStr
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth import hash_password
+from auth import get_current_user, hash_password
 from database import get_session
 from models.candidate import Candidate
 from models.interview import Interview
@@ -135,12 +135,19 @@ async def get_candidate_interview(
             detail="No interview found for candidate",
         )
 
+    # Fetch candidate for accommodations
+    candidate_result = await session.execute(
+        select(Candidate).where(Candidate.id == cand_uuid)
+    )
+    candidate = candidate_result.scalar_one_or_none()
+
     return {
         "id": str(interview.id),
         "candidate_id": str(interview.candidate_id) if interview.candidate_id else None,
         "status": interview.status,
         "current_step": interview.current_step,
         "ocean_scores": interview.ocean_scores,
+        "accommodations": candidate.accommodations if candidate else None,
         "created_at": interview.created_at.isoformat(),
         "updated_at": interview.updated_at.isoformat(),
     }
@@ -156,6 +163,14 @@ class CandidateProfileResponse(BaseModel):
     skills: dict | None
     ocean_scores: dict | None
     created_at: str
+
+
+class CandidateUpdateRequest(BaseModel):
+    name: str | None = None
+    headline: str | None = None
+    location: str | None = None
+    experience_years: float | None = None
+    skills: dict | None = None
 
 
 @router.get("/{candidate_id}", response_model=CandidateProfileResponse)
@@ -178,6 +193,56 @@ async def get_candidate_profile(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Candidate not found",
         )
+
+    return CandidateProfileResponse(
+        id=str(candidate.id),
+        user_id=str(candidate.user_id),
+        name=candidate.name,
+        headline=candidate.headline,
+        location=candidate.location,
+        experience_years=candidate.experience_years,
+        skills=candidate.skills,
+        ocean_scores=candidate.ocean_scores,
+        created_at=candidate.created_at.isoformat(),
+    )
+
+
+@router.patch("/{candidate_id}", response_model=CandidateProfileResponse)
+async def update_candidate_profile(
+    candidate_id: str,
+    request: CandidateUpdateRequest,
+    session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+):
+    try:
+        cand_uuid = uuid.UUID(candidate_id)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid candidate_id format",
+        )
+
+    result = await session.execute(select(Candidate).where(Candidate.id == cand_uuid))
+    candidate = result.scalar_one_or_none()
+    if not candidate:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidate not found")
+
+    if candidate.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+
+    if request.name is not None:
+        candidate.name = request.name
+    if request.headline is not None:
+        candidate.headline = request.headline
+    if request.location is not None:
+        candidate.location = request.location
+    if request.experience_years is not None:
+        candidate.experience_years = request.experience_years
+    if request.skills is not None:
+        candidate.skills = request.skills
+
+    await session.flush()
+    await session.refresh(candidate)
 
     return CandidateProfileResponse(
         id=str(candidate.id),
