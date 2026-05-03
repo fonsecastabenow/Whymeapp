@@ -124,3 +124,49 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================ */
+/* Custom range slider (OCEAN filters)                          */
+/* ============================================================ */
+
+.ocean-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: #27272a; /* zinc-800 */
+  outline: none;
+  cursor: pointer;
+}
+
+.ocean-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f59e0b; /* amber-500 */
+  border: 2px solid #09090b; /* zinc-950 */
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3);
+  transition: transform 0.15s ease;
+}
+
+.ocean-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.ocean-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #f59e0b;
+  border: 2px solid #09090b;
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3);
+  cursor: pointer;
+}
+
+.ocean-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: #27272a;
+}

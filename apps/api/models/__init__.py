@@ -7,5 +7,6 @@ from models.match import Match
 
 from models.interview import Interview
 from models.notification import Notification
+from models.webhook import Webhook
 
-__all__ = ["Base", "User", "Company", "Candidate", "Job", "Match", "Interview", "Notification"]
+__all__ = ["Base", "User", "Company", "Candidate", "Job", "Match", "Interview", "Notification", "Webhook"]

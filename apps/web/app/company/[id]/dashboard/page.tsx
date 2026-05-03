@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useParams } from "next/navigation"
 import {
   getCurrentUser,
@@ -15,7 +15,35 @@ import type {
   JobData,
   NotificationData,
   UserData,
+  SummaryFilters,
 } from "@/lib/api"
+
+// ─── OCEAN labels ────────────────────────────────────────────────────────────
+
+const OCEAN_DIMS = [
+  { key: "O", label: "Abertura", field: "openness" },
+  { key: "C", label: "Conscienciosidade", field: "conscientiousness" },
+  { key: "E", label: "Extroversão", field: "extraversion" },
+  { key: "A", label: "Amabilidade", field: "agreeableness" },
+  { key: "N", label: "Neuroticismo", field: "neuroticism" },
+] as const
+
+const OCEAN_COLORS: Record<string, string> = {
+  openness: "bg-sky-500",
+  conscientiousness: "bg-emerald-500",
+  extraversion: "bg-violet-500",
+  agreeableness: "bg-amber-500",
+  neuroticism: "bg-rose-500",
+}
+
+const SORT_OPTIONS = [
+  { value: "overall", label: "Score Geral" },
+  { value: "openness", label: "Abertura" },
+  { value: "conscientiousness", label: "Conscienciosidade" },
+  { value: "extraversion", label: "Extroversão" },
+  { value: "agreeableness", label: "Amabilidade" },
+  { value: "neuroticism", label: "Neuroticismo" },
+] as const
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -57,6 +85,29 @@ export default function CompanyDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
+  // Filter state
+  const [filterO, setFilterO] = useState(0)
+  const [filterC, setFilterC] = useState(0)
+  const [filterE, setFilterE] = useState(0)
+  const [filterA, setFilterA] = useState(0)
+  const [filterN, setFilterN] = useState(0)
+  const [sortBy, setSortBy] = useState<string>("overall")
+  const [appliedFilters, setAppliedFilters] = useState<SummaryFilters | null>(null)
+
+  // Derived: any filter active (for visual indicator)
+  const filtersActive =
+    filterO > 0 || filterC > 0 || filterE > 0 || filterA > 0 || filterN > 0 || sortBy !== "overall"
+
+  const loadSummary = useCallback(async (filters: SummaryFilters | null) => {
+    if (!token) return
+    try {
+      const summaryData = await getCompanySummary(companyId, token, filters ?? undefined)
+      return summaryData
+    } catch {
+      return null
+    }
+  }, [token, companyId])
+
   useEffect(() => {
     const t = typeof window !== "undefined" ? localStorage.getItem("whyme_token") ?? "" : ""
     setToken(t)
@@ -96,6 +147,32 @@ export default function CompanyDashboardPage() {
       cancelled = true
     }
   }, [token, companyId])
+
+  const handleApplyFilters = async () => {
+    const filters: SummaryFilters = {}
+    if (filterO > 0) filters.filter_O_min = filterO
+    if (filterC > 0) filters.filter_C_min = filterC
+    if (filterE > 0) filters.filter_E_min = filterE
+    if (filterA > 0) filters.filter_A_min = filterA
+    if (filterN > 0) filters.filter_N_min = filterN
+    if (sortBy !== "overall") filters.sort_by = sortBy as SummaryFilters["sort_by"]
+    filters.limit = 20
+    setAppliedFilters(filters)
+    const data = await loadSummary(filters)
+    if (data) setSummary(data)
+  }
+
+  const handleResetFilters = async () => {
+    setFilterO(0)
+    setFilterC(0)
+    setFilterE(0)
+    setFilterA(0)
+    setFilterN(0)
+    setSortBy("overall")
+    setAppliedFilters(null)
+    const data = await loadSummary(null)
+    if (data) setSummary(data)
+  }
 
   const activeJobCount = jobs.filter((j) => j.status === "active").length
   const unreadCount = notifications.filter((n) => !n.is_read).length
@@ -205,6 +282,88 @@ export default function CompanyDashboardPage() {
           />
         </div>
 
+        {/* OCEAN Filters */}
+        <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-zinc-50">Filtros OCEAN</h3>
+            {filtersActive && (
+              <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-400">
+                Filtros ativos
+              </span>
+            )}
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {OCEAN_DIMS.map((dim) => {
+              const value = dim.key === "O" ? filterO
+                : dim.key === "C" ? filterC
+                : dim.key === "E" ? filterE
+                : dim.key === "A" ? filterA
+                : filterN
+              const setter = dim.key === "O" ? setFilterO
+                : dim.key === "C" ? setFilterC
+                : dim.key === "E" ? setFilterE
+                : dim.key === "A" ? setFilterA
+                : setFilterN
+              const color = OCEAN_COLORS[dim.field]
+              return (
+                <div key={dim.key} className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-medium text-zinc-400">
+                      {dim.key} — {dim.label}
+                    </label>
+                    <span className="text-xs tabular-nums text-zinc-500">{value}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={value}
+                    onChange={(e) => setter(Number(e.target.value))}
+                    className="ocean-slider w-full"
+                    style={{
+                      accentColor: color === "bg-sky-500" ? "#0ea5e9"
+                        : color === "bg-emerald-500" ? "#10b981"
+                        : color === "bg-violet-500" ? "#8b5cf6"
+                        : color === "bg-amber-500" ? "#f59e0b"
+                        : "#f43f5e",
+                    }}
+                  />
+                </div>
+              )
+            })}
+          </div>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-medium text-zinc-400">Ordenar por:</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-xs text-zinc-200 outline-none focus:border-amber-500"
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={handleApplyFilters}
+              className="rounded-lg bg-amber-500 px-4 py-1.5 text-xs font-semibold text-zinc-950 transition-opacity hover:opacity-90"
+            >
+              Aplicar Filtros
+            </button>
+            {filtersActive && (
+              <button
+                onClick={handleResetFilters}
+                className="rounded-lg border border-zinc-700 px-4 py-1.5 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-600 hover:text-zinc-200"
+              >
+                Limpar Filtros
+              </button>
+            )}
+          </div>
+        </section>
+
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Left: Top Candidates + Jobs */}
           <div className="space-y-6 lg:col-span-2">
@@ -212,23 +371,52 @@ export default function CompanyDashboardPage() {
             <section className="rounded-xl border border-zinc-800 bg-zinc-900">
               <div className="border-b border-zinc-800 px-5 py-4">
                 <h2 className="font-semibold text-zinc-50">Top Candidatos</h2>
-                <p className="mt-0.5 text-xs text-zinc-500">Os 5 candidatos com maior compatibilidade</p>
+                <p className="mt-0.5 text-xs text-zinc-500">
+                  {filtersActive
+                    ? "Ordenados e filtrados por dimensões OCEAN"
+                    : "Os candidatos com maior compatibilidade"}
+                </p>
               </div>
               {!summary || summary.top_candidates.length === 0 ? (
                 <p className="px-5 py-10 text-center text-sm text-zinc-500">Nenhum candidato encontrado</p>
               ) : (
                 <div className="divide-y divide-zinc-800">
                   {summary.top_candidates.map((c, i) => (
-                    <div key={c.candidate_id} className="flex items-center gap-4 px-5 py-3.5">
-                      <span className="w-5 shrink-0 text-center text-xs font-medium text-zinc-600">
+                    <div key={c.candidate_id} className="flex items-start gap-4 px-5 py-3.5">
+                      <span className="mt-1 w-5 shrink-0 text-center text-xs font-medium text-zinc-600">
                         {i + 1}
                       </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-zinc-100">{c.candidate_name}</p>
-                        <p className="truncate text-xs text-zinc-500">{c.job_title}</p>
+                      <div className="min-w-0 flex-1 space-y-2">
+                        <div>
+                          <p className="truncate text-sm font-medium text-zinc-100">{c.candidate_name}</p>
+                          <p className="truncate text-xs text-zinc-500">{c.job_title}</p>
+                        </div>
+                        {/* OCEAN mini breakdown bars */}
+                        {c.ocean_breakdown && (
+                          <div className="flex flex-wrap gap-2">
+                            {OCEAN_DIMS.map((dim) => {
+                              const val = c.ocean_breakdown![dim.field] ?? 0
+                              const color = OCEAN_COLORS[dim.field]
+                              return (
+                                <div key={dim.field} className="flex items-center gap-1.5">
+                                  <span className="text-[10px] font-medium text-zinc-500">{dim.key}</span>
+                                  <div className="h-1.5 w-12 overflow-hidden rounded-full bg-zinc-800">
+                                    <div
+                                      className={`h-full rounded-full ${color}`}
+                                      style={{ width: `${Math.min(val, 100)}%` }}
+                                    />
+                                  </div>
+                                  <span className="w-6 text-right text-[10px] tabular-nums text-zinc-500">
+                                    {Math.round(val)}
+                                  </span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        )}
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        <div className="h-1.5 w-24 overflow-hidden rounded-full bg-zinc-800">
+                        <div className="h-1.5 w-16 overflow-hidden rounded-full bg-zinc-800 sm:w-20">
                           <div
                             className={`h-full rounded-full transition-all duration-700 ${scoreBarColor(c.score)}`}
                             style={{ width: `${Math.round(c.score * 100)}%` }}

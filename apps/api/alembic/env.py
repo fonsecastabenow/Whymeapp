@@ -7,7 +7,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from database import Base
-from models import User, Company, Candidate, Job, Match, Interview, Notification
+from models import User, Company, Candidate, Job, Match, Interview, Notification, Webhook
 
 config = context.config
 if config.config_file_name is not None:

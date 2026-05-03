@@ -7,6 +7,7 @@ from models.candidate import Candidate
 from models.company import Company
 from models.job import Job
 from models.notification import Notification
+from services.webhook_service import dispatch_webhook
 
 
 async def create_match_notifications(
@@ -50,5 +51,17 @@ async def create_match_notifications(
     await session.flush()
     await session.refresh(notif_candidate)
     await session.refresh(notif_company)
+
+    # Dispatch webhook for new match event
+    payload = {
+        "match_id": str(match_id),
+        "job_id": str(job_id),
+        "candidate_id": str(candidate_id),
+        "job_title": job.title,
+        "candidate_name": candidate.name,
+        "company_name": company.name,
+        "company_id": str(company.id),
+    }
+    await dispatch_webhook(session, "match.new", payload, company.id)
 
     return [notif_candidate, notif_company]

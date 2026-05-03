@@ -264,6 +264,7 @@ class TopCandidateItem(BaseModel):
     score: float
     job_id: str
     job_title: str
+    ocean_breakdown: Optional[dict] = None
 
 
 class CompanySummaryOut(BaseModel):
@@ -386,9 +387,16 @@ async def list_matches_with_candidate_details(
 @router.get("/company/{company_id}/summary", response_model=CompanySummaryOut)
 async def get_company_matches_summary(
     company_id: str,
+    sort_by: str = Query("overall", regex="^(overall|openness|conscientiousness|extraversion|agreeableness|neuroticism)$"),
+    filter_O_min: Optional[float] = Query(None, ge=0.0, le=100.0),
+    filter_C_min: Optional[float] = Query(None, ge=0.0, le=100.0),
+    filter_E_min: Optional[float] = Query(None, ge=0.0, le=100.0),
+    filter_A_min: Optional[float] = Query(None, ge=0.0, le=100.0),
+    filter_N_min: Optional[float] = Query(None, ge=0.0, le=100.0),
+    limit: int = Query(20, ge=1, le=100),
     session: AsyncSession = Depends(get_session),
 ):
-    """Aggregate match statistics for a company."""
+    """Aggregate match statistics for a company with OCEAN filters and sorting."""
     try:
         company_uuid = uuid.UUID(company_id)
     except ValueError:
@@ -422,17 +430,43 @@ async def get_company_matches_summary(
     total = len(rows)
     avg_score = sum(m.score or 0.0 for m, _ in rows) / total if total else 0.0
 
-    sorted_rows = sorted(rows, key=lambda r: r[0].score or 0.0, reverse=True)
-    top_candidates = [
-        TopCandidateItem(
-            candidate_id=str(c.id),
-            candidate_name=c.name,
-            score=m.score or 0.0,
-            job_id=str(m.job_id),
-            job_title=job_title_map.get(str(m.job_id), ""),
+    # Build candidate items with ocean_breakdown
+    candidates = []
+    for m, c in rows:
+        breakdown = m.ocean_breakdown or {}
+        # Apply OCEAN dimension minimum filters
+        if filter_O_min is not None and (breakdown.get("openness", 0) or 0) < filter_O_min:
+            continue
+        if filter_C_min is not None and (breakdown.get("conscientiousness", 0) or 0) < filter_C_min:
+            continue
+        if filter_E_min is not None and (breakdown.get("extraversion", 0) or 0) < filter_E_min:
+            continue
+        if filter_A_min is not None and (breakdown.get("agreeableness", 0) or 0) < filter_A_min:
+            continue
+        if filter_N_min is not None and (breakdown.get("neuroticism", 0) or 0) < filter_N_min:
+            continue
+
+        candidates.append(
+            TopCandidateItem(
+                candidate_id=str(c.id),
+                candidate_name=c.name,
+                score=m.score or 0.0,
+                job_id=str(m.job_id),
+                job_title=job_title_map.get(str(m.job_id), ""),
+                ocean_breakdown=breakdown,
+            )
         )
-        for m, c in sorted_rows[:5]
-    ]
+
+    # Sort by chosen dimension or overall score
+    if sort_by == "overall":
+        candidates.sort(key=lambda item: item.score, reverse=True)
+    else:
+        candidates.sort(
+            key=lambda item: (item.ocean_breakdown or {}).get(sort_by, 0) or 0,
+            reverse=True,
+        )
+
+    top_candidates = candidates[:limit]
 
     matches_by_job: dict[str, int] = {}
     for m, _ in rows:

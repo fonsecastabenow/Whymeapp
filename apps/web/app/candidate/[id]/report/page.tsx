@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
-import { getCandidateProfile, getCandidateMatchDetails } from "@/lib/api"
+import { getCandidateProfile, getCandidateMatchDetails, API_BASE } from "@/lib/api"
 import type { CandidateProfileData, MatchDetailItem } from "@/lib/api"
 
 type PageState = "loading" | "error" | "ready"
@@ -70,6 +70,11 @@ export default function CandidateReportPage({ params }: { params: { id: string }
     window.print()
   }
 
+  function handleDownloadPdf() {
+    const id = params.id
+    window.open(`${API_BASE}/candidates/${encodeURIComponent(id)}/report/pdf`, "_blank")
+  }
+
   if (state === "loading") {
     return (
       <main className="flex min-h-screen items-center justify-center bg-white">
@@ -94,13 +99,19 @@ export default function CandidateReportPage({ params }: { params: { id: string }
 
   return (
     <>
-      {/* Botão de impressão - visível só na tela */}
-      <div className="no-print fixed bottom-6 right-6 z-50">
+      {/* Botões de ação - visíveis só na tela */}
+      <div className="no-print fixed bottom-6 right-6 z-50 flex flex-col gap-2">
         <button
-          onClick={handlePrint}
+          onClick={handleDownloadPdf}
           className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-blue-700 transition-colors"
         >
-          📄 Exportar PDF
+          📄 Baixar PDF
+        </button>
+        <button
+          onClick={handlePrint}
+          className="rounded-xl bg-zinc-700 px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-zinc-600 transition-colors"
+        >
+          🖨️ Imprimir
         </button>
       </div>
 

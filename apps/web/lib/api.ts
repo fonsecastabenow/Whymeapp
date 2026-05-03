@@ -122,6 +122,7 @@ export type TopCandidateItem = {
   score: number
   job_id: string
   job_title: string
+  ocean_breakdown?: Record<string, number> | null
 }
 
 export type CompanySummaryData = {
@@ -261,8 +262,30 @@ export function updateCompany(companyId: string, data: CompanyUpdateRequest, aut
   return apiFetch(`/companies/${encodeURIComponent(companyId)}`, { method: "PATCH", body: JSON.stringify(data) }, authToken)
 }
 
-export function getCompanySummary(companyId: string, authToken: string): Promise<CompanySummaryData> {
-  return apiFetch(`/matches/company/${encodeURIComponent(companyId)}/summary`, undefined, authToken)
+export type SummaryFilters = {
+  sort_by?: 'overall' | 'openness' | 'conscientiousness' | 'extraversion' | 'agreeableness' | 'neuroticism'
+  filter_O_min?: number
+  filter_C_min?: number
+  filter_E_min?: number
+  filter_A_min?: number
+  filter_N_min?: number
+  limit?: number
+}
+
+export function getCompanySummary(companyId: string, authToken: string, filters?: SummaryFilters): Promise<CompanySummaryData> {
+  const params = new URLSearchParams()
+  if (filters) {
+    if (filters.sort_by) params.set('sort_by', filters.sort_by)
+    if (filters.filter_O_min !== undefined) params.set('filter_O_min', String(filters.filter_O_min))
+    if (filters.filter_C_min !== undefined) params.set('filter_C_min', String(filters.filter_C_min))
+    if (filters.filter_E_min !== undefined) params.set('filter_E_min', String(filters.filter_E_min))
+    if (filters.filter_A_min !== undefined) params.set('filter_A_min', String(filters.filter_A_min))
+    if (filters.filter_N_min !== undefined) params.set('filter_N_min', String(filters.filter_N_min))
+    if (filters.limit !== undefined) params.set('limit', String(filters.limit))
+  }
+  const qs = params.toString()
+  const url = `/matches/company/${encodeURIComponent(companyId)}/summary${qs ? `?${qs}` : ''}`
+  return apiFetch(url, undefined, authToken)
 }
 
 export function getUserNotifications(userId: string, authToken: string): Promise<NotificationData[]> {
