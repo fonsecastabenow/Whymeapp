@@ -12,6 +12,7 @@ from auth import (
 from database import get_session
 from models.user import User
 from models.company import Company
+from models.candidate import Candidate
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -47,6 +48,7 @@ class UserResponse(BaseModel):
     name: str
     role: str
     company_id: str | None = None
+    candidate_id: str | None = None
     created_at: str
 
 
@@ -80,6 +82,24 @@ async def register(request: RegisterRequest, session: AsyncSession = Depends(get
     session.add(user)
     await session.flush()
     await session.refresh(user)
+
+    # Auto-create profile based on role
+    if request.role == "candidate":
+        candidate = Candidate(
+            id=user.id,
+            user_id=user.id,
+            name=user.name,
+        )
+        session.add(candidate)
+    elif request.role == "company":
+        company = Company(
+            id=user.id,
+            user_id=user.id,
+            name=user.name,
+        )
+        session.add(company)
+
+    await session.flush()
 
     return RegisterResponse(
         id=str(user.id),
@@ -117,6 +137,7 @@ async def me(
     session: AsyncSession = Depends(get_session),
 ):
     company_id = None
+    candidate_id = None
     if current_user.role == "company":
         result = await session.execute(
             select(Company).where(Company.user_id == current_user.id)
@@ -124,6 +145,13 @@ async def me(
         company = result.scalar_one_or_none()
         if company:
             company_id = str(company.id)
+    elif current_user.role == "candidate":
+        result = await session.execute(
+            select(Candidate).where(Candidate.user_id == current_user.id)
+        )
+        candidate = result.scalar_one_or_none()
+        if candidate:
+            candidate_id = str(candidate.id)
 
     return UserResponse(
         id=str(current_user.id),
@@ -131,5 +159,6 @@ async def me(
         name=current_user.name,
         role=current_user.role,
         company_id=company_id,
+        candidate_id=candidate_id,
         created_at=current_user.created_at.isoformat(),
     )

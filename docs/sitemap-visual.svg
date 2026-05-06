@@ -1,0 +1,390 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#09090b"/>
+      <stop offset="100%" stop-color="#18181b"/>
+    </linearGradient>
+    <linearGradient id="titleGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+
+  <!-- Grid pattern -->
+  <g opacity="0.05">
+    <line x1="0" y1="0" x2="0" y2="900" stroke="#3f3f46" stroke-width="0.5"/>
+    <line x1="40" y1="0" x2="40" y2="900" stroke="#3f3f46" stroke-width="0.5" opacity="0"/>
+    <line x1="0" y1="0" x2="1200" y2="0" stroke="#3f3f46" stroke-width="0.5"/>
+    <line x1="0" y1="40" x2="1200" y2="40" stroke="#3f3f46" stroke-width="0.5" opacity="0"/>
+  </g>
+
+  <!-- Header -->
+  <text x="600" y="52" text-anchor="middle" font-family="Inter, sans-serif" font-size="32" font-weight="800" fill="url(#titleGrad)" filter="url(#glow)">🗺️ Whyme — Mapa do Site</text>
+  <text x="600" y="78" text-anchor="middle" font-family="Inter, sans-serif" font-size="14" fill="#71717a">whymeapp.io · Next.js · 23 p&aacute;ginas existentes · 20 por criar</text>
+
+  <!-- Status dots -->
+  <g transform="translate(200, 100)">
+    <!-- Exists -->
+    <rect x="0" y="0" width="12" height="12" rx="3" fill="#22c55e"/>
+    <text x="18" y="10" font-family="Inter, sans-serif" font-size="11" fill="#a1a1aa">J&aacute; existe</text>
+    <!-- High -->
+    <rect x="130" y="0" width="12" height="12" rx="3" fill="#ef4444"/>
+    <text x="148" y="10" font-family="Inter, sans-serif" font-size="11" fill="#a1a1aa">Alta</text>
+    <!-- Medium -->
+    <rect x="210" y="0" width="12" height="12" rx="3" fill="#f59e0b"/>
+    <text x="228" y="10" font-family="Inter, sans-serif" font-size="11" fill="#a1a1aa">M&eacute;dia</text>
+    <!-- Low -->
+    <rect x="310" y="0" width="12" height="12" rx="3" fill="#6b7280"/>
+    <text x="328" y="10" font-family="Inter, sans-serif" font-size="11" fill="#a1a1aa">Baixa</text>
+  </g>
+
+  <!-- GROUP 1: Landing -->
+  <g transform="translate(30, 130)">
+    <rect width="370" height="310" rx="10" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+    <rect x="0" y="0" width="370" height="40" rx="10" fill="rgba(34,197,94,0.1)"/>
+    <rect x="0" y="30" width="370" height="10" fill="rgba(34,197,94,0.1)"/>
+    <text x="16" y="26" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#f4f4f5">🌐 Landing &amp; Institucional</text>
+    <text x="280" y="26" font-family="JetBrains Mono, monospace" font-size="10" fill="#a1a1aa">8 exist · 4 criar</text>
+
+    <!-- Cards -->
+    <g transform="translate(12, 50)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(190, 50)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/login</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(0, 84)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/register</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(190, 84)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/faq</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(0, 118)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/terms</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(190, 118)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/privacy</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(0, 152)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="9" fill="#f4f4f5">/privacy/consent</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(190, 152)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/accessibility</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+
+    <!-- Create items -->
+    <g transform="translate(0, 190)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#ef4444"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/pricing</text>
+      <text x="150" y="18" font-size="8" fill="#ef4444" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(190, 190)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#ef4444"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="9" fill="#f4f4f5">/reset-password</text>
+      <text x="150" y="18" font-size="8" fill="#ef4444" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(0, 224)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#ef4444"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="9" fill="#f4f4f5">/confirm-email</text>
+      <text x="150" y="18" font-size="8" fill="#ef4444" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(190, 224)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#f59e0b"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/blog</text>
+      <text x="150" y="18" font-size="8" fill="#f59e0b" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(0, 258)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#f59e0b"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/contact</text>
+      <text x="150" y="18" font-size="8" fill="#f59e0b" text-anchor="end">🔧</text>
+    </g>
+  </g>
+
+  <!-- GROUP 2: Candidate -->
+  <g transform="translate(415, 130)">
+    <rect width="370" height="310" rx="10" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+    <rect x="0" y="0" width="370" height="40" rx="10" fill="rgba(59,130,246,0.1)"/>
+    <rect x="0" y="30" width="370" height="10" fill="rgba(59,130,246,0.1)"/>
+    <text x="16" y="26" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#f4f4f5">👤 Candidato</text>
+    <text x="280" y="26" font-family="JetBrains Mono, monospace" font-size="10" fill="#a1a1aa">4 exist · 6 criar</text>
+
+    <g transform="translate(12, 50)">
+      <!-- exist -->
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/candidate/[id]/onboarding</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(190, 50)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/candidate/[id]/dashboard</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(0, 84)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/candidate/[id]/profile</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(190, 84)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/candidate/[id]/report</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(0, 118)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/candidate/orbita</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <!-- create -->
+    <g transform="translate(0, 156)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#ef4444"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/candidate/[id]/jobs</text>
+      <text x="150" y="18" font-size="8" fill="#ef4444" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(190, 156)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#ef4444"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/candidate/[id]/jobs/[jid]</text>
+      <text x="150" y="18" font-size="8" fill="#ef4444" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(0, 190)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#f59e0b"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/candidate/[id]/applications</text>
+      <text x="150" y="18" font-size="8" fill="#f59e0b" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(190, 190)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#f59e0b"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/candidate/[id]/settings</text>
+      <text x="150" y="18" font-size="8" fill="#f59e0b" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(0, 224)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#f59e0b"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/candidate/[id]/interview</text>
+      <text x="150" y="18" font-size="8" fill="#f59e0b" text-anchor="end">🔧</text>
+    </g>
+  </g>
+
+  <!-- GROUP 3: Company -->
+  <g transform="translate(800, 130)">
+    <rect width="370" height="310" rx="10" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+    <rect x="0" y="0" width="370" height="40" rx="10" fill="rgba(168,85,247,0.1)"/>
+    <rect x="0" y="30" width="370" height="10" fill="rgba(168,85,247,0.1)"/>
+    <text x="16" y="26" font-family="Inter, sans-serif" font-size="14" font-weight="700" fill="#f4f4f5">🏢 Empresa</text>
+    <text x="280" y="26" font-family="JetBrains Mono, monospace" font-size="10" fill="#a1a1aa">5 exist · 8 criar</text>
+
+    <g transform="translate(12, 50)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/onboarding</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(190, 50)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/[id]/dashboard</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(0, 84)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/[id]/profile</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(190, 84)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/[id]/jobs</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(0, 118)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/company/orbita</text>
+      <text x="150" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+
+    <g transform="translate(0, 156)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#ef4444"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/[id]/jobs/new</text>
+      <text x="150" y="18" font-size="8" fill="#ef4444" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(190, 156)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#ef4444"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/[id]/jobs/[jid]/candidates</text>
+      <text x="150" y="18" font-size="8" fill="#ef4444" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(0, 190)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#ef4444"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/[id]/matches</text>
+      <text x="150" y="18" font-size="8" fill="#ef4444" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(190, 190)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#f59e0b"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/[id]/candidates</text>
+      <text x="150" y="18" font-size="8" fill="#f59e0b" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(0, 224)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#f59e0b"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/[id]/candidates/[cid]</text>
+      <text x="150" y="18" font-size="8" fill="#f59e0b" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(190, 224)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#f59e0b"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/[id]/settings</text>
+      <text x="150" y="18" font-size="8" fill="#f59e0b" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(0, 258)">
+      <rect x="0" y="0" width="170" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#6b7280"/>
+      <text x="10" y="14" font-family="JetBrains Mono, monospace" font-size="8" fill="#f4f4f5">/company/[id]/billing</text>
+      <text x="150" y="18" font-size="8" fill="#6b7280" text-anchor="end">🔧</text>
+    </g>
+  </g>
+
+  <!-- GROUP 4: Jobs -->
+  <g transform="translate(30, 460)">
+    <rect width="250" height="160" rx="10" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+    <rect x="0" y="0" width="250" height="36" rx="10" fill="rgba(251,146,60,0.1)"/>
+    <rect x="0" y="26" width="250" height="10" fill="rgba(251,146,60,0.1)"/>
+    <text x="14" y="23" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#f4f4f5">📋 Vagas P&uacute;blicas</text>
+    <text x="210" y="23" font-family="JetBrains Mono, monospace" font-size="9" fill="#a1a1aa">0 · 2</text>
+
+    <g transform="translate(10, 46)">
+      <rect x="0" y="0" width="230" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#ef4444"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/jobs</text>
+      <text x="210" y="18" font-size="8" fill="#ef4444" text-anchor="end">🔧</text>
+    </g>
+    <g transform="translate(10, 80)">
+      <rect x="0" y="0" width="230" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#ef4444"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/jobs/[jobId]</text>
+      <text x="210" y="18" font-size="8" fill="#ef4444" text-anchor="end">🔧</text>
+    </g>
+  </g>
+
+  <!-- GROUP 5: Entrevistas -->
+  <g transform="translate(300, 460)">
+    <rect width="250" height="160" rx="10" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+    <rect x="0" y="0" width="250" height="36" rx="10" fill="rgba(6,182,212,0.1)"/>
+    <rect x="0" y="26" width="250" height="10" fill="rgba(6,182,212,0.1)"/>
+    <text x="14" y="23" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#f4f4f5">🧪 Entrevistas</text>
+    <text x="210" y="23" font-family="JetBrains Mono, monospace" font-size="9" fill="#a1a1aa">2 · 1</text>
+
+    <g transform="translate(10, 46)">
+      <rect x="0" y="0" width="230" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/interview/[id]</text>
+      <text x="210" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(10, 80)">
+      <rect x="0" y="0" width="230" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/questionnaire/[id]</text>
+      <text x="210" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(10, 114)">
+      <rect x="0" y="0" width="230" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#f59e0b"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/interview/[id]/complete</text>
+      <text x="210" y="18" font-size="8" fill="#f59e0b" text-anchor="end">🔧</text>
+    </g>
+  </g>
+
+  <!-- GROUP 6: Admin -->
+  <g transform="translate(570, 460)">
+    <rect width="250" height="160" rx="10" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+    <rect x="0" y="0" width="250" height="36" rx="10" fill="rgba(239,68,68,0.1)"/>
+    <rect x="0" y="26" width="250" height="10" fill="rgba(239,68,68,0.1)"/>
+    <text x="14" y="23" font-family="Inter, sans-serif" font-size="13" font-weight="700" fill="#f4f4f5">⚙️ Sistema</text>
+    <text x="210" y="23" font-family="JetBrains Mono, monospace" font-size="9" fill="#a1a1aa">2 · 5</text>
+
+    <g transform="translate(10, 46)">
+      <rect x="0" y="0" width="230" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/notifications</text>
+      <text x="210" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(10, 80)">
+      <rect x="0" y="0" width="230" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#22c55e"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/not-found</text>
+      <text x="210" y="18" font-size="8" fill="#22c55e" text-anchor="end">✅</text>
+    </g>
+    <g transform="translate(10, 114)">
+      <rect x="0" y="0" width="230" height="28" rx="6" fill="#27272a"/>
+      <rect x="0" y="0" width="3" height="28" rx="2" fill="#6b7280"/>
+      <text x="10" y="18" font-family="JetBrains Mono, monospace" font-size="10" fill="#f4f4f5">/admin + 3 sub-rotas</text>
+      <text x="210" y="18" font-size="8" fill="#6b7280" text-anchor="end">🔧</text>
+    </g>
+  </g>
+
+  <!-- Summary Cards -->
+  <g transform="translate(850, 460)">
+    <!-- Card 1 -->
+    <rect x="0" y="0" width="320" height="72" rx="10" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+    <text x="16" y="24" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#a1a1aa">✅ J&aacute; existem</text>
+    <text x="16" y="58" font-family="Inter, sans-serif" font-size="36" font-weight="800" fill="#22c55e">23</text>
+    <text x="100" y="58" font-family="Inter, sans-serif" font-size="13" fill="#71717a">p&aacute;ginas prontas</text>
+
+    <!-- Card 2 -->
+    <rect x="0" y="82" width="320" height="72" rx="10" fill="#18181b" stroke="#27272a" stroke-width="1"/>
+    <text x="16" y="106" font-family="Inter, sans-serif" font-size="12" font-weight="600" fill="#a1a1aa">🔧 Por criar</text>
+    <text x="16" y="140" font-family="Inter, sans-serif" font-size="36" font-weight="800" fill="#ef4444">20</text>
+    <text x="100" y="140" font-family="Inter, sans-serif" font-size="13" fill="#71717a">p&aacute;ginas — 10 alta prioridade</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="600" y="870" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" fill="#52525b">Whyme © 2026 · Next.js · Gerado em 05/05/2026</text>
+</svg>

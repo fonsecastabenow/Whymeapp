@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, String, Text
-from sqlalchemy.dialects.postgresql import JSON, UUID
+from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy.dialects.postgresql import JSON, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -21,9 +21,14 @@ class Job(Base):
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     requirements: Mapped[str | None] = mapped_column(Text, nullable=True)
     ocean_ideal: Mapped[dict | None] = mapped_column(JSON, nullable=True)
-    status: Mapped[str] = mapped_column(
-        String(20), nullable=False, default="draft"
-    )
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="draft")
+    hard_skills_required: Mapped[list | None] = mapped_column(JSONB, nullable=True, default=list)
+    education_level_min: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    experience_years_min: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    work_model: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    salary_min: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+    salary_max: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
+    location: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
     )

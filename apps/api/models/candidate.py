@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, Float, ForeignKey, String, Text
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, String, Text
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -26,6 +26,24 @@ class Candidate(Base):
     accommodations: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     resume_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     resume_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # Onboarding fields
+    phone: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    education: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    languages: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    hard_skills: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    city: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    state: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    country: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    salary_expectation: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    work_model: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    linkedin_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    portfolio_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    professional_level: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    onboarding_completed: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
     )

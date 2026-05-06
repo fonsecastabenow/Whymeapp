@@ -19,6 +19,13 @@ class JobOut(BaseModel):
     description: Optional[str]
     status: str
     ocean_ideal: Optional[dict]
+    hard_skills_required: Optional[list]
+    education_level_min: Optional[str]
+    experience_years_min: Optional[int]
+    work_model: Optional[str]
+    salary_min: Optional[float]
+    salary_max: Optional[float]
+    location: Optional[str]
     created_at: str
 
 
@@ -27,12 +34,26 @@ class JobCreate(BaseModel):
     title: str
     description: Optional[str] = None
     ocean_ideal: Optional[dict] = None
+    hard_skills_required: Optional[list[str]] = None
+    education_level_min: Optional[str] = None
+    experience_years_min: Optional[int] = None
+    work_model: Optional[str] = None
+    salary_min: Optional[float] = None
+    salary_max: Optional[float] = None
+    location: Optional[str] = None
 
 
 class JobUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     ocean_ideal: Optional[dict] = None
+    hard_skills_required: Optional[list[str]] = None
+    education_level_min: Optional[str] = None
+    experience_years_min: Optional[int] = None
+    work_model: Optional[str] = None
+    salary_min: Optional[float] = None
+    salary_max: Optional[float] = None
+    location: Optional[str] = None
 
 
 class JobStatusUpdate(BaseModel):
@@ -47,6 +68,13 @@ def _job_to_out(j: Job) -> JobOut:
         description=j.description,
         status=j.status,
         ocean_ideal=j.ocean_ideal,
+        hard_skills_required=j.hard_skills_required,
+        education_level_min=j.education_level_min,
+        experience_years_min=j.experience_years_min,
+        work_model=j.work_model,
+        salary_min=float(j.salary_min) if j.salary_min is not None else None,
+        salary_max=float(j.salary_max) if j.salary_max is not None else None,
+        location=j.location,
         created_at=j.created_at.isoformat(),
     )
 
@@ -85,6 +113,13 @@ async def create_job(
         title=body.title,
         description=body.description,
         ocean_ideal=body.ocean_ideal,
+        hard_skills_required=body.hard_skills_required,
+        education_level_min=body.education_level_min,
+        experience_years_min=body.experience_years_min,
+        work_model=body.work_model,
+        salary_min=body.salary_min,
+        salary_max=body.salary_max,
+        location=body.location,
     )
     session.add(job)
     await session.commit()
@@ -122,6 +157,20 @@ async def update_job(
         job.description = body.description
     if body.ocean_ideal is not None:
         job.ocean_ideal = body.ocean_ideal
+    if body.hard_skills_required is not None:
+        job.hard_skills_required = body.hard_skills_required
+    if body.education_level_min is not None:
+        job.education_level_min = body.education_level_min
+    if body.experience_years_min is not None:
+        job.experience_years_min = body.experience_years_min
+    if body.work_model is not None:
+        job.work_model = body.work_model
+    if body.salary_min is not None:
+        job.salary_min = body.salary_min
+    if body.salary_max is not None:
+        job.salary_max = body.salary_max
+    if body.location is not None:
+        job.location = body.location
     await session.commit()
     await session.refresh(job)
     return _job_to_out(job)

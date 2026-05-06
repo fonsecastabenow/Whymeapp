@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whyme — Mapa do Site</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #09090b;
+  color: #f4f4f5;
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.header h1 {
+  font-size: 48px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+}
+.header p {
+  color: #a1a1aa;
+  font-size: 16px;
+  margin-top: 8px;
+}
+.header .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 6px 16px;
+  background: rgba(39, 39, 42, 0.8);
+  border: 1px solid #27272a;
+  border-radius: 9999px;
+  font-size: 13px;
+  color: #a1a1aa;
+}
+.badge-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #a1a1aa;
+}
+.legend-dot {
+  width: 12px; height: 12px;
+  border-radius: 4px;
+}
+.legend-dot.exists { background: #22c55e; }
+.legend-dot.todo-high { background: #ef4444; }
+.legend-dot.todo-med { background: #f59e0b; }
+.legend-dot.todo-low { background: #6b7280; }
+
+/* Section */
+.section {
+  margin-bottom: 40px;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #27272a;
+  background: #18181b;
+}
+.section-icon {
+  font-size: 24px;
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+}
+.section-icon.green { background: rgba(34, 197, 94, 0.15); }
+.section-icon.blue { background: rgba(59, 130, 246, 0.15); }
+.section-icon.purple { background: rgba(168, 85, 247, 0.15); }
+.section-icon.orange { background: rgba(251, 146, 60, 0.15); }
+.section-icon.cyan { background: rgba(6, 182, 212, 0.15); }
+.section-icon.red { background: rgba(239, 68, 68, 0.15); }
+.section-info {
+  flex: 1;
+}
+.section-info h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f4f4f5;
+}
+.section-info p {
+  font-size: 13px;
+  color: #71717a;
+  margin-top: 2px;
+}
+.section-count {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: #27272a;
+  color: #a1a1aa;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Page Cards */
+.pages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+.page-card {
+  position: relative;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #27272a;
+  background: #18181b;
+  transition: all 0.2s ease;
+}
+.page-card:hover {
+  border-color: #3f3f46;
+  background: #1c1c1f;
+  transform: translateY(-1px);
+}
+.page-card.exists { border-left: 3px solid #22c55e; }
+.page-card.high { border-left: 3px solid #ef4444; }
+.page-card.medium { border-left: 3px solid #f59e0b; }
+.page-card.low { border-left: 3px solid #6b7280; }
+.page-card .route {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: #f4f4f5;
+}
+.page-card .desc {
+  font-size: 12px;
+  color: #71717a;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.page-card .status-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.status-badge.exists {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+.status-badge.high {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+.status-badge.medium {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+}
+.status-badge.low {
+  background: rgba(107, 114, 128, 0.15);
+  color: #9ca3af;
+}
+
+/* Tree Lines */
+.tree-connector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 4px 20px;
+  margin-bottom: 8px;
+}
+.tree-line {
+  width: 20px;
+  height: 0;
+  border-top: 1.5px dashed #3f3f46;
+}
+.tree-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #71717a;
+}
+
+/* Summary Cards */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+.summary-card {
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #27272a;
+  background: #18181b;
+}
+.summary-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #a1a1aa;
+  margin-bottom: 8px;
+}
+.summary-card .big-number {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.summary-card .big-number.green { color: #22c55e; }
+.summary-card .big-number.red { color: #ef4444; }
+.summary-card .big-number.blue { color: #60a5fa; }
+.summary-card p {
+  font-size: 13px;
+  color: #71717a;
+  margin-top: 4px;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid #27272a;
+  font-size: 13px;
+  color: #52525b;
+}
+
+/* Orbits */
+.orbits {
+  display: flex; justify-content: center; gap: 24px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.orbit-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: #18181b;
+  border: 1px solid #27272a;
+}
+.orbit-item .orbit-emoji { font-size: 28px; }
+.orbit-item .orbit-label { font-size: 12px; color: #71717a; font-weight: 500; }
+
+@media (max-width: 768px) {
+  .pages-grid { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- Header -->
+<div class="header">
+  <h1>🗺️ Whyme — Mapa do Site</h1>
+  <p>Arquitetura de páginas do frontend · whymeapp.io</p>
+  <div class="badge">
+    <span class="badge-dot"></span>
+    Next.js · 23 páginas existentes · ~20 por criar
+  </div>
+</div>
+
+<!-- Orbits / Quick Nav -->
+<div class="orbits">
+  <div class="orbit-item">
+    <span class="orbit-emoji">🌐</span>
+    <span class="orbit-label">Landing</span>
+  </div>
+  <div class="orbit-item">
+    <span class="orbit-emoji">👤</span>
+    <span class="orbit-label">Candidato</span>
+  </div>
+  <div class="orbit-item">
+    <span class="orbit-emoji">🏢</span>
+    <span class="orbit-label">Empresa</span>
+  </div>
+  <div class="orbit-item">
+    <span class="orbit-emoji">📋</span>
+    <span class="orbit-label">Vagas</span>
+  </div>
+  <div class="orbit-item">
+    <span class="orbit-emoji">🧪</span>
+    <span class="orbit-label">Entrevistas</span>
+  </div>
+  <div class="orbit-item">
+    <span class="orbit-emoji">⚙️</span>
+    <span class="orbit-label">Sistema</span>
+  </div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot exists"></span> Já existe</div>
+  <div class="legend-item"><span class="legend-dot todo-high"></span> Alta prioridade</div>
+  <div class="legend-item"><span class="legend-dot todo-med"></span> Média prioridade</div>
+  <div class="legend-item"><span class="legend-dot todo-low"></span> Baixa prioridade</div>
+</div>
+
+<!-- Section: Landing -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-icon green">🌐</div>
+    <div class="section-info">
+      <h2>Landing &amp; Institucional</h2>
+      <p>Páginas públicas — qualquer visitante</p>
+    </div>
+    <span class="section-count">8 exist · 4 criar</span>
+  </div>
+  <div class="pages-grid">
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/</div><div class="desc">Home — Landing page com hero e CTA</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/login</div><div class="desc">Login (email+senha)</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/register</div><div class="desc">Cadastro — escolhe rota</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/faq</div><div class="desc">Dúvidas frequentes</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/terms</div><div class="desc">Termos de uso</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/privacy</div><div class="desc">Política de privacidade</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/privacy/consent</div><div class="desc">Consentimento LGPD</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/accessibility</div><div class="desc">Acessibilidade</div></div>
+    <div class="page-card high"><span class="status-badge high">🔧</span><div class="route">/pricing</div><div class="desc">Planos e preços</div></div>
+    <div class="page-card high"><span class="status-badge high">🔧</span><div class="route">/reset-password</div><div class="desc">Recuperação de senha</div></div>
+    <div class="page-card high"><span class="status-badge high">🔧</span><div class="route">/confirm-email</div><div class="desc">Confirmação de e-mail</div></div>
+    <div class="page-card medium"><span class="status-badge medium">🔧</span><div class="route">/blog</div><div class="desc">Blog institucional</div></div>
+    <div class="page-card medium"><span class="status-badge medium">🔧</span><div class="route">/contact</div><div class="desc">Fale conosco</div></div>
+  </div>
+</div>
+
+<!-- Section: Candidato -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-icon blue">👤</div>
+    <div class="section-info">
+      <h2>Candidato</h2>
+      <p>Jornada completa do candidato</p>
+    </div>
+    <span class="section-count">4 exist · 6 criar</span>
+  </div>
+  <div class="pages-grid">
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/candidate/[id]/onboarding</div><div class="desc">Pós-cadastro, perfil inicial</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/candidate/[id]/dashboard</div><div class="desc">Dashboard — visão geral</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/candidate/[id]/profile</div><div class="desc">Perfil completo + editar</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/candidate/[id]/report</div><div class="desc">Relatório OCEAN + gráfico orbital</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/candidate/orbita</div><div class="desc">Demo do gráfico orbital</div></div>
+    <div class="page-card high"><span class="status-badge high">🔧</span><div class="route">/candidate/[id]/jobs</div><div class="desc">Vagas recomendadas (match)</div></div>
+    <div class="page-card high"><span class="status-badge high">🔧</span><div class="route">/candidate/[id]/jobs/[jobId]</div><div class="desc">Detalhe da vaga + candidatar</div></div>
+    <div class="page-card medium"><span class="status-badge medium">🔧</span><div class="route">/candidate/[id]/applications</div><div class="desc">Histórico de candidaturas</div></div>
+    <div class="page-card medium"><span class="status-badge medium">🔧</span><div class="route">/candidate/[id]/settings</div><div class="desc">Configurações da conta</div></div>
+    <div class="page-card medium"><span class="status-badge medium">🔧</span><div class="route">/candidate/[id]/interview</div><div class="desc">Entrevista OCEAN no site (futuro)</div></div>
+  </div>
+</div>
+
+<!-- Section: Empresa -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-icon purple">🏢</div>
+    <div class="section-info">
+      <h2>Empresa</h2>
+      <p>Jornada completa da empresa contratante</p>
+    </div>
+    <span class="section-count">5 exist · 8 criar</span>
+  </div>
+  <div class="pages-grid">
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/company/onboarding</div><div class="desc">Configurar perfil + cultura</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/company/[id]/dashboard</div><div class="desc">Dashboard — KPIs, matches</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/company/[id]/profile</div><div class="desc">Perfil da empresa + editar</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/company/[id]/jobs</div><div class="desc">Listar vagas da empresa</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/company/orbita</div><div class="desc">Demo orbital (visão empresa)</div></div>
+    <div class="page-card high"><span class="status-badge high">🔧</span><div class="route">/company/[id]/jobs/new</div><div class="desc">Criar nova vaga</div></div>
+    <div class="page-card high"><span class="status-badge high">🔧</span><div class="route">/company/[id]/jobs/[jobId]/candidates</div><div class="desc">Candidatos + scores OCEAN</div></div>
+    <div class="page-card high"><span class="status-badge high">🔧</span><div class="route">/company/[id]/matches</div><div class="desc">Matches gerados</div></div>
+    <div class="page-card medium"><span class="status-badge medium">🔧</span><div class="route">/company/[id]/candidates</div><div class="desc">Pool de candidatos</div></div>
+    <div class="page-card medium"><span class="status-badge medium">🔧</span><div class="route">/company/[id]/candidates/[cid]</div><div class="desc">Perfil do candidato (empresa)</div></div>
+    <div class="page-card medium"><span class="status-badge medium">🔧</span><div class="route">/company/[id]/settings</div><div class="desc">Configurações + membros</div></div>
+    <div class="page-card low"><span class="status-badge low">🔧</span><div class="route">/company/[id]/billing</div><div class="desc">Faturamento / assinatura</div></div>
+  </div>
+</div>
+
+<!-- Section: Vagas Públicas -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-icon orange">📋</div>
+    <div class="section-info">
+      <h2>Vagas (Público)</h2>
+      <p>Qualquer visitante vê as vagas abertas</p>
+    </div>
+    <span class="section-count">0 exist · 2 criar</span>
+  </div>
+  <div class="pages-grid">
+    <div class="page-card high"><span class="status-badge high">🔧</span><div class="route">/jobs</div><div class="desc">Lista pública de vagas abertas</div></div>
+    <div class="page-card high"><span class="status-badge high">🔧</span><div class="route">/jobs/[jobId]</div><div class="desc">Detalhe da vaga + "Candidate-se"</div></div>
+  </div>
+</div>
+
+<!-- Section: Entrevistas -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-icon cyan">🧪</div>
+    <div class="section-info">
+      <h2>Entrevistas &amp; Questionário</h2>
+      <p>Fluxo de avaliação OCEAN</p>
+    </div>
+    <span class="section-count">2 exist · 1 criar</span>
+  </div>
+  <div class="pages-grid">
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/interview/[id]</div><div class="desc">Entrevista OCEAN (futura versão web)</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/questionnaire/[id]</div><div class="desc">Questionário direto no navegador</div></div>
+    <div class="page-card medium"><span class="status-badge medium">🔧</span><div class="route">/interview/[id]/complete</div><div class="desc">Conclusão + próximos passos</div></div>
+  </div>
+</div>
+
+<!-- Section: Sistema -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-icon red">⚙️</div>
+    <div class="section-info">
+      <h2>Sistema &amp; Admin</h2>
+      <p>Utilidades e backoffice</p>
+    </div>
+    <span class="section-count">2 exist · 5 criar</span>
+  </div>
+  <div class="pages-grid">
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/notifications</div><div class="desc">Central de notificações</div></div>
+    <div class="page-card exists"><span class="status-badge exists">✅</span><div class="route">/not-found</div><div class="desc">Página 404 personalizada</div></div>
+    <div class="page-card low"><span class="status-badge low">🔧</span><div class="route">/admin</div><div class="desc">Portal admin (root)</div></div>
+    <div class="page-card low"><span class="status-badge low">🔧</span><div class="route">/admin/candidates</div><div class="desc">Lista de candidatos</div></div>
+    <div class="page-card low"><span class="status-badge low">🔧</span><div class="route">/admin/companies</div><div class="desc">Lista de empresas</div></div>
+    <div class="page-card low"><span class="status-badge low">🔧</span><div class="route">/admin/interviews</div><div class="desc">Logs de entrevistas</div></div>
+    <div class="page-card low"><span class="status-badge low">🔧</span><div class="route">/status</div><div class="desc">Health check público</div></div>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="summary-grid">
+  <div class="summary-card">
+    <h3>✅ Já existem</h3>
+    <div class="big-number green">23</div>
+    <p>páginas prontas</p>
+  </div>
+  <div class="summary-card">
+    <h3>🔧 Por criar</h3>
+    <div class="big-number red">20</div>
+    <p>páginas — 10 alta prioridade</p>
+  </div>
+  <div class="summary-card">
+    <h3>🎯 Prioridade máxima</h3>
+    <div class="big-number blue">8</div>
+    <p>Jobs, Matches, Pricing, Senha</p>
+  </div>
+</div>
+
+<div class="footer">
+  Whyme © 2026 · Next.js + FastAPI · Gerado em 05/05/2026
+</div>
+
+</div>
+</body>
+</html>

@@ -9,8 +9,9 @@ import {
   createJob,
   updateJob,
   updateJobStatus,
+  getCompanyReferenceData,
 } from "@/lib/api"
-import type { JobData, CompanyData, UserData, JobCreateRequest, JobUpdateRequest } from "@/lib/api"
+import type { JobData, CompanyData, UserData, JobCreateRequest, JobUpdateRequest, CompanyReferenceData } from "@/lib/api"
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -121,10 +122,53 @@ function JobFormModal({
   })
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState("")
+  const [refData, setRefData] = useState<CompanyReferenceData | null>(null)
+  const [refDataLoading, setRefDataLoading] = useState(false)
+  const [refDataLoaded, setRefDataLoaded] = useState(false)
+  const [hardSkillsRequired, setHardSkillsRequired] = useState<string[]>(
+    editing?.hard_skills_required ?? [],
+  )
+  const [hardSkillSearch, setHardSkillSearch] = useState("")
+  const [educationLevelMin, setEducationLevelMin] = useState(
+    editing?.education_level_min ?? "",
+  )
+  const [experienceYearsMin, setExperienceYearsMin] = useState<number | "">(
+    editing?.experience_years_min ?? "",
+  )
+  const [workModel, setWorkModel] = useState(editing?.work_model ?? "")
+  const [salaryMin, setSalaryMin] = useState<number | "">(editing?.salary_min ?? "")
+  const [salaryMax, setSalaryMax] = useState<number | "">(editing?.salary_max ?? "")
+  const [location, setLocation] = useState(editing?.location ?? "")
 
   const ocean_ideal = Object.fromEntries(
     OCEAN_KEYS.map((k) => [k, sliders[k] / 100]),
   ) as Record<string, number>
+
+  // Load reference data once (cached)
+  useEffect(() => {
+    if (!refDataLoaded && !refDataLoading) {
+      setRefDataLoading(true)
+      getCompanyReferenceData(token || undefined)
+        .then((data) => {
+          setRefData(data)
+          setRefDataLoaded(true)
+        })
+        .catch(() => {
+          // silently fail, fields will show empty
+        })
+        .finally(() => setRefDataLoading(false))
+    }
+  }, [refDataLoaded, refDataLoading, token])
+
+  function toggleHardSkill(id: string) {
+    setHardSkillsRequired((prev) =>
+      prev.includes(id)
+        ? prev.filter((s) => s !== id)
+        : prev.length < 10
+          ? [...prev, id]
+          : prev,
+    )
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -141,6 +185,13 @@ function JobFormModal({
           title: title.trim(),
           description: description.trim() || null,
           ocean_ideal,
+          hard_skills_required: hardSkillsRequired.length > 0 ? hardSkillsRequired : undefined,
+          education_level_min: educationLevelMin || null,
+          experience_years_min: experienceYearsMin !== "" ? Number(experienceYearsMin) : null,
+          work_model: workModel || null,
+          salary_min: salaryMin !== "" ? Number(salaryMin) : null,
+          salary_max: salaryMax !== "" ? Number(salaryMax) : null,
+          location: location.trim() || null,
         }
         saved = await updateJob(editing.id, payload, token)
       } else {
@@ -149,6 +200,13 @@ function JobFormModal({
           title: title.trim(),
           description: description.trim() || null,
           ocean_ideal,
+          hard_skills_required: hardSkillsRequired.length > 0 ? hardSkillsRequired : undefined,
+          education_level_min: educationLevelMin || null,
+          experience_years_min: experienceYearsMin !== "" ? Number(experienceYearsMin) : null,
+          work_model: workModel || null,
+          salary_min: salaryMin !== "" ? Number(salaryMin) : null,
+          salary_max: salaryMax !== "" ? Number(salaryMax) : null,
+          location: location.trim() || null,
         }
         saved = await createJob(payload, token)
       }
@@ -234,6 +292,179 @@ function JobFormModal({
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Hard Skills Required */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400">
+              Hard Skills Requeridas (máx. 10)
+            </label>
+            {refDataLoading ? (
+              <div className="flex items-center gap-2 py-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-blue-500" />
+                <span className="text-xs text-zinc-500">Carregando...</span>
+              </div>
+            ) : refData ? (
+              <>
+                <input
+                  type="text"
+                  value={hardSkillSearch}
+                  onChange={(e) => setHardSkillSearch(e.target.value)}
+                  placeholder="Buscar habilidades..."
+                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+                />
+                {hardSkillsRequired.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {hardSkillsRequired.map((id) => {
+                      const skill = refData.hard_skills.find((s) => s.id === id)
+                      return skill ? (
+                        <span
+                          key={id}
+                          className="flex items-center gap-1 rounded-md bg-blue-500/20 px-2 py-1 text-xs text-blue-400"
+                        >
+                          {skill.name}
+                          <button
+                            type="button"
+                            onClick={() => toggleHardSkill(id)}
+                            className="ml-0.5 text-blue-300 hover:text-blue-100"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ) : null
+                    })}
+                  </div>
+                )}
+                <div className="max-h-36 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-800/40">
+                  {refData.hard_skills
+                    .filter((s) =>
+                      s.name.toLowerCase().includes(hardSkillSearch.toLowerCase()),
+                    )
+                    .length === 0 ? (
+                    <p className="p-3 text-xs text-zinc-500">Nenhuma habilidade encontrada.</p>
+                  ) : (
+                    refData.hard_skills
+                      .filter((s) =>
+                        s.name.toLowerCase().includes(hardSkillSearch.toLowerCase()),
+                      )
+                      .map((skill) => {
+                        const active = hardSkillsRequired.includes(skill.id)
+                        return (
+                          <button
+                            key={skill.id}
+                            type="button"
+                            onClick={() => toggleHardSkill(skill.id)}
+                            disabled={!active && hardSkillsRequired.length >= 10}
+                            className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
+                              active
+                                ? "bg-blue-500/10 text-blue-400"
+                                : "text-zinc-400 hover:bg-zinc-800"
+                            } disabled:opacity-40`}
+                          >
+                            <span>{skill.name}</span>
+                            <span className="text-zinc-600">{skill.category}</span>
+                          </button>
+                        )
+                      })
+                  )}
+                </div>
+              </>
+            ) : (
+              <p className="text-xs text-zinc-500">Erro ao carregar habilidades.</p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-zinc-400">Nível Formação Mín.</label>
+              <select
+                value={educationLevelMin}
+                onChange={(e) => setEducationLevelMin(e.target.value)}
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 outline-none transition-colors focus:border-blue-500"
+              >
+                <option value="">Qualquer</option>
+                {refData?.education_levels.map((el) => {
+                  const id = typeof el === "string" ? el : el.id
+                  const name = typeof el === "string" ? el : el.name
+                  return (
+                    <option key={id} value={id}>
+                      {name}
+                    </option>
+                  )
+                })}
+              </select>
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-zinc-400">Anos Exp. Mínimos</label>
+              <input
+                type="number"
+                min={0}
+                max={50}
+                value={experienceYearsMin}
+                onChange={(e) =>
+                  setExperienceYearsMin(e.target.value ? Number(e.target.value) : "")
+                }
+                placeholder="0"
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400">Modelo de Trabalho</label>
+            <select
+              value={workModel}
+              onChange={(e) => setWorkModel(e.target.value)}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 outline-none transition-colors focus:border-blue-500"
+            >
+              <option value="">Selecione</option>
+              {["presencial", "hibrido", "remoto"].map((wm) => (
+                <option key={wm} value={wm}>
+                  {wm.charAt(0).toUpperCase() + wm.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-zinc-400">Salário Mín.</label>
+              <input
+                type="number"
+                min={0}
+                value={salaryMin}
+                onChange={(e) =>
+                  setSalaryMin(e.target.value ? Number(e.target.value) : "")
+                }
+                placeholder="0"
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-zinc-400">Salário Máx.</label>
+              <input
+                type="number"
+                min={0}
+                value={salaryMax}
+                onChange={(e) =>
+                  setSalaryMax(e.target.value ? Number(e.target.value) : "")
+                }
+                placeholder="0"
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-zinc-400">Localização</label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="ex: São Paulo, SP"
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+            />
           </div>
 
           {formError && (

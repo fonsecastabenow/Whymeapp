@@ -20,6 +20,9 @@ class CompanyOut(BaseModel):
     description: str | None
     industry: str | None
     culture_vector: str | None
+    size: str | None
+    website: str | None
+    linkedin_url: str | None
     created_at: str
 
 
@@ -28,6 +31,9 @@ class CompanyUpdateRequest(BaseModel):
     description: str | None = None
     industry: str | None = None
     culture_vector: str | None = None
+    size: str | None = None
+    website: str | None = None
+    linkedin_url: str | None = None
 
 
 @router.get("/{company_id}", response_model=CompanyOut)
@@ -60,6 +66,9 @@ async def get_company(
         description=company.description,
         industry=company.industry,
         culture_vector=company.culture_vector,
+        size=company.size,
+        website=company.website,
+        linkedin_url=company.linkedin_url,
         created_at=company.created_at.isoformat(),
     )
 
@@ -103,6 +112,12 @@ async def update_company(
         company.industry = body.industry
     if body.culture_vector is not None:
         company.culture_vector = body.culture_vector
+    if body.size is not None:
+        company.size = body.size
+    if body.website is not None:
+        company.website = body.website
+    if body.linkedin_url is not None:
+        company.linkedin_url = body.linkedin_url
 
     await session.commit()
     await session.refresh(company)
@@ -114,5 +129,8 @@ async def update_company(
         description=company.description,
         industry=company.industry,
         culture_vector=company.culture_vector,
+        size=company.size,
+        website=company.website,
+        linkedin_url=company.linkedin_url,
         created_at=company.created_at.isoformat(),
     )

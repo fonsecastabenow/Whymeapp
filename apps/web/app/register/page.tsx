@@ -46,9 +46,9 @@ export default function RegisterPage() {
       const me = await getCurrentUser(loginRes.access_token)
 
       if (role === "company") {
-        router.push(`/company/${me.id}/dashboard`)
+        router.push(`/company/onboarding`)
       } else {
-        router.push(`/candidate/${me.id}/profile`)
+        router.push(`/candidate/${me.id}/onboarding`)
       }
     } catch (err) {
       setState("error")

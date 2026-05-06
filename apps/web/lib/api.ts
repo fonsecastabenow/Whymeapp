@@ -61,7 +61,31 @@ export type JobData = {
   description: string | null
   status: string
   ocean_ideal: OCEANScores | null
+  hard_skills_required: string[]
+  education_level_min: string | null
+  experience_years_min: number | null
+  work_model: string | null
+  salary_min: number | null
+  salary_max: number | null
+  location: string | null
   created_at: string
+}
+
+export type CandidateEducation = {
+  level?: string | null
+  course?: string | null
+  institution?: string | null
+}
+
+export type CandidateLanguage = {
+  language: string
+  level: string
+}
+
+export type CandidateSalaryExpectation = {
+  min?: number | null
+  max?: number | null
+  currency?: string
 }
 
 export type CandidateProfileData = {
@@ -73,7 +97,45 @@ export type CandidateProfileData = {
   experience_years: number | null
   skills: Record<string, unknown> | null
   ocean_scores: OCEANScores | null
+  phone?: string | null
+  education?: CandidateEducation | null
+  languages?: CandidateLanguage[] | null
+  hard_skills?: string[] | null
+  city?: string | null
+  state?: string | null
+  country?: string | null
+  salary_expectation?: CandidateSalaryExpectation | null
+  work_model?: string | null
+  linkedin_url?: string | null
+  portfolio_url?: string | null
+  professional_level?: string | null
+  onboarding_completed?: boolean
   created_at: string
+}
+
+export type ReferenceHardSkill = { id: string; name: string; category: string }
+export type ReferenceEducationLevel = { id: string; name: string }
+export type ReferenceDataResponse = {
+  hard_skills: ReferenceHardSkill[]
+  education_levels: ReferenceEducationLevel[]
+  professional_levels: string[]
+  work_models: string[]
+  language_levels: string[]
+}
+
+export type CandidateOnboardingRequest = {
+  phone?: string | null
+  education: CandidateEducation
+  languages?: CandidateLanguage[]
+  hard_skills?: string[]
+  city: string
+  state: string
+  country: string
+  salary_expectation?: CandidateSalaryExpectation | null
+  work_model: string
+  linkedin_url?: string | null
+  portfolio_url?: string | null
+  professional_level: string
 }
 
 export type CandidateUpdateRequest = {
@@ -105,6 +167,9 @@ export type CompanyData = {
   name: string
   description: string | null
   industry: string | null
+  size: string | null
+  website: string | null
+  linkedin_url: string | null
   culture_vector: string | null
   created_at: string
 }
@@ -113,7 +178,30 @@ export type CompanyUpdateRequest = {
   name?: string | null
   description?: string | null
   industry?: string | null
+  size?: string | null
+  website?: string | null
+  linkedin_url?: string | null
   culture_vector?: string | null
+}
+
+export type CultureQuestionType = {
+  id: string
+  question_pt: string
+  dimension: string
+  direction: number
+  sort_order: number
+}
+
+export type CultureAnswer = {
+  question_id: string
+  score: number
+}
+
+export type CompanyReferenceData = {
+  hard_skills: { id: string; name: string; category: string }[]
+  education_levels: { id: string; name: string; sort_order: number }[]
+  work_models: string[]
+  language_levels: string[]
 }
 
 export type TopCandidateItem = {
@@ -269,6 +357,22 @@ export function getCandidateMatchDetails(candidateId: string): Promise<MatchDeta
   return apiFetch(`/matches/candidate/${encodeURIComponent(candidateId)}/details`)
 }
 
+export function getCandidateReferenceData(): Promise<ReferenceDataResponse> {
+  return apiFetch("/candidates/reference-data")
+}
+
+export function submitCandidateOnboarding(
+  candidateId: string,
+  data: CandidateOnboardingRequest,
+  authToken: string,
+): Promise<CandidateProfileData> {
+  return apiFetch(
+    `/candidates/${encodeURIComponent(candidateId)}/onboarding`,
+    { method: "POST", body: JSON.stringify(data) },
+    authToken,
+  )
+}
+
 export function updateCandidateProfile(
   candidateId: string,
   data: CandidateUpdateRequest,
@@ -336,12 +440,26 @@ export type JobCreateRequest = {
   title: string
   description?: string | null
   ocean_ideal?: Record<string, number> | null
+  hard_skills_required?: string[]
+  education_level_min?: string | null
+  experience_years_min?: number | null
+  work_model?: string | null
+  salary_min?: number | null
+  salary_max?: number | null
+  location?: string | null
 }
 
 export type JobUpdateRequest = {
   title?: string
   description?: string | null
   ocean_ideal?: Record<string, number> | null
+  hard_skills_required?: string[]
+  education_level_min?: string | null
+  experience_years_min?: number | null
+  work_model?: string | null
+  salary_min?: number | null
+  salary_max?: number | null
+  location?: string | null
 }
 
 export function createJob(data: JobCreateRequest, authToken: string): Promise<JobData> {
@@ -403,4 +521,34 @@ export async function deleteResume(candidateId: string): Promise<void> {
     const body = await res.json().catch(() => ({}))
     throw new Error((body as { detail?: string }).detail ?? `API error ${res.status}`)
   }
+}
+
+// ─── Company Onboarding ───────────────────────────────────────────────────────
+
+export async function getCultureQuestions(): Promise<CultureQuestionType[]> {
+  const res = await fetch(`${API_BASE}/companies/culture-questions`)
+  if (!res.ok) throw new Error(`Erro ao carregar perguntas: ${res.statusText}`)
+  return res.json()
+}
+
+export async function submitCultureQuestionnaire(
+  companyId: string,
+  answers: CultureAnswer[],
+  token: string
+): Promise<{ culture_vector: Record<string, number>; dimensions: Record<string, number> }> {
+  const res = await fetch(`${API_BASE}/companies/${companyId}/culture-questionnaire`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ answers }),
+  })
+  if (!res.ok) throw new Error(`Erro ao enviar questionário: ${res.statusText}`)
+  return res.json()
+}
+
+export async function getCompanyReferenceData(token?: string): Promise<CompanyReferenceData> {
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+  const res = await fetch(`${API_BASE}/companies/reference-data`, { headers })
+  if (!res.ok) throw new Error(`Erro ao carregar dados de referência: ${res.statusText}`)
+  return res.json()
 }

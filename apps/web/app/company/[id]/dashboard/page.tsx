@@ -245,6 +245,12 @@ export default function CompanyDashboardPage() {
               >
                 Perfil
               </a>
+              <a
+                href="/company/orbita"
+                className="rounded-full border border-zinc-700 bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400 transition-colors hover:border-violet-500 hover:text-violet-300"
+              >
+                Órbita
+              </a>
             </div>
             <p className="mt-0.5 text-xs text-zinc-500">Dashboard RH</p>
           </div>

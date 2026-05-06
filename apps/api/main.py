@@ -4,6 +4,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from routers import health, auth, candidates, companies, interviews, jobs, matches, notifications, accessibility, resumes, webhooks, report
+from routers import companies_onboarding, interviews_telegram
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["60/minute"])
 
@@ -27,8 +28,10 @@ app.add_middleware(
 app.include_router(health.router, tags=["health"])
 app.include_router(auth.router)
 app.include_router(candidates.router)
+app.include_router(companies_onboarding.router)
 app.include_router(companies.router)
 app.include_router(interviews.router)
+app.include_router(interviews_telegram.router)
 app.include_router(jobs.router)
 app.include_router(matches.router)
 app.include_router(notifications.router, prefix="/api/v1")
