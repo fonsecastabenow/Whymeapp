@@ -643,7 +643,7 @@ function JobCard({
                 const pct = Math.round(c.score * 100)
                 const isActioning = actioning === c.id
                 return (
-                  <div key={c.id} className="flex items-center gap-3 px-5 py-3">
+                  <div key={c.id} className="flex flex-col gap-2 px-5 py-3 sm:flex-row sm:items-center sm:gap-3">
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-zinc-100">{c.candidate_name}</p>
                       {c.candidate_headline && (

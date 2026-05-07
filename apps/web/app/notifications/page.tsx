@@ -128,7 +128,7 @@ export default function NotificationsPage() {
                     {!n.is_read && (
                       <button
                         onClick={() => markAsRead(n.id)}
-                        className="mt-3 text-xs font-medium text-blue-400 hover:underline"
+                        className="mt-3 inline-block rounded px-2 py-1.5 text-xs font-medium text-blue-400 hover:underline"
                       >
                         Marcar como lida
                       </button>

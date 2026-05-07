@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, FormEvent } from "react"
+import { useState, FormEvent, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { loginUser, getCurrentUser, type LoginRequest } from "@/lib/api"
 import { AuthLayout } from "@/components/layouts/auth-layout"
 import { Button } from "@/components/ui/button"
@@ -10,10 +10,18 @@ import { Input } from "@/components/ui/input"
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [info, setInfo] = useState("")
+
+  useEffect(() => {
+    if (searchParams.get("session") === "expired") {
+      setInfo("Sua sessão expirou. Faça login novamente.")
+    }
+  }, [searchParams])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -77,6 +85,7 @@ export default function LoginPage() {
           autoComplete="current-password"
         />
 
+        {info && <p className="text-sm text-amber-400">{info}</p>}
         {error && <p className="text-sm text-red-400">{error}</p>}
 
         <Button type="submit" loading={loading} className="w-full">

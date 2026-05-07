@@ -269,7 +269,7 @@ export default function CandidateDashboardPage() {
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-4">
-                    <div className="w-36">
+                    <div className="w-24 sm:w-36">
                       <div className="mb-1.5 flex justify-between text-xs">
                         <span className="text-zinc-500">Compatibilidade</span>
                         <span className="font-semibold tabular-nums text-zinc-300">{pct}%</span>

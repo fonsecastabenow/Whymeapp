@@ -283,6 +283,16 @@ async function apiFetch<T>(path: string, options?: RequestInit, token?: string):
     },
     ...options,
   })
+
+  if (res.status === 401) {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("whyme_token")
+      localStorage.removeItem("whyme_user")
+      window.location.href = "/login?session=expired"
+    }
+    throw new Error("Sessão expirada. Faça login novamente.")
+  }
+
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
     throw new Error((body as { detail?: string }).detail ?? `API error ${res.status}`)
