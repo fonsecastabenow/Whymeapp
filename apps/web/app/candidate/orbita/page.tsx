@@ -73,18 +73,21 @@ export default function CandidateOrbitaPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="border-b px-6 py-4">
+      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur-md px-6 py-4">
         <nav className="mx-auto flex max-w-6xl items-center gap-6 text-sm">
-          <span className="text-xl font-bold tracking-tight">Whyme</span>
+          <span className="text-lg font-black tracking-widest text-gradient-gold uppercase">WHY ME?</span>
           <a href={candidateId ? `/candidate/${candidateId}/profile` : "#"} className="text-muted-foreground transition-colors hover:text-foreground">Perfil</a>
-          <a href={candidateId ? `/candidate/orbita?candidate_id=${candidateId}` : "#"} className="font-semibold text-foreground">ORBITA</a>
+          <a href={candidateId ? `/candidate/orbita?candidate_id=${candidateId}` : "#"} className="font-semibold text-[#3AB0FF]">ORBITA</a>
           <a href={candidateId ? `/candidate/${candidateId}/dashboard` : "#"} className="text-muted-foreground transition-colors hover:text-foreground">Dashboard</a>
         </nav>
       </header>
 
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold tracking-tight">ORBITA</h1>
+          <span className="text-sm text-[#3AB0FF] font-semibold tracking-widest uppercase">Visualização</span>
+          <h1 className="mt-2 text-4xl font-black tracking-tight">
+            <span className="text-gradient-gold">ORBITA</span>
+          </h1>
           <p className="mt-2 text-muted-foreground">
             Empresas com melhor compatibilidade com seu perfil
           </p>
@@ -131,10 +134,10 @@ function CompanyCard({ match, index, onClick }: { match: MatchDetailItem; index:
   return (
     <button
       onClick={onClick}
-      className="group flex w-full items-center gap-4 rounded-xl border bg-card p-4 text-left shadow-sm transition-all hover:border-primary/50 hover:shadow-md"
+      className="group flex w-full items-center gap-4 rounded-2xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.7)] p-4 text-left transition-all hover:border-[#3AB0FF]/35 hover:bg-[rgba(16,34,68,0.9)] backdrop-blur"
       style={{ animationDelay: `${index * 80}ms` }}
     >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#3AB0FF]/10 text-lg font-bold text-[#3AB0FF]">
         {initial}
       </div>
       <div className="min-w-0 flex-1">
@@ -148,7 +151,7 @@ function CompanyCard({ match, index, onClick }: { match: MatchDetailItem; index:
         </div>
       </div>
       <div className="shrink-0 text-right">
-        <div className="text-lg font-bold tabular-nums text-primary">{pct}%</div>
+        <div className="text-lg font-bold tabular-nums text-[#3AB0FF]">{pct}%</div>
         <div className="text-xs text-muted-foreground">match</div>
       </div>
     </button>
@@ -169,13 +172,13 @@ function MatchModal({ match, onClose }: { match: MatchDetailItem; onClose: () =>
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative z-10 flex h-full w-full max-w-lg flex-col overflow-y-auto border-l bg-card p-6 shadow-xl">
-        <button onClick={onClose} className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted">
+      <div className="relative z-10 flex h-full w-full max-w-lg flex-col overflow-y-auto border-l border-[#3AB0FF]/15 bg-[#0B1F3A] p-6 shadow-2xl">
+        <button onClick={onClose} className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-white/5">
           <X className="h-5 w-5" />
         </button>
 
         <div className="mb-6 flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#3AB0FF]/10 text-2xl font-bold text-[#3AB0FF]">
             {match.company_name?.charAt(0).toUpperCase() ?? "?"}
           </div>
           <div>
@@ -184,8 +187,8 @@ function MatchModal({ match, onClose }: { match: MatchDetailItem; onClose: () =>
           </div>
         </div>
 
-        <div className="mb-6 rounded-xl bg-primary/5 p-4 text-center">
-          <div className="text-3xl font-bold text-primary">{pct}%</div>
+        <div className="mb-6 rounded-2xl bg-[#3AB0FF]/8 border border-[#3AB0FF]/15 p-4 text-center">
+          <div className="text-3xl font-bold text-gradient-gold">{pct}%</div>
           <p className="text-sm text-muted-foreground">Compatibilidade OCEAN</p>
         </div>
 
@@ -209,7 +212,7 @@ function MatchModal({ match, onClose }: { match: MatchDetailItem; onClose: () =>
                   <span className="font-medium">{DIMENSION_LABELS[dim]}</span>
                   <span className="tablular-nums text-muted-foreground">{Math.round(val)}%</span>
                 </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-white/5">
                   <div
                     className="h-full rounded-full transition-all"
                     style={{ width: `${val}%`, backgroundColor: DIMENSION_COLORS[dim] }}

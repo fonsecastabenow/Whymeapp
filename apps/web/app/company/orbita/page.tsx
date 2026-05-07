@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Building2, ChevronDown, Filter, Star, Users, X } from "lucide-react"
@@ -25,7 +25,7 @@ const DIMENSION_COLORS: Record<string, string> = {
 
 const AVATAR_COLORS = [
   "bg-violet-500",
-  "bg-blue-500",
+  "bg-[#3AB0FF]",
   "bg-amber-500",
   "bg-emerald-500",
   "bg-rose-500",
@@ -51,7 +51,7 @@ function avatarColor(name: string): string {
 
 function scoreBadgeClass(score: number): string {
   if (score >= 0.9) return "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-  if (score >= 0.75) return "bg-blue-500/15 text-blue-400 border border-blue-500/30"
+  if (score >= 0.75) return "bg-[#3AB0FF]/15 text-[#3AB0FF] border border-[#3AB0FF]/30"
   return "bg-amber-500/15 text-amber-400 border border-amber-500/30"
 }
 
@@ -196,7 +196,7 @@ export default function CompanyOrbitaPage() {
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
             <div className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-primary" />
-              <span className="text-lg font-bold tracking-tight">Whyme</span>
+              <span className="text-lg font-black tracking-widest text-gradient-gold uppercase">WHY ME?</span>
               <span className="text-muted-foreground">/</span>
               <span className="text-sm font-medium text-muted-foreground">ORBITA</span>
             </div>
@@ -395,7 +395,7 @@ export default function CompanyOrbitaPage() {
                   <span>90%+ excelente</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <span className="inline-block h-1.5 w-4 rounded-full bg-blue-500 opacity-70" />
+                  <span className="inline-block h-1.5 w-4 rounded-full bg-[#3AB0FF] opacity-70" />
                   <span>75–89% bom</span>
                 </div>
                 <div className="flex items-center gap-1.5">

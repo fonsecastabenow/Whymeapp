@@ -52,6 +52,24 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // WHY ME? electric blue accent ("gold" alias from design system)
+        gold: {
+          DEFAULT: "#3AB0FF",
+          muted: "#1a8fdb",
+          50: "rgba(58,176,255,0.05)",
+          100: "rgba(58,176,255,0.10)",
+          200: "rgba(58,176,255,0.20)",
+          300: "rgba(58,176,255,0.30)",
+          400: "rgba(58,176,255,0.40)",
+        },
+        navy: {
+          DEFAULT: "#0B1F3A",
+          light: "#102244",
+          card: "#0f2040",
+        },
+      },
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -67,10 +85,15 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        float: "float 6s ease-in-out infinite",
       },
     },
   },

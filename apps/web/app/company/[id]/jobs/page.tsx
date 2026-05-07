@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
@@ -56,7 +56,7 @@ function RadarChart({ ocean }: { ocean: Record<string, number> | null }) {
   return (
     <svg width={80} height={80} viewBox="0 0 80 80">
       {[0.25, 0.5, 0.75, 1].map((s) => (
-        <polygon key={s} points={gridPoints(s)} fill="none" stroke="#3f3f46" strokeWidth="0.5" />
+        <polygon key={s} points={gridPoints(s)} fill="none" stroke="rgba(58,176,255,0.15)" strokeWidth="0.5" />
       ))}
       {angles.map((a, i) => (
         <line
@@ -65,15 +65,15 @@ function RadarChart({ ocean }: { ocean: Record<string, number> | null }) {
           y1={cy}
           x2={cx + r * Math.cos(a)}
           y2={cy + r * Math.sin(a)}
-          stroke="#3f3f46"
+          stroke="rgba(58,176,255,0.15)"
           strokeWidth="0.5"
         />
       ))}
       {ocean && (
         <polygon
           points={dataPoints}
-          fill="rgba(59,130,246,0.18)"
-          stroke="#3b82f6"
+          fill="rgba(58,176,255,0.20)"
+          stroke="#3AB0FF"
           strokeWidth="1.5"
           strokeLinejoin="round"
         />
@@ -86,7 +86,7 @@ function RadarChart({ ocean }: { ocean: Record<string, number> | null }) {
           textAnchor="middle"
           dominantBaseline="central"
           fontSize="7"
-          fill="#71717a"
+          fill="rgba(148,163,184,0.8)"
           fontWeight="600"
         >
           {OCEAN_KEYS[i].toUpperCase()}
@@ -229,14 +229,14 @@ function JobFormModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-lg rounded-2xl border border-zinc-700 bg-zinc-900 shadow-2xl">
-        <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
-          <h2 className="font-semibold text-zinc-50">
+      <div className="w-full max-w-lg rounded-2xl border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.8)] shadow-2xl">
+        <div className="flex items-center justify-between border-b border-[#3AB0FF]/10 px-6 py-4">
+          <h2 className="font-semibold text-foreground">
             {editing ? "Editar Vaga" : "Nova Vaga"}
           </h2>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-50"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-[rgba(16,34,68,0.6)] hover:text-foreground"
           >
             ✕
           </button>
@@ -245,43 +245,43 @@ function JobFormModal({
         <form onSubmit={handleSubmit} className="space-y-5 px-6 py-5">
           {/* Title */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-400">Título</label>
+            <label className="text-xs font-medium text-muted-foreground">Título</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="ex: Desenvolvedor Full Stack"
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+              className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
             />
           </div>
 
           {/* Description */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-400">Descrição</label>
+            <label className="text-xs font-medium text-muted-foreground">Descrição</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Descreva a vaga, responsabilidades, benefícios..."
               rows={3}
-              className="w-full resize-none rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+              className="w-full resize-none rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
             />
           </div>
 
           {/* OCEAN Sliders */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-zinc-400">Perfil OCEAN Ideal</label>
+              <label className="text-xs font-medium text-muted-foreground">Perfil OCEAN Ideal</label>
               <div className="flex h-10 w-10 items-center justify-center">
                 <RadarChart ocean={ocean_ideal} />
               </div>
             </div>
-            <div className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-800/40 px-4 py-3">
+            <div className="space-y-3 rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] px-4 py-3">
               {OCEAN_KEYS.map((key) => (
                 <div key={key} className="flex items-center gap-3">
-                  <span className="w-6 shrink-0 text-center text-xs font-bold text-zinc-500">
+                  <span className="w-6 shrink-0 text-center text-xs font-bold text-foreground0">
                     {key.toUpperCase()}
                   </span>
-                  <span className="w-28 shrink-0 text-xs text-zinc-400">{OCEAN_LABELS[key]}</span>
+                  <span className="w-28 shrink-0 text-xs text-muted-foreground">{OCEAN_LABELS[key]}</span>
                   <input
                     type="range"
                     min={0}
@@ -290,9 +290,9 @@ function JobFormModal({
                     onChange={(e) =>
                       setSliders((prev) => ({ ...prev, [key]: Number(e.target.value) }))
                     }
-                    className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-zinc-700 accent-blue-500"
+                    className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/10 accent-[#3AB0FF]"
                   />
-                  <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-blue-400">
+                  <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-[#3AB0FF]">
                     {sliders[key]}
                   </span>
                 </div>
@@ -302,13 +302,13 @@ function JobFormModal({
 
           {/* Hard Skills Required */}
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-400">
+            <label className="text-xs font-medium text-muted-foreground">
               Hard Skills Requeridas (máx. 10)
             </label>
             {refDataLoading ? (
               <div className="flex items-center gap-2 py-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-blue-500" />
-                <span className="text-xs text-zinc-500">Carregando...</span>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#3AB0FF]/15 border-t-blue-500" />
+                <span className="text-xs text-foreground0">Carregando...</span>
               </div>
             ) : refData ? (
               <>
@@ -317,7 +317,7 @@ function JobFormModal({
                   value={hardSkillSearch}
                   onChange={(e) => setHardSkillSearch(e.target.value)}
                   placeholder="Buscar habilidades..."
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+                  className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
                 />
                 {hardSkillsRequired.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
@@ -326,13 +326,13 @@ function JobFormModal({
                       return skill ? (
                         <span
                           key={id}
-                          className="flex items-center gap-1 rounded-md bg-blue-500/20 px-2 py-1 text-xs text-blue-400"
+                          className="flex items-center gap-1 rounded-md bg-[#3AB0FF]/20 px-2 py-1 text-xs text-[#3AB0FF]"
                         >
                           {skill.name}
                           <button
                             type="button"
                             onClick={() => toggleHardSkill(id)}
-                            className="ml-0.5 text-blue-300 hover:text-blue-100"
+                            className="ml-0.5 text-[#3AB0FF] hover:text-white"
                           >
                             ×
                           </button>
@@ -341,13 +341,13 @@ function JobFormModal({
                     })}
                   </div>
                 )}
-                <div className="max-h-36 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-800/40">
+                <div className="max-h-36 overflow-y-auto rounded-lg border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)]">
                   {refData.hard_skills
                     .filter((s) =>
                       s.name.toLowerCase().includes(hardSkillSearch.toLowerCase()),
                     )
                     .length === 0 ? (
-                    <p className="p-3 text-xs text-zinc-500">Nenhuma habilidade encontrada.</p>
+                    <p className="p-3 text-xs text-foreground0">Nenhuma habilidade encontrada.</p>
                   ) : (
                     refData.hard_skills
                       .filter((s) =>
@@ -363,12 +363,12 @@ function JobFormModal({
                             disabled={!active && hardSkillsRequired.length >= 10}
                             className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
                               active
-                                ? "bg-blue-500/10 text-blue-400"
-                                : "text-zinc-400 hover:bg-zinc-800"
+                                ? "bg-[#3AB0FF]/10 text-[#3AB0FF]"
+                                : "text-muted-foreground hover:bg-[rgba(16,34,68,0.6)]"
                             } disabled:opacity-40`}
                           >
                             <span>{skill.name}</span>
-                            <span className="text-zinc-600">{skill.category}</span>
+                            <span className="text-muted-foreground/50">{skill.category}</span>
                           </button>
                         )
                       })
@@ -376,17 +376,17 @@ function JobFormModal({
                 </div>
               </>
             ) : (
-              <p className="text-xs text-zinc-500">Erro ao carregar habilidades.</p>
+              <p className="text-xs text-foreground0">Erro ao carregar habilidades.</p>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Nível Formação Mín.</label>
+              <label className="text-xs font-medium text-muted-foreground">Nível Formação Mín.</label>
               <select
                 value={educationLevelMin}
                 onChange={(e) => setEducationLevelMin(e.target.value)}
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 outline-none transition-colors focus:border-blue-500"
+                className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-[#3AB0FF]/60"
               >
                 <option value="">Qualquer</option>
                 {refData?.education_levels.map((el) => {
@@ -402,7 +402,7 @@ function JobFormModal({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Anos Exp. Mínimos</label>
+              <label className="text-xs font-medium text-muted-foreground">Anos Exp. Mínimos</label>
               <input
                 type="number"
                 min={0}
@@ -412,17 +412,17 @@ function JobFormModal({
                   setExperienceYearsMin(e.target.value ? Number(e.target.value) : "")
                 }
                 placeholder="0"
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+                className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-400">Modelo de Trabalho</label>
+            <label className="text-xs font-medium text-muted-foreground">Modelo de Trabalho</label>
             <select
               value={workModel}
               onChange={(e) => setWorkModel(e.target.value)}
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 outline-none transition-colors focus:border-blue-500"
+              className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-[#3AB0FF]/60"
             >
               <option value="">Selecione</option>
               {["presencial", "hibrido", "remoto"].map((wm) => (
@@ -435,7 +435,7 @@ function JobFormModal({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Salário Mín.</label>
+              <label className="text-xs font-medium text-muted-foreground">Salário Mín.</label>
               <input
                 type="number"
                 min={0}
@@ -444,11 +444,11 @@ function JobFormModal({
                   setSalaryMin(e.target.value ? Number(e.target.value) : "")
                 }
                 placeholder="0"
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+                className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Salário Máx.</label>
+              <label className="text-xs font-medium text-muted-foreground">Salário Máx.</label>
               <input
                 type="number"
                 min={0}
@@ -457,19 +457,19 @@ function JobFormModal({
                   setSalaryMax(e.target.value ? Number(e.target.value) : "")
                 }
                 placeholder="0"
-                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+                className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-zinc-400">Localização</label>
+            <label className="text-xs font-medium text-muted-foreground">Localização</label>
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="ex: São Paulo, SP"
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+              className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
             />
           </div>
 
@@ -499,7 +499,7 @@ const STATUS_LABELS: Record<string, string> = {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  pending:   "bg-zinc-700/60 text-zinc-400",
+  pending:   "bg-white/10/60 text-muted-foreground",
   accepted:  "bg-emerald-500/15 text-emerald-400",
   rejected:  "bg-rose-500/15 text-rose-400",
   bilateral: "bg-purple-500/15 text-purple-400",
@@ -568,13 +568,13 @@ function JobCard({
   const pendingCount = candidates.filter((c) => c.status === "pending").length
 
   return (
-    <div className="flex flex-col rounded-xl border border-zinc-800 bg-zinc-900 transition-colors hover:border-zinc-700">
+    <div className="flex flex-col rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)] transition-colors hover:border-[#3AB0FF]/15">
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <h3 className="truncate font-semibold text-zinc-50">{job.title}</h3>
+            <h3 className="truncate font-semibold text-foreground">{job.title}</h3>
             {job.description && (
-              <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-zinc-500">
+              <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-foreground0">
                 {job.description}
               </p>
             )}
@@ -583,7 +583,7 @@ function JobCard({
             className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
               isActive
                 ? "bg-emerald-500/15 text-emerald-400"
-                : "bg-zinc-700/60 text-zinc-500"
+                : "bg-white/10/60 text-foreground0"
             }`}
           >
             {isActive ? "Ativa" : "Inativa"}
@@ -594,7 +594,7 @@ function JobCard({
           <div className="flex items-center gap-2">
             <RadarChart ocean={job.ocean_ideal} />
             {!job.ocean_ideal && (
-              <span className="text-xs text-zinc-600">Sem perfil OCEAN</span>
+              <span className="text-xs text-muted-foreground/50">Sem perfil OCEAN</span>
             )}
           </div>
 
@@ -616,12 +616,12 @@ function JobCard({
 
         <button
           onClick={handleViewCandidates}
-          className="mt-4 flex w-full items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/40 px-3 py-2 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-700 hover:text-zinc-200"
+          className="mt-4 flex w-full items-center justify-between rounded-lg border border-[#3AB0FF]/10 bg-background/40 px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:border-[#3AB0FF]/15 hover:text-foreground/90"
         >
           <span>
             {showCandidates ? "Ocultar candidatos" : "Ver candidatos"}
             {candidatesLoaded && candidates.length > 0 && (
-              <span className="ml-1.5 rounded-full bg-blue-600/20 px-1.5 py-0.5 text-blue-400">
+              <span className="ml-1.5 rounded-full bg-[#3AB0FF]/20 px-1.5 py-0.5 text-[#3AB0FF]">
                 {candidates.length}
                 {pendingCount > 0 && ` · ${pendingCount} pendente${pendingCount !== 1 ? "s" : ""}`}
               </span>
@@ -632,27 +632,27 @@ function JobCard({
       </div>
 
       {showCandidates && (
-        <div className="border-t border-zinc-800">
+        <div className="border-t border-[#3AB0FF]/10">
           {loadingCandidates ? (
-            <div className="flex items-center justify-center py-6 text-xs text-zinc-500">Carregando…</div>
+            <div className="flex items-center justify-center py-6 text-xs text-foreground0">Carregando…</div>
           ) : candidates.length === 0 ? (
-            <div className="py-6 text-center text-xs text-zinc-600">Nenhum candidato ainda</div>
+            <div className="py-6 text-center text-xs text-muted-foreground/50">Nenhum candidato ainda</div>
           ) : (
-            <div className="divide-y divide-zinc-800">
+            <div className="divide-y divide-[#3AB0FF]/10">
               {candidates.map((c) => {
                 const pct = Math.round(c.score * 100)
                 const isActioning = actioning === c.id
                 return (
                   <div key={c.id} className="flex flex-col gap-2 px-5 py-3 sm:flex-row sm:items-center sm:gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-zinc-100">{c.candidate_name}</p>
+                      <p className="truncate text-sm font-medium text-foreground">{c.candidate_name}</p>
                       {c.candidate_headline && (
-                        <p className="truncate text-xs text-zinc-500">{c.candidate_headline}</p>
+                        <p className="truncate text-xs text-foreground0">{c.candidate_headline}</p>
                       )}
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
                       <div className="flex items-center gap-1.5">
-                        <div className="h-1.5 w-14 overflow-hidden rounded-full bg-zinc-800">
+                        <div className="h-1.5 w-14 overflow-hidden rounded-full bg-[rgba(16,34,68,0.6)]">
                           <div
                             className="h-full rounded-full"
                             style={{
@@ -661,11 +661,11 @@ function JobCard({
                             }}
                           />
                         </div>
-                        <span className="w-9 text-right text-xs font-semibold tabular-nums text-zinc-400">
+                        <span className="w-9 text-right text-xs font-semibold tabular-nums text-muted-foreground">
                           {pct}%
                         </span>
                       </div>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[c.status] ?? "bg-zinc-700/60 text-zinc-400"}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[c.status] ?? "bg-white/10/60 text-muted-foreground"}`}>
                         {STATUS_LABELS[c.status] ?? c.status}
                       </span>
                       {c.status === "pending" && (
@@ -790,26 +790,26 @@ export default function CompanyJobsPage() {
   // ── main render ────────────────────────────────────────────────────────────
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-50">
-      <header className="sticky top-0 z-30 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur">
+    <main className="min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
           <div>
             <div className="flex items-center gap-2">
               <a
                 href={`/company/${companyId}/dashboard`}
-                className="text-xs text-zinc-500 transition-colors hover:text-zinc-300"
+                className="text-xs text-foreground0 transition-colors hover:text-foreground/85"
               >
                 {company?.name ?? "Empresa"}
               </a>
-              <span className="text-xs text-zinc-700">/</span>
-              <h1 className="text-sm font-bold text-zinc-50">Vagas</h1>
+              <span className="text-xs text-muted-foreground/40">/</span>
+              <h1 className="text-sm font-bold text-foreground">Vagas</h1>
             </div>
-            <p className="mt-0.5 text-xs text-zinc-500">
+            <p className="mt-0.5 text-xs text-foreground0">
               {jobs.length} vaga{jobs.length !== 1 ? "s" : ""} · {activeCount} ativa{activeCount !== 1 ? "s" : ""}
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {user && <span className="text-sm text-zinc-400">{user.name}</span>}
+            {user && <span className="text-sm text-muted-foreground">{user.name}</span>}
             <Button onClick={openCreate}>+ Nova Vaga</Button>
           </div>
         </div>

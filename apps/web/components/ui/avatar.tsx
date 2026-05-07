@@ -14,9 +14,9 @@ const sizeMap = {
 }
 
 const variantMap = {
-  blue:   "bg-blue-600/20 text-blue-300",
-  violet: "bg-violet-600/20 text-violet-300",
-  zinc:   "bg-zinc-700 text-zinc-300",
+  blue:   "bg-[#3AB0FF]/15 text-[#3AB0FF] ring-1 ring-[#3AB0FF]/20",
+  violet: "bg-violet-500/15 text-violet-300 ring-1 ring-violet-500/20",
+  zinc:   "bg-white/8 text-white/70 ring-1 ring-white/10",
 }
 
 export function Avatar({ name, size = "md", variant = "blue", className }: AvatarProps) {

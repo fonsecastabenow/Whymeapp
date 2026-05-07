@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useCallback } from "react"
 import {
@@ -25,8 +25,8 @@ function typeLabel(type: string): string {
 function typeColor(type: string): string {
   switch (type) {
     case "match_candidate": return "bg-violet-500/15 text-violet-400"
-    case "match_company":   return "bg-blue-500/15 text-blue-400"
-    default:                return "bg-zinc-700/50 text-zinc-400"
+    case "match_company":   return "bg-[#3AB0FF]/15 text-[#3AB0FF]"
+    default:                return "bg-white/10/50 text-muted-foreground"
   }
 }
 
@@ -78,12 +78,12 @@ export default function NotificationsPage() {
   const unread = notifications.filter((n) => !n.is_read)
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-50">
-      <header className="sticky top-0 z-30 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur">
+    <main className="min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
           <div>
             <h1 className="text-lg font-bold">Notificações</h1>
-            <p className="mt-0.5 text-xs text-zinc-500">
+            <p className="mt-0.5 text-xs text-muted-foreground/70">
               {notifications.length} no total
               {unread.length > 0 ? ` · ${unread.length} não lida${unread.length !== 1 ? "s" : ""}` : ""}
             </p>
@@ -105,30 +105,30 @@ export default function NotificationsPage() {
               <div
                 key={n.id}
                 className={`rounded-xl border transition-colors ${
-                  n.is_read ? "border-zinc-800/50 bg-zinc-900/30" : "border-zinc-700 bg-zinc-900"
+                  n.is_read ? "border-[#3AB0FF]/8 bg-[rgba(16,34,68,0.3)]" : "border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.8)]"
                 }`}
               >
                 <div className="flex items-start gap-4 p-4">
-                  {!n.is_read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-500" />}
+                  {!n.is_read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#3AB0FF]" />}
                   <div className={`min-w-0 flex-1 ${n.is_read ? "ml-[18px]" : ""}`}>
                     <div className="flex items-center gap-2">
                       <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${typeColor(n.type)}`}>
                         {typeLabel(n.type)}
                       </span>
-                      <span className="text-[11px] text-zinc-600">{formatDate(n.created_at)}</span>
+                      <span className="text-[11px] text-muted-foreground/50">{formatDate(n.created_at)}</span>
                     </div>
-                    <h3 className={`mt-2 text-sm font-semibold ${n.is_read ? "text-zinc-400" : "text-zinc-50"}`}>
+                    <h3 className={`mt-2 text-sm font-semibold ${n.is_read ? "text-muted-foreground" : "text-foreground"}`}>
                       {n.title}
                     </h3>
                     {n.message && (
-                      <p className={`mt-1 text-sm leading-relaxed ${n.is_read ? "text-zinc-600" : "text-zinc-400"}`}>
+                      <p className={`mt-1 text-sm leading-relaxed ${n.is_read ? "text-muted-foreground/50" : "text-muted-foreground"}`}>
                         {n.message}
                       </p>
                     )}
                     {!n.is_read && (
                       <button
                         onClick={() => markAsRead(n.id)}
-                        className="mt-3 inline-block rounded px-2 py-1.5 text-xs font-medium text-blue-400 hover:underline"
+                        className="mt-3 inline-block rounded px-2 py-1.5 text-xs font-medium text-[#3AB0FF] hover:underline"
                       >
                         Marcar como lida
                       </button>

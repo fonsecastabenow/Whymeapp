@@ -60,8 +60,8 @@ type FormData = {
 }
 
 const inputCls =
-  "w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm text-zinc-100 placeholder-zinc-600 focus:border-blue-500 focus:outline-none"
-const labelCls = "block text-sm font-medium text-zinc-400 mb-1.5"
+  "w-full rounded-xl border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.7)] px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground/50 focus:border-[#3AB0FF]/50 focus:outline-none focus:ring-1 focus:ring-[#3AB0FF]/20"
+const labelCls = "block text-sm font-medium text-muted-foreground mb-1.5"
 
 export default function OnboardingPage() {
   useAuthGuard()
@@ -250,19 +250,19 @@ export default function OnboardingPage() {
 
   if (showSuccess) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
+      <main className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="w-full max-w-md space-y-6 text-center">
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20 text-4xl">
             🎯
           </div>
-          <h1 className="text-2xl font-bold text-zinc-50">Onboarding completo!</h1>
-          <p className="text-zinc-400">
+          <h1 className="text-2xl font-bold text-foreground">Onboarding completo!</h1>
+          <p className="text-muted-foreground">
             Seus dados foram salvos. Agora vamos descobrir seu perfil profissional com a entrevista OCEAN.
           </p>
 
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-            <p className="mb-2 text-sm font-medium text-zinc-300">Entrevista OCEAN via Telegram</p>
-            <p className="mb-4 text-xs text-zinc-500">
+          <div className="glass-card rounded-2xl p-6">
+            <p className="mb-2 text-sm font-medium text-foreground/90">Entrevista OCEAN via Telegram</p>
+            <p className="mb-4 text-xs text-muted-foreground/70">
               Responda 8 perguntas de forma natural. Um agente vai interpretar suas respostas e criar seu perfil.
             </p>
             {telegramLink ? (
@@ -270,18 +270,18 @@ export default function OnboardingPage() {
                 href={telegramLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#3AB0FF] to-[#1a8fdb] px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-[#3AB0FF]/20 transition-opacity hover:opacity-90"
               >
                 💬 Iniciar Entrevista no Telegram
               </a>
             ) : (
-              <p className="text-xs text-zinc-600">Link indisponível no momento</p>
+              <p className="text-xs text-muted-foreground/50">Link indisponível no momento</p>
             )}
           </div>
 
           <button
             onClick={() => router.push(`/candidate/${candidateId}/dashboard`)}
-            className="text-sm text-zinc-500 underline transition-colors hover:text-zinc-300"
+            className="text-sm text-muted-foreground/70 underline transition-colors hover:text-foreground"
           >
             Pular, quero ir pro Dashboard
           </button>
@@ -301,21 +301,21 @@ export default function OnboardingPage() {
   )
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
+    <main className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-lg">
         {/* Page header */}
         <div className="mb-8 text-center">
-          <a href="/" className="text-2xl font-bold tracking-tight text-zinc-50">
+          <a href="/" className="text-lg font-black tracking-widest text-gradient-gold uppercase">
             Whyme
           </a>
-          <p className="mt-2 text-sm text-zinc-500">Configure seu perfil para começar</p>
+          <p className="mt-2 text-sm text-muted-foreground/70">Configure seu perfil para começar</p>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl bg-zinc-900 p-6 md:p-8">
+        <div className="glass-card rounded-2xl p-6 md:p-8">
           {/* Step indicator */}
           <div className="mb-6 flex items-center justify-between">
-            <p className="text-sm font-medium text-zinc-400">
+            <p className="text-sm font-medium text-muted-foreground">
               Passo {step} de {TOTAL_STEPS}
             </p>
             <div className="flex gap-1.5">
@@ -323,7 +323,7 @@ export default function OnboardingPage() {
                 <div
                   key={i}
                   className={`h-1.5 w-7 rounded-full transition-colors ${
-                    i + 1 <= step ? "bg-blue-500" : "bg-zinc-700"
+                    i + 1 <= step ? "bg-[#3AB0FF]" : "bg-white/15"
                   }`}
                 />
               ))}
@@ -333,7 +333,7 @@ export default function OnboardingPage() {
           {/* ── Step 1: Formação ── */}
           {step === 1 && (
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-zinc-50">Formação Acadêmica</h2>
+              <h2 className="text-xl font-bold text-foreground">Formação Acadêmica</h2>
               <div>
                 <label className={labelCls}>Nível de Formação</label>
                 <select
@@ -375,7 +375,7 @@ export default function OnboardingPage() {
           {/* ── Step 2: Experiência ── */}
           {step === 2 && (
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-zinc-50">Experiência Profissional</h2>
+              <h2 className="text-xl font-bold text-foreground">Experiência Profissional</h2>
               <div>
                 <label className={labelCls}>Anos de Experiência</label>
                 <input
@@ -422,16 +422,16 @@ export default function OnboardingPage() {
           {step === 3 && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-zinc-50">Idiomas</h2>
+                <h2 className="text-xl font-bold text-foreground">Idiomas</h2>
                 <button
                   onClick={addLanguage}
-                  className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-zinc-100"
+                  className="rounded-xl border border-[#3AB0FF]/20 px-3 py-1.5 text-xs font-medium text-foreground/90 transition-colors hover:border-[#3AB0FF]/50 hover:text-foreground"
                 >
                   + Adicionar idioma
                 </button>
               </div>
               {form.languages.length === 0 ? (
-                <p className="py-4 text-center text-sm text-zinc-500">Nenhum idioma adicionado</p>
+                <p className="py-4 text-center text-sm text-muted-foreground/70">Nenhum idioma adicionado</p>
               ) : (
                 <div className="space-y-3">
                   {form.languages.map((lang, i) => (
@@ -439,7 +439,7 @@ export default function OnboardingPage() {
                       <select
                         value={lang.language}
                         onChange={(e) => updateLanguage(i, "language", e.target.value)}
-                        className="flex-1 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 focus:border-blue-500 focus:outline-none"
+                        className="flex-1 rounded-xl border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.7)] px-3 py-2 text-sm text-foreground focus:border-[#3AB0FF]/50 focus:outline-none"
                       >
                         {LANGUAGE_OPTIONS.map((l) => (
                           <option key={l} value={l}>
@@ -450,7 +450,7 @@ export default function OnboardingPage() {
                       <select
                         value={lang.level}
                         onChange={(e) => updateLanguage(i, "level", e.target.value)}
-                        className="flex-1 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 focus:border-blue-500 focus:outline-none"
+                        className="flex-1 rounded-xl border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.7)] px-3 py-2 text-sm text-foreground focus:border-[#3AB0FF]/50 focus:outline-none"
                       >
                         {langLevels.map((l) => (
                           <option key={l} value={l}>
@@ -460,7 +460,7 @@ export default function OnboardingPage() {
                       </select>
                       <button
                         onClick={() => removeLanguage(i)}
-                        className="rounded-lg p-2 text-zinc-500 transition-colors hover:text-red-400"
+                        className="rounded-lg p-2 text-muted-foreground/50 transition-colors hover:text-red-400"
                         aria-label="Remover idioma"
                       >
                         ✕
@@ -475,7 +475,7 @@ export default function OnboardingPage() {
           {/* ── Step 4: Localização ── */}
           {step === 4 && (
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-zinc-50">Localização</h2>
+              <h2 className="text-xl font-bold text-foreground">Localização</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className={labelCls}>
@@ -531,8 +531,8 @@ export default function OnboardingPage() {
           {step === 5 && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-xl font-bold text-zinc-50">Hard Skills</h2>
-                <p className="mt-1 text-sm text-zinc-500">Selecione até 5 habilidades técnicas</p>
+                <h2 className="text-xl font-bold text-foreground">Hard Skills</h2>
+                <p className="mt-1 text-sm text-muted-foreground/70">Selecione até 5 habilidades técnicas</p>
               </div>
 
               {form.hardSkills.length > 0 && (
@@ -540,12 +540,12 @@ export default function OnboardingPage() {
                   {form.hardSkills.map((skill) => (
                     <span
                       key={skill}
-                      className="flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-600/20 px-3 py-1 text-sm font-medium text-blue-300"
+                      className="flex items-center gap-1.5 rounded-full border border-[#3AB0FF]/30 bg-[#3AB0FF]/10 px-3 py-1 text-sm font-medium text-[#3AB0FF]"
                     >
                       {skill}
                       <button
                         onClick={() => toggleSkill(skill)}
-                        className="text-blue-400 transition-colors hover:text-blue-200"
+                        className="text-[#3AB0FF] transition-colors hover:text-[#3AB0FF]/70"
                         aria-label={`Remover ${skill}`}
                       >
                         ✕
@@ -564,9 +564,9 @@ export default function OnboardingPage() {
                     onChange={(e) => setSkillSearch(e.target.value)}
                     className={inputCls}
                   />
-                  <div className="max-h-52 overflow-y-auto rounded-lg border border-zinc-700 bg-zinc-800">
+                  <div className="max-h-52 overflow-y-auto rounded-xl border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.8)]">
                     {filteredSkills.length === 0 ? (
-                      <p className="p-4 text-center text-sm text-zinc-500">Nenhuma skill encontrada</p>
+                      <p className="p-4 text-center text-sm text-muted-foreground/70">Nenhuma skill encontrada</p>
                     ) : (
                       filteredSkills.map((skill) => {
                         const selected = form.hardSkills.includes(skill.name)
@@ -577,13 +577,13 @@ export default function OnboardingPage() {
                             disabled={selected}
                             className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm transition-colors ${
                               selected
-                                ? "cursor-default text-zinc-600"
-                                : "text-zinc-200 hover:bg-zinc-700"
+                                ? "cursor-default text-muted-foreground/50"
+                                : "text-foreground/90 hover:bg-[#3AB0FF]/8"
                             }`}
                           >
                             <span>{skill.name}</span>
                             {skill.category && (
-                              <span className="text-xs text-zinc-500">{skill.category}</span>
+                              <span className="text-xs text-muted-foreground/70">{skill.category}</span>
                             )}
                           </button>
                         )
@@ -593,14 +593,14 @@ export default function OnboardingPage() {
                 </>
               )}
 
-              <p className="text-xs text-zinc-500">{form.hardSkills.length}/5 selecionadas</p>
+              <p className="text-xs text-muted-foreground/70">{form.hardSkills.length}/5 selecionadas</p>
             </div>
           )}
 
           {/* ── Step 6: Pretensões ── */}
           {step === 6 && (
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-zinc-50">Pretensões</h2>
+              <h2 className="text-xl font-bold text-foreground">Pretensões</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className={labelCls}>Pretensão mínima (R$)</label>
@@ -669,7 +669,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handleBack}
                 disabled={submitting}
-                className="rounded-lg border border-zinc-700 px-5 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-zinc-100 disabled:opacity-50"
+                className="rounded-xl border border-[#3AB0FF]/15 px-5 py-2.5 text-sm font-medium text-foreground/90 transition-colors hover:border-[#3AB0FF]/40 hover:text-foreground disabled:opacity-50"
               >
                 Voltar
               </button>
@@ -680,7 +680,7 @@ export default function OnboardingPage() {
             {step < TOTAL_STEPS ? (
               <button
                 onClick={handleNext}
-                className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                className="rounded-xl bg-gradient-to-r from-[#3AB0FF] to-[#1a8fdb] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3AB0FF]/20 transition-opacity hover:opacity-90"
               >
                 Próximo
               </button>

@@ -8,7 +8,7 @@ interface SectionLabelProps {
 
 export function SectionLabel({ children, className, as: Tag = "h3" }: SectionLabelProps) {
   return (
-    <Tag className={cn("mb-4 text-xs font-semibold uppercase tracking-wider text-zinc-500", className)}>
+    <Tag className={cn("mb-4 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]", className)}>
       {children}
     </Tag>
   )

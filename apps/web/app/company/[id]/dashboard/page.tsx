@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState, useCallback } from "react"
 import { useParams } from "next/navigation"
@@ -53,14 +53,14 @@ const SORT_OPTIONS = [
 
 function scoreBarColor(score: number): string {
   if (score >= 0.85) return "bg-emerald-500"
-  if (score >= 0.7) return "bg-blue-500"
+  if (score >= 0.7) return "bg-[#3AB0FF]"
   if (score >= 0.55) return "bg-amber-500"
   return "bg-rose-500"
 }
 
 function scoreTextColor(score: number): string {
   if (score >= 0.85) return "text-emerald-400"
-  if (score >= 0.7) return "text-blue-400"
+  if (score >= 0.7) return "text-[#3AB0FF]"
   if (score >= 0.55) return "text-amber-400"
   return "text-rose-400"
 }
@@ -190,37 +190,37 @@ export default function CompanyDashboardPage() {
   // ── main render ────────────────────────────────────────────────────────────
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-50">
+    <main className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <div>
             <div className="flex items-center gap-2.5">
               <h1 className="text-lg font-bold tracking-tight">{company?.name ?? "—"}</h1>
               {company?.industry && (
-                <span className="rounded-full border border-zinc-700 bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400">
+                <span className="rounded-full border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-2.5 py-0.5 text-xs text-muted-foreground">
                   {company.industry}
                 </span>
               )}
               <a
                 href={`/company/${companyId}/profile`}
-                className="rounded-full border border-zinc-700 bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400 transition-colors hover:border-zinc-600 hover:text-zinc-200"
+                className="rounded-full border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-2.5 py-0.5 text-xs text-muted-foreground transition-colors hover:border-[#3AB0FF]/20 hover:text-foreground/90"
               >
                 Perfil
               </a>
               <a
                 href="/company/orbita"
-                className="rounded-full border border-zinc-700 bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400 transition-colors hover:border-violet-500 hover:text-violet-300"
+                className="rounded-full border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-2.5 py-0.5 text-xs text-muted-foreground transition-colors hover:border-violet-500 hover:text-violet-300"
               >
                 Órbita
               </a>
             </div>
-            <p className="mt-0.5 text-xs text-zinc-500">Dashboard RH</p>
+            <p className="mt-0.5 text-xs text-muted-foreground/70">Dashboard RH</p>
           </div>
           {user && (
-            <div className="flex items-center gap-3 text-sm text-zinc-400">
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
               {unreadCount > 0 && (
-                <span className="rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white">
+                <span className="rounded-full bg-[#3AB0FF] px-2 py-0.5 text-xs font-medium text-white">
                   {unreadCount} nova{unreadCount !== 1 ? "s" : ""}
                 </span>
               )}
@@ -252,9 +252,9 @@ export default function CompanyDashboardPage() {
         </div>
 
         {/* OCEAN Filters */}
-        <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-5">
+        <section className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)] p-5">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-zinc-50">Filtros OCEAN</h3>
+            <h3 className="text-sm font-semibold text-foreground">Filtros OCEAN</h3>
             {filtersActive && (
               <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-medium text-amber-400">
                 Filtros ativos
@@ -277,10 +277,10 @@ export default function CompanyDashboardPage() {
               return (
                 <div key={dim.key} className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-medium text-zinc-400">
+                    <label className="text-xs font-medium text-muted-foreground">
                       {dim.key} — {dim.label}
                     </label>
-                    <span className="text-xs tabular-nums text-zinc-500">{value}%</span>
+                    <span className="text-xs tabular-nums text-foreground0">{value}%</span>
                   </div>
                   <input
                     type="range"
@@ -303,11 +303,11 @@ export default function CompanyDashboardPage() {
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2">
-              <label className="text-xs font-medium text-zinc-400">Ordenar por:</label>
+              <label className="text-xs font-medium text-muted-foreground">Ordenar por:</label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-lg border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-xs text-zinc-200 outline-none focus:border-amber-500"
+                className="rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-2.5 py-1.5 text-xs text-foreground/90 outline-none focus:border-amber-500"
               >
                 {SORT_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -318,14 +318,14 @@ export default function CompanyDashboardPage() {
             </div>
             <button
               onClick={handleApplyFilters}
-              className="rounded-lg bg-amber-500 px-4 py-1.5 text-xs font-semibold text-zinc-950 transition-opacity hover:opacity-90"
+              className="rounded-xl bg-gradient-to-r from-[#3AB0FF] to-[#1a8fdb] px-4 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90"
             >
               Aplicar Filtros
             </button>
             {filtersActive && (
               <button
                 onClick={handleResetFilters}
-                className="rounded-lg border border-zinc-700 px-4 py-1.5 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-600 hover:text-zinc-200"
+                className="rounded-lg border border-[#3AB0FF]/15 px-4 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-[#3AB0FF]/20 hover:text-foreground/90"
               >
                 Limpar Filtros
               </button>
@@ -337,10 +337,10 @@ export default function CompanyDashboardPage() {
           {/* Left: Top Candidates + Jobs */}
           <div className="space-y-6 lg:col-span-2">
             {/* Top Candidates */}
-            <section className="rounded-xl border border-zinc-800 bg-zinc-900">
-              <div className="border-b border-zinc-800 px-5 py-4">
-                <h2 className="font-semibold text-zinc-50">Top Candidatos</h2>
-                <p className="mt-0.5 text-xs text-zinc-500">
+            <section className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)]">
+              <div className="border-b border-[#3AB0FF]/10 px-5 py-4">
+                <h2 className="font-semibold text-foreground">Top Candidatos</h2>
+                <p className="mt-0.5 text-xs text-foreground0">
                   {filtersActive
                     ? "Ordenados e filtrados por dimensões OCEAN"
                     : "Os candidatos com maior compatibilidade"}
@@ -349,16 +349,16 @@ export default function CompanyDashboardPage() {
               {!summary || summary.top_candidates.length === 0 ? (
                 <EmptyState title="Nenhum candidato encontrado" className="rounded-none border-0" />
               ) : (
-                <div className="divide-y divide-zinc-800">
+                <div className="divide-y divide-[#3AB0FF]/10">
                   {summary.top_candidates.map((c, i) => (
                     <div key={c.candidate_id} className="flex items-start gap-4 px-5 py-3.5">
-                      <span className="mt-1 w-5 shrink-0 text-center text-xs font-medium text-zinc-600">
+                      <span className="mt-1 w-5 shrink-0 text-center text-xs font-medium text-muted-foreground/50">
                         {i + 1}
                       </span>
                       <div className="min-w-0 flex-1 space-y-2">
                         <div>
-                          <p className="truncate text-sm font-medium text-zinc-100">{c.candidate_name}</p>
-                          <p className="truncate text-xs text-zinc-500">{c.job_title}</p>
+                          <p className="truncate text-sm font-medium text-foreground">{c.candidate_name}</p>
+                          <p className="truncate text-xs text-foreground0">{c.job_title}</p>
                         </div>
                         {/* OCEAN mini breakdown bars */}
                         {c.ocean_breakdown && (
@@ -368,14 +368,14 @@ export default function CompanyDashboardPage() {
                               const color = OCEAN_COLORS[dim.field]
                               return (
                                 <div key={dim.field} className="flex items-center gap-1.5">
-                                  <span className="text-[10px] font-medium text-zinc-500">{dim.key}</span>
-                                  <div className="h-1.5 w-12 overflow-hidden rounded-full bg-zinc-800">
+                                  <span className="text-[10px] font-medium text-foreground0">{dim.key}</span>
+                                  <div className="h-1.5 w-12 overflow-hidden rounded-full bg-[rgba(16,34,68,0.6)]">
                                     <div
                                       className={`h-full rounded-full ${color}`}
                                       style={{ width: `${Math.min(val, 100)}%` }}
                                     />
                                   </div>
-                                  <span className="w-6 text-right text-[10px] tabular-nums text-zinc-500">
+                                  <span className="w-6 text-right text-[10px] tabular-nums text-foreground0">
                                     {Math.round(val)}
                                   </span>
                                 </div>
@@ -385,7 +385,7 @@ export default function CompanyDashboardPage() {
                         )}
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        <div className="h-1.5 w-16 overflow-hidden rounded-full bg-zinc-800 sm:w-20">
+                        <div className="h-1.5 w-16 overflow-hidden rounded-full bg-[rgba(16,34,68,0.6)] sm:w-20">
                           <div
                             className={`h-full rounded-full transition-all duration-700 ${scoreBarColor(c.score)}`}
                             style={{ width: `${Math.round(c.score * 100)}%` }}
@@ -402,28 +402,28 @@ export default function CompanyDashboardPage() {
             </section>
 
             {/* Jobs */}
-            <section className="rounded-xl border border-zinc-800 bg-zinc-900">
-              <div className="border-b border-zinc-800 px-5 py-4">
-                <h2 className="font-semibold text-zinc-50">Vagas</h2>
-                <p className="mt-0.5 text-xs text-zinc-500">Matches por vaga</p>
+            <section className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)]">
+              <div className="border-b border-[#3AB0FF]/10 px-5 py-4">
+                <h2 className="font-semibold text-foreground">Vagas</h2>
+                <p className="mt-0.5 text-xs text-foreground0">Matches por vaga</p>
               </div>
               {jobs.length === 0 ? (
                 <EmptyState title="Nenhuma vaga cadastrada" className="rounded-none border-0" />
               ) : (
-                <div className="divide-y divide-zinc-800">
+                <div className="divide-y divide-[#3AB0FF]/10">
                   {jobs.map((job) => {
                     const count = summary?.matches_by_job[job.id] ?? 0
                     return (
                       <div key={job.id} className="flex items-center justify-between gap-4 px-5 py-3.5">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium text-zinc-100">{job.title}</p>
+                          <p className="truncate text-sm font-medium text-foreground">{job.title}</p>
                           <span
-                            className={`text-xs ${job.status === "active" ? "text-emerald-400" : "text-zinc-600"}`}
+                            className={`text-xs ${job.status === "active" ? "text-emerald-400" : "text-muted-foreground/50"}`}
                           >
                             {job.status === "active" ? "Ativa" : "Inativa"}
                           </span>
                         </div>
-                        <span className="shrink-0 rounded-full border border-zinc-700 bg-zinc-800 px-3 py-0.5 text-xs font-medium text-zinc-300">
+                        <span className="shrink-0 rounded-full border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-0.5 text-xs font-medium text-foreground/85">
                           {count} match{count !== 1 ? "es" : ""}
                         </span>
                       </div>
@@ -435,22 +435,22 @@ export default function CompanyDashboardPage() {
           </div>
 
           {/* Right: Notifications */}
-          <section className="rounded-xl border border-zinc-800 bg-zinc-900">
-            <div className="border-b border-zinc-800 px-5 py-4">
+          <section className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)]">
+            <div className="border-b border-[#3AB0FF]/10 px-5 py-4">
               <div className="flex items-center justify-between">
-                <h2 className="font-semibold text-zinc-50">Notificações</h2>
+                <h2 className="font-semibold text-foreground">Notificações</h2>
                 {unreadCount > 0 && (
-                  <span className="rounded-full bg-blue-600/20 px-2 py-0.5 text-xs font-medium text-blue-400">
+                  <span className="rounded-full bg-[#3AB0FF]/20 px-2 py-0.5 text-xs font-medium text-[#3AB0FF]">
                     {unreadCount} não lida{unreadCount !== 1 ? "s" : ""}
                   </span>
                 )}
               </div>
-              <p className="mt-0.5 text-xs text-zinc-500">Últimas 5 notificações</p>
+              <p className="mt-0.5 text-xs text-foreground0">Últimas 5 notificações</p>
             </div>
             {notifications.length === 0 ? (
               <EmptyState title="Sem notificações" className="rounded-none border-0" />
             ) : (
-              <div className="divide-y divide-zinc-800">
+              <div className="divide-y divide-[#3AB0FF]/10">
                 {notifications.slice(0, 5).map((n) => (
                   <div
                     key={n.id}
@@ -458,20 +458,20 @@ export default function CompanyDashboardPage() {
                   >
                     <div className="flex items-start gap-2">
                       {!n.is_read && (
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
+                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#3AB0FF]" />
                       )}
                       <div className="min-w-0 flex-1" style={n.is_read ? { paddingLeft: "10px" } : {}}>
-                        <p className={`text-sm font-medium leading-snug ${n.is_read ? "text-zinc-400" : "text-zinc-50"}`}>
+                        <p className={`text-sm font-medium leading-snug ${n.is_read ? "text-muted-foreground" : "text-foreground"}`}>
                           {n.title}
                         </p>
                         {n.message && (
-                          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-zinc-500">
+                          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-foreground0">
                             {n.message}
                           </p>
                         )}
                         <div className="mt-2 flex items-center gap-2">
                           <NotifTypeBadge type={n.type} />
-                          <span className="text-[10px] text-zinc-600">{formatDate(n.created_at)}</span>
+                          <span className="text-[10px] text-muted-foreground/50">{formatDate(n.created_at)}</span>
                         </div>
                       </div>
                     </div>
@@ -500,12 +500,12 @@ function MetricCard({
   accent?: boolean
 }) {
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-5">
-      <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">{label}</p>
-      <p className={`mt-2 text-3xl font-bold tabular-nums ${accent ? "text-blue-400" : "text-zinc-50"}`}>
+    <div className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)] px-5 py-5">
+      <p className="text-xs font-medium uppercase tracking-wider text-foreground0">{label}</p>
+      <p className={`mt-2 text-3xl font-bold tabular-nums ${accent ? "text-[#3AB0FF]" : "text-foreground"}`}>
         {value}
       </p>
-      <p className="mt-1 text-xs text-zinc-600">{sub}</p>
+      <p className="mt-1 text-xs text-muted-foreground/50">{sub}</p>
     </div>
   )
 }
@@ -517,7 +517,7 @@ function NotifTypeBadge({ type }: { type: string }) {
       className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
         isCandidate
           ? "bg-violet-500/15 text-violet-400"
-          : "bg-blue-500/15 text-blue-400"
+          : "bg-[#3AB0FF]/15 text-[#3AB0FF]"
       }`}
     >
       {isCandidate ? "Candidato" : "Empresa"}

@@ -21,10 +21,10 @@ function OceanBar({ label, value, color }: { label: string; value: number; color
   return (
     <div className="mb-3">
       <div className="mb-1 flex justify-between text-xs">
-        <span className="font-medium text-zinc-300">{label}</span>
-        <span className="font-semibold tabular-nums text-zinc-400">{pct}%</span>
+        <span className="font-medium text-foreground/90">{label}</span>
+        <span className="font-semibold tabular-nums text-muted-foreground">{pct}%</span>
       </div>
-      <div className="h-3 w-full overflow-hidden rounded-full bg-zinc-800">
+      <div className="h-3 w-full overflow-hidden rounded-full bg-white/10">
         <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
       </div>
     </div>
@@ -90,7 +90,7 @@ export default function CandidateReportPage({ params }: { params: { id: string }
       <main className="flex min-h-screen items-center justify-center bg-white p-4">
         <div className="text-center space-y-4">
           <h1 className="text-xl font-semibold text-gray-900">Erro ao carregar relatório</h1>
-          <Link href="/" className="text-blue-600 hover:underline text-sm">Voltar</Link>
+          <Link href="/" className="text-[#3AB0FF] hover:underline text-sm">Voltar</Link>
         </div>
       </main>
     )
@@ -105,13 +105,13 @@ export default function CandidateReportPage({ params }: { params: { id: string }
       <div className="no-print fixed bottom-6 right-6 z-50 flex flex-col gap-2">
         <button
           onClick={handleDownloadPdf}
-          className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-blue-700 transition-colors"
+          className="rounded-xl bg-gradient-to-r from-[#3AB0FF] to-[#1a8fdb] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#3AB0FF]/20 hover:opacity-90 transition-opacity"
         >
           📄 Baixar PDF
         </button>
         <button
           onClick={handlePrint}
-          className="rounded-xl bg-zinc-700 px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-zinc-600 transition-colors"
+          className="rounded-xl border border-[#3AB0FF]/20 px-5 py-3 text-sm font-semibold text-foreground shadow-lg hover:border-[#3AB0FF]/40 transition-colors"
         >
           🖨️ Imprimir
         </button>

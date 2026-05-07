@@ -185,9 +185,9 @@ export default function CandidateProfilePage({ params }: { params: { id: string 
   return (
     <main className="min-h-screen bg-background">
       {/* ── Nav ── */}
-      <header className="border-b px-6 py-4">
+      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur-md px-6 py-4">
         <div className="mx-auto flex max-w-4xl items-center gap-3">
-          <span className="text-xl font-bold tracking-tight">Whyme</span>
+          <span className="text-lg font-black tracking-widest text-gradient-gold uppercase">WHY ME?</span>
           <span className="text-muted-foreground">/</span>
           <span className="text-sm text-muted-foreground">Perfil</span>
         </div>

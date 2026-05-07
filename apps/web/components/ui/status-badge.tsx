@@ -17,7 +17,7 @@ interface StatusBadgeProps {
 export function StatusBadge({ status, className }: StatusBadgeProps) {
   const config = STATUS_CONFIG[status as MatchStatus] ?? {
     label: status,
-    className: "text-zinc-400 bg-zinc-400/10 border-zinc-400/20",
+    className: "text-muted-foreground bg-white/5 border-white/10",
   }
 
   return (

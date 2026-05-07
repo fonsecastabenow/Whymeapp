@@ -88,12 +88,12 @@ export function OceanBars({ scores }: OceanBarsProps) {
         const pct = Math.round((s[key] ?? 0) * 100)
         return (
           <div key={key} className="flex items-center gap-3">
-            <span className="w-4 text-sm font-bold text-zinc-400">{label}</span>
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-800">
+            <span className="w-4 text-sm font-bold text-[#3AB0FF]/80">{label}</span>
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/8">
               <div className="h-full rounded-full bg-violet-500" style={{ width: `${pct}%` }} />
             </div>
-            <span className="w-8 text-right text-sm font-semibold tabular-nums text-zinc-300">{pct}</span>
-            <span className="hidden w-32 text-xs text-zinc-500 md:block">{fullLabel}</span>
+            <span className="w-8 text-right text-sm font-semibold tabular-nums text-foreground/85">{pct}</span>
+            <span className="hidden w-32 text-xs text-muted-foreground/70 md:block">{fullLabel}</span>
           </div>
         )
       })}

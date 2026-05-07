@@ -62,7 +62,7 @@ export default function RegisterPage() {
       footer={
         <>
           Já tem conta?{" "}
-          <Link href="/login" className="text-blue-400 hover:underline">
+          <Link href="/login" className="text-[#3AB0FF] hover:underline">
             Fazer login
           </Link>
         </>
@@ -109,17 +109,17 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <p className="mb-1.5 text-sm font-medium text-zinc-400">Tipo de conta</p>
+          <p className="mb-1.5 text-sm font-medium text-muted-foreground">Tipo de conta</p>
           <div className="grid grid-cols-2 gap-2">
             {(["candidate", "company"] as const).map((r) => (
               <button
                 key={r}
                 type="button"
                 onClick={() => setRole(r)}
-                className={`rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors ${
+                className={`rounded-xl border px-4 py-2.5 text-sm font-medium transition-all ${
                   role === r
-                    ? "border-blue-500 bg-blue-500/10 text-blue-400"
-                    : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700"
+                    ? "border-[#3AB0FF]/60 bg-[#3AB0FF]/10 text-[#3AB0FF]"
+                    : "border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.5)] text-muted-foreground hover:border-[#3AB0FF]/25"
                 }`}
               >
                 {r === "candidate" ? "Candidato" : "Empresa"}

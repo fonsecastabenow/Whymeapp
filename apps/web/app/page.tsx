@@ -1,31 +1,40 @@
 import Link from "next/link"
 
 const OCEAN_DIMS = [
-  { letter: "O", name: "Abertura", desc: "Criatividade e curiosidade" },
-  { letter: "C", name: "Conscienciosidade", desc: "Organização e responsabilidade" },
+  { letter: "O", name: "Abertura", desc: "Criatividade e curiosidade intelectual" },
+  { letter: "C", name: "Consciência", desc: "Organização e responsabilidade" },
   { letter: "E", name: "Extroversão", desc: "Sociabilidade e energia" },
   { letter: "A", name: "Amabilidade", desc: "Cooperação e empatia" },
   { letter: "N", name: "Neuroticismo", desc: "Estabilidade emocional" },
 ]
 
 const STEPS = [
-  { num: "01", title: "Candidato responde", desc: "Questionário OCEAN de 30 perguntas em formato conversacional. Leva 5 minutos." },
-  { num: "02", title: "Match por valores", desc: "Nossa IA compara o perfil do candidato com a cultura da empresa." },
-  { num: "03", title: "Contratação precisa", desc: "Empresas encontram talentos alinhados aos seus valores. Menos turnover." },
+  { num: "01", title: "Responda o questionário", desc: "30 perguntas em formato conversacional. Leva 5 minutos e revela seu perfil OCEAN completo." },
+  { num: "02", title: "Match por valores", desc: "Nossa IA compara seu perfil com a cultura de cada empresa. Sem achismos, só ciência." },
+  { num: "03", title: "Contratação precisa", desc: "Empresas encontram talentos alinhados. Candidatos encontram culturas compatíveis." },
+]
+
+const STATS = [
+  { value: "5 min", label: "Para o perfil" },
+  { value: "95%", label: "Precisão" },
+  { value: "3×", label: "Menos turnover" },
 ]
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-50">
+    <main className="min-h-screen bg-background text-foreground overflow-hidden">
+
       {/* Nav */}
-      <header className="border-b border-zinc-800">
+      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <span className="text-xl font-bold tracking-tight">Whyme</span>
+          <span className="text-lg font-black tracking-widest text-gradient-gold uppercase">WHY ME?</span>
           <div className="flex items-center gap-4">
-            <Link href="/login" className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">Entrar</Link>
+            <Link href="/login" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+              Entrar
+            </Link>
             <Link
               href="/register"
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="rounded-xl bg-gradient-to-r from-[#3AB0FF] to-[#1a8fdb] px-4 py-2 text-sm font-semibold text-white shadow-md shadow-[#3AB0FF]/20 transition-opacity hover:opacity-90"
             >
               Criar conta
             </Link>
@@ -34,46 +43,92 @@ export default function Home() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-4 pt-24 pb-16 text-center">
-        <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
-          Recrutamento por{" "}
-          <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">valores</span>
-        </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-zinc-400">
-          O Whyme usa o modelo OCEAN para conectar candidatos e empresas pelo que realmente importa: 
-          alinhamento de perfil e cultura. Menos currículo, mais compatibilidade.
-        </p>
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <Link
-            href="/register"
-            className="rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            Começar agora
-          </Link>
-          <Link
-            href="/faq"
-            className="rounded-lg border border-zinc-700 px-6 py-3 text-sm font-semibold text-zinc-300 transition-colors hover:border-zinc-500"
-          >
-            Saber mais
-          </Link>
+      <section className="relative py-32 px-6">
+        {/* Background decorations */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+          backgroundSize: "40px 40px",
+        }} />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full opacity-[0.06]"
+          style={{ background: "radial-gradient(circle, #3AB0FF, transparent 70%)" }} />
+
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
+          {/* Eyebrow badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#3AB0FF]/25 bg-[#3AB0FF]/8 mb-8">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#3AB0FF] animate-pulse" />
+            <span className="text-sm text-[#3AB0FF] font-medium tracking-wider uppercase">
+              Powered by OCEAN Science
+            </span>
+          </div>
+
+          {/* Headline */}
+          <h1 className="text-5xl md:text-7xl font-black leading-[0.95] tracking-tight">
+            Recrutamento por
+            <br />
+            <span className="text-gradient-gold">valores reais</span>
+            <br />
+            <span className="text-muted-foreground text-4xl md:text-5xl font-light">não por currículo</span>
+          </h1>
+
+          <p className="mx-auto mt-8 max-w-2xl text-lg text-muted-foreground leading-relaxed">
+            O WHY ME? usa o modelo psicológico OCEAN para conectar candidatos e empresas
+            pelo que realmente importa: alinhamento de personalidade e cultura.
+          </p>
+
+          {/* CTAs */}
+          <div className="mt-10 flex items-center justify-center gap-4 flex-wrap">
+            <Link
+              href="/register"
+              className="rounded-xl bg-gradient-to-r from-[#3AB0FF] to-[#1a8fdb] px-8 py-3.5 text-base font-semibold text-white shadow-xl shadow-[#3AB0FF]/25 transition-all hover:shadow-[#3AB0FF]/40 hover:opacity-90"
+            >
+              Começar agora
+            </Link>
+            <Link
+              href="/faq"
+              className="rounded-xl border border-[#3AB0FF]/25 px-8 py-3.5 text-base font-semibold text-[#3AB0FF] transition-colors hover:border-[#3AB0FF]/50 hover:bg-[#3AB0FF]/5"
+            >
+              Saber mais
+            </Link>
+          </div>
+
+          {/* Stats */}
+          <div className="mt-16 grid grid-cols-3 gap-8 max-w-sm mx-auto">
+            {STATS.map((s) => (
+              <div key={s.label} className="text-center">
+                <div className="text-3xl font-black text-gradient-gold">{s.value}</div>
+                <div className="text-xs text-muted-foreground mt-1 uppercase tracking-widest">{s.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* OCEAN explanation */}
-      <section className="border-t border-zinc-800 py-20">
-        <div className="mx-auto max-w-6xl px-4">
-          <h2 className="text-center text-2xl font-bold">O que é OCEAN?</h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-sm text-zinc-500">
-            O modelo dos 5 grandes fatores da personalidade, validado por décadas de pesquisa acadêmica.
-          </p>
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
+      {/* OCEAN section */}
+      <section className="py-24 px-6">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <span className="text-sm text-[#3AB0FF] font-semibold tracking-widest uppercase">
+              O Modelo
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black mt-4 tracking-tight">
+              O que é <span className="text-gradient-gold">OCEAN?</span>
+            </h2>
+            <p className="text-muted-foreground mt-4 max-w-xl mx-auto text-lg">
+              5 grandes fatores da personalidade validados por décadas de pesquisa acadêmica.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
             {OCEAN_DIMS.map((dim) => (
-              <div key={dim.letter} className="rounded-xl border border-zinc-800 bg-zinc-900 p-5 text-center">
-                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-500/10 text-lg font-bold text-blue-400">
-                  {dim.letter}
+              <div
+                key={dim.letter}
+                className="glass-card rounded-2xl p-5 text-center hover:border-[#3AB0FF]/30 transition-all duration-500 group"
+              >
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#3AB0FF]/10 group-hover:bg-[#3AB0FF]/20 transition-colors">
+                  <span className="text-lg font-black text-[#3AB0FF]">{dim.letter}</span>
                 </div>
-                <h3 className="text-sm font-semibold text-zinc-100">{dim.name}</h3>
-                <p className="mt-1 text-xs text-zinc-500">{dim.desc}</p>
+                <h3 className="text-sm font-bold text-foreground">{dim.name}</h3>
+                <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{dim.desc}</p>
               </div>
             ))}
           </div>
@@ -81,18 +136,26 @@ export default function Home() {
       </section>
 
       {/* How it works */}
-      <section className="border-t border-zinc-800 py-20">
-        <div className="mx-auto max-w-6xl px-4">
-          <h2 className="text-center text-2xl font-bold">Como funciona</h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-sm text-zinc-500">
-            Três passos simples para encontrar o match ideal.
-          </p>
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
+      <section className="py-24 px-6">
+        <div className="mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <span className="text-sm text-[#3AB0FF] font-semibold tracking-widest uppercase">
+              Processo
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black mt-4 tracking-tight">
+              Como <span className="text-gradient-gold">funciona</span>
+            </h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
             {STEPS.map((step) => (
-              <div key={step.num} className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-                <span className="text-3xl font-bold text-blue-500/30">{step.num}</span>
-                <h3 className="mt-4 text-lg font-semibold text-zinc-100">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{step.desc}</p>
+              <div
+                key={step.num}
+                className="glass-card rounded-2xl p-8 hover:border-[#3AB0FF]/25 transition-all duration-500"
+              >
+                <span className="text-4xl font-black text-[#3AB0FF]/20">{step.num}</span>
+                <h3 className="mt-4 text-lg font-bold text-foreground">{step.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -100,22 +163,30 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="border-t border-zinc-800 py-20">
-        <div className="mx-auto max-w-3xl px-4 text-center">
-          <h2 className="text-3xl font-bold">Pronto para encontrar o match ideal?</h2>
-          <p className="mt-4 text-zinc-400">
-            Junte-se às empresas que já estão revolucionando seu processo seletivo.
+      <section className="py-24 px-6 relative">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[2px] bg-gradient-to-r from-transparent via-[#3AB0FF] to-transparent opacity-60" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[200px] h-[80px] opacity-10"
+          style={{ background: "radial-gradient(ellipse, #3AB0FF, transparent 70%)" }} />
+
+        <div className="mx-auto max-w-3xl text-center">
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight">
+            Pronto para o
+            <br />
+            <span className="text-gradient-gold">match ideal?</span>
+          </h2>
+          <p className="mt-6 text-lg text-muted-foreground">
+            Junte-se a quem já está revolucionando o processo seletivo com personalidade.
           </p>
-          <div className="mt-8 flex items-center justify-center gap-4">
+          <div className="mt-10 flex items-center justify-center gap-4 flex-wrap">
             <Link
               href="/register"
-              className="rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="rounded-xl bg-gradient-to-r from-[#3AB0FF] to-[#1a8fdb] px-8 py-3.5 text-base font-semibold text-white shadow-xl shadow-[#3AB0FF]/25 transition-all hover:opacity-90"
             >
               Criar conta gratuita
             </Link>
             <Link
               href="/login"
-              className="rounded-lg border border-zinc-700 px-6 py-3 text-sm font-semibold text-zinc-300 transition-colors hover:border-zinc-500"
+              className="rounded-xl border border-[#3AB0FF]/25 px-8 py-3.5 text-base font-semibold text-[#3AB0FF] transition-colors hover:border-[#3AB0FF]/50"
             >
               Já tenho conta
             </Link>
@@ -124,13 +195,13 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-800">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row">
-          <span className="text-sm text-zinc-600">Whyme © 2026</span>
-          <div className="flex gap-6 text-sm text-zinc-500">
-            <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacidade</Link>
-            <Link href="/terms" className="hover:text-zinc-300 transition-colors">Termos</Link>
-            <Link href="/faq" className="hover:text-zinc-300 transition-colors">FAQ</Link>
+      <footer className="border-t border-[#3AB0FF]/10 py-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-center sm:flex-row">
+          <span className="text-sm text-muted-foreground/50">WHY ME? © 2026</span>
+          <div className="flex gap-6 text-sm text-muted-foreground/50">
+            <Link href="/privacy" className="hover:text-muted-foreground transition-colors">Privacidade</Link>
+            <Link href="/terms"   className="hover:text-muted-foreground transition-colors">Termos</Link>
+            <Link href="/faq"     className="hover:text-muted-foreground transition-colors">FAQ</Link>
           </div>
         </div>
       </footer>

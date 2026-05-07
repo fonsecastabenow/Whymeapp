@@ -53,12 +53,12 @@ function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProf
 
   return (
     <>
-      <div className="border-b border-zinc-800 p-6">
+      <div className="border-b border-[#3AB0FF]/10 p-6">
         <Avatar name={candidate.name} size="lg" className="mb-4" />
-        <h1 className="text-lg font-bold leading-snug text-zinc-50">{candidate.name}</h1>
-        {candidate.headline && <p className="mt-1 text-sm text-zinc-400">{candidate.headline}</p>}
+        <h1 className="text-lg font-bold leading-snug text-foreground">{candidate.name}</h1>
+        {candidate.headline && <p className="mt-1 text-sm text-muted-foreground">{candidate.headline}</p>}
         {locationStr && (
-          <p className="mt-2 flex items-center gap-1 text-xs text-zinc-500">
+          <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground/70">
             <svg className="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
               <circle cx="12" cy="9" r="2.5" />
@@ -71,8 +71,8 @@ function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProf
       <div className="flex-1 space-y-5 p-5 text-sm">
         {candidate.professional_level && (
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-600">Nível</p>
-            <span className="rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-400">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">Nível</p>
+            <span className="rounded-full border border-[#3AB0FF]/20 bg-[#3AB0FF]/10 px-2.5 py-0.5 text-xs font-medium text-[#3AB0FF]">
               {LEVEL_LABELS[candidate.professional_level] ?? candidate.professional_level}
             </span>
           </div>
@@ -80,10 +80,10 @@ function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProf
 
         {candidate.hard_skills && candidate.hard_skills.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-600">Hard Skills</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">Hard Skills</p>
             <div className="flex flex-wrap gap-1.5">
               {candidate.hard_skills.map((skill) => (
-                <span key={skill} className="rounded-md border border-zinc-700 bg-zinc-800 px-2 py-0.5 text-xs text-zinc-300">
+                <span key={skill} className="rounded-md border border-[#3AB0FF]/15 bg-[#3AB0FF]/5 px-2 py-0.5 text-xs text-foreground/80">
                   {skill}
                 </span>
               ))}
@@ -93,21 +93,21 @@ function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProf
 
         {candidate.education && (candidate.education.course || candidate.education.institution) && (
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-600">Formação</p>
-            {candidate.education.level && <p className="text-xs text-zinc-500">{candidate.education.level}</p>}
-            {candidate.education.course && <p className="text-zinc-300">{candidate.education.course}</p>}
-            {candidate.education.institution && <p className="text-xs text-zinc-500">{candidate.education.institution}</p>}
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">Formação</p>
+            {candidate.education.level && <p className="text-xs text-muted-foreground/70">{candidate.education.level}</p>}
+            {candidate.education.course && <p className="text-foreground/90">{candidate.education.course}</p>}
+            {candidate.education.institution && <p className="text-xs text-muted-foreground/70">{candidate.education.institution}</p>}
           </div>
         )}
 
         {candidate.languages && candidate.languages.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-600">Idiomas</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">Idiomas</p>
             <div className="space-y-1">
               {candidate.languages.map((l, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <span className="text-zinc-300">{l.language}</span>
-                  <span className="text-xs text-zinc-500">{l.level}</span>
+                  <span className="text-foreground/90">{l.language}</span>
+                  <span className="text-xs text-muted-foreground/70">{l.level}</span>
                 </div>
               ))}
             </div>
@@ -116,12 +116,12 @@ function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProf
 
         {(candidate.work_model || candidate.salary_expectation) && (
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-600">Preferências</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">Preferências</p>
             {candidate.work_model && (
-              <p className="text-zinc-300">{WORK_MODEL_LABELS[candidate.work_model] ?? candidate.work_model}</p>
+              <p className="text-foreground/90">{WORK_MODEL_LABELS[candidate.work_model] ?? candidate.work_model}</p>
             )}
             {candidate.salary_expectation && (candidate.salary_expectation.min || candidate.salary_expectation.max) && (
-              <p className="mt-0.5 text-xs text-zinc-400">
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 {formatCurrency(candidate.salary_expectation.min)}
                 {candidate.salary_expectation.min && candidate.salary_expectation.max ? " – " : ""}
                 {formatCurrency(candidate.salary_expectation.max)}
@@ -132,12 +132,12 @@ function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProf
 
         {candidate.linkedin_url && (
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-600">LinkedIn</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">LinkedIn</p>
             <a
               href={candidate.linkedin_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs text-blue-400 transition-colors hover:text-blue-300"
+              className="flex items-center gap-1.5 text-xs text-[#3AB0FF] transition-colors hover:text-[#3AB0FF]/80"
             >
               <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z" />
@@ -149,22 +149,22 @@ function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProf
         )}
       </div>
 
-      <div className="border-t border-zinc-800 p-5 space-y-2">
+      <div className="border-t border-[#3AB0FF]/10 p-5 space-y-2">
         <a
           href={`/candidate/orbita?candidate_id=${candidateId}`}
-          className="flex w-full items-center justify-center rounded-lg border border-violet-700/50 bg-violet-500/10 px-4 py-2 text-sm font-medium text-violet-300 transition-colors hover:border-violet-500 hover:text-violet-100"
+          className="flex w-full items-center justify-center rounded-xl border border-violet-500/30 bg-violet-500/8 px-4 py-2 text-sm font-medium text-violet-300 transition-colors hover:border-violet-500/60 hover:bg-violet-500/15"
         >
           Ver ORBITA
         </a>
         <a
           href={`/candidate/${candidateId}/report`}
-          className="flex w-full items-center justify-center rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-zinc-100"
+          className="flex w-full items-center justify-center rounded-xl border border-[#3AB0FF]/15 px-4 py-2 text-sm font-medium text-foreground/90 transition-colors hover:border-[#3AB0FF]/35 hover:text-foreground"
         >
           Relatório OCEAN
         </a>
         <a
           href={`/candidate/${candidateId}/profile`}
-          className="flex w-full items-center justify-center rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-100"
+          className="flex w-full items-center justify-center rounded-xl border border-[#3AB0FF]/10 px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-[#3AB0FF]/30 hover:text-foreground"
         >
           Editar Perfil
         </a>
@@ -259,22 +259,22 @@ export default function CandidateDashboardPage() {
               return (
                 <div
                   key={match.id}
-                  className="flex flex-col gap-4 rounded-xl border border-zinc-800 bg-zinc-900 p-4 transition-colors hover:border-zinc-700 sm:flex-row sm:items-center sm:gap-6"
+                  className="flex flex-col gap-4 rounded-2xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.7)] p-4 transition-all hover:border-[#3AB0FF]/25 hover:bg-[rgba(16,34,68,0.9)] sm:flex-row sm:items-center sm:gap-6"
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-3">
                     <Avatar name={match.company_name ?? "?"} />
                     <div className="min-w-0">
-                      <div className="truncate font-semibold text-zinc-100">{match.job_title}</div>
-                      <div className="truncate text-sm text-zinc-500">{match.company_name}</div>
+                      <div className="truncate font-semibold text-foreground">{match.job_title}</div>
+                      <div className="truncate text-sm text-muted-foreground/70">{match.company_name}</div>
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-4">
                     <div className="w-24 sm:w-36">
                       <div className="mb-1.5 flex justify-between text-xs">
-                        <span className="text-zinc-500">Compatibilidade</span>
-                        <span className="font-semibold tabular-nums text-zinc-300">{pct}%</span>
+                        <span className="text-muted-foreground/70">Compatibilidade</span>
+                        <span className="font-semibold tabular-nums text-foreground/90">{pct}%</span>
                       </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-white/8">
                         <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
                       </div>
                     </div>

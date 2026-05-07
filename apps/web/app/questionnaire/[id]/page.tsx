@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useCallback, useEffect, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
@@ -73,7 +73,7 @@ const DIMENSION_COLORS: Record<string, string> = {
 
 const DIMENSION_BG: Record<string, string> = {
   openness: "bg-purple-950/20 border-purple-900/30",
-  conscientiousness: "bg-blue-950/20 border-blue-900/30",
+  conscientiousness: "bg-[rgba(58,176,255,0.05)] border-[#3AB0FF]/15",
   extraversion: "bg-amber-950/20 border-amber-900/30",
   agreeableness: "bg-emerald-950/20 border-emerald-900/30",
   neuroticism: "bg-red-950/20 border-red-900/30",
@@ -81,7 +81,7 @@ const DIMENSION_BG: Record<string, string> = {
 
 const DIMENSION_ACCENT: Record<string, string> = {
   openness: "text-purple-400",
-  conscientiousness: "text-blue-400",
+  conscientiousness: "text-[#3AB0FF]",
   extraversion: "text-amber-400",
   agreeableness: "text-emerald-400",
   neuroticism: "text-red-400",
@@ -164,10 +164,10 @@ export default function QuestionnairePage() {
   // ─── Loading ──────────────────────────────────────────────────────────
   if (pageState === "loading") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950">
+      <main className="flex min-h-screen items-center justify-center bg-background">
         <div className="space-y-4 text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-zinc-700 border-t-amber-500" />
-          <p className="text-zinc-400">Carregando questionário...</p>
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-[#3AB0FF]/15 border-t-amber-500" />
+          <p className="text-muted-foreground">Carregando questionário...</p>
         </div>
       </main>
     )
@@ -176,13 +176,13 @@ export default function QuestionnairePage() {
   // ─── Error ────────────────────────────────────────────────────────────
   if (pageState === "error" && !scores) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
+      <main className="flex min-h-screen items-center justify-center bg-background p-4">
         <div className="max-w-sm space-y-4 text-center">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-2xl">
             !
           </div>
-          <h1 className="text-xl font-semibold text-zinc-100">Erro</h1>
-          <p className="text-zinc-400">{error || "Não foi possível carregar o questionário."}</p>
+          <h1 className="text-xl font-semibold text-foreground">Erro</h1>
+          <p className="text-muted-foreground">{error || "Não foi possível carregar o questionário."}</p>
           <Link
             href="/"
             className="inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-amber-500 transition-colors"
@@ -197,10 +197,10 @@ export default function QuestionnairePage() {
   // ─── Results (after submission) ──────────────────────────────────────
   if (pageState === "submitted" && scores) {
     return (
-      <main className="min-h-screen bg-zinc-950 text-zinc-100">
-        <header className="border-b border-zinc-800 px-6 py-4">
+      <main className="min-h-screen bg-background text-foreground">
+        <header className="border-b border-[#3AB0FF]/10 px-6 py-4">
           <div className="mx-auto flex max-w-3xl items-center justify-between">
-            <span className="text-xl font-bold tracking-tight text-zinc-100">Whyme</span>
+            <span className="text-lg font-black tracking-widest text-amber-500 uppercase">WHY ME?</span>
           </div>
         </header>
 
@@ -209,10 +209,10 @@ export default function QuestionnairePage() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 text-3xl">
               ✓
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-zinc-100">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
               Questionário concluído!
             </h1>
-            <p className="mt-2 text-zinc-400">
+            <p className="mt-2 text-muted-foreground">
               Seu perfil OCEAN foi calculado. Veja os resultados abaixo.
             </p>
           </div>
@@ -224,10 +224,10 @@ export default function QuestionnairePage() {
               return (
                 <div key={dim} className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-zinc-200">{DIMENSION_LABELS[dim]}</span>
-                    <span className="tabular-nums text-zinc-400">{pct}%</span>
+                    <span className="font-medium text-foreground/90">{DIMENSION_LABELS[dim]}</span>
+                    <span className="tabular-nums text-muted-foreground">{pct}%</span>
                   </div>
-                  <div className="h-3 w-full overflow-hidden rounded-full bg-zinc-800">
+                  <div className="h-3 w-full overflow-hidden rounded-full bg-[rgba(11,31,58,0.7)]">
                     <div
                       className="h-full rounded-full transition-all duration-1000"
                       style={{ width: `${pct}%`, backgroundColor: color }}
@@ -238,11 +238,11 @@ export default function QuestionnairePage() {
             })}
           </div>
 
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-6">
-            <h2 className="mb-2 text-lg font-semibold text-zinc-100">
+          <div className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(11,31,58,0.9)] p-6">
+            <h2 className="mb-2 text-lg font-semibold text-foreground">
               Próximo passo
             </h2>
-            <p className="mb-4 text-sm text-zinc-400">
+            <p className="mb-4 text-sm text-muted-foreground">
               Crie sua conta gratuita para salvar seu perfil e encontrar as
               melhores oportunidades para você.
             </p>
@@ -268,17 +268,17 @@ export default function QuestionnairePage() {
   const textBase = "text-base"
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100">
+    <main className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-10 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <span className="text-lg font-bold tracking-tight text-amber-500">Whyme</span>
-          <span className={cn("text-zinc-500", textSm)}>
+          <span className="text-lg font-black tracking-widest text-amber-500 uppercase">WHY ME?</span>
+          <span className={cn("text-muted-foreground/70", textSm)}>
             {answeredCount} / 30
           </span>
         </div>
         {/* Progress bar */}
-        <div className="h-1 w-full bg-zinc-800">
+        <div className="h-1 w-full bg-[rgba(11,31,58,0.7)]">
           <div
             className="h-full bg-amber-500 transition-all duration-300"
             style={{ width: `${(answeredCount / 30) * 100}%` }}
@@ -289,10 +289,10 @@ export default function QuestionnairePage() {
       <div className="mx-auto max-w-3xl px-4 py-8">
         {/* Title */}
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Seu Perfil OCEAN
           </h1>
-          <p className="mt-1 text-zinc-400">
+          <p className="mt-1 text-muted-foreground">
             Responda com sinceridade — não existem respostas certas ou erradas.
           </p>
         </div>
@@ -324,7 +324,7 @@ export default function QuestionnairePage() {
                 const selected = responses[idx]
                 return (
                   <div key={q.id} className="space-y-2">
-                    <p className={cn("leading-relaxed text-zinc-200", textSm)}>
+                    <p className={cn("leading-relaxed text-foreground/90", textSm)}>
                       {q.id}. {q.text}
                     </p>
                     <div className="flex gap-1.5 sm:gap-2" role="radiogroup" aria-label={`Pergunta ${q.id}`}>
@@ -339,10 +339,10 @@ export default function QuestionnairePage() {
                             onClick={() => setResponse(idx, opt.value)}
                             className={cn(
                               "flex flex-1 flex-col items-center gap-0.5 rounded-full px-2 py-2 text-xs font-medium transition-all",
-                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950",
+                              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                               isSelected
                                 ? "bg-amber-600 text-white shadow-lg shadow-amber-600/20 scale-105"
-                                : "bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-zinc-200",
+                                : "bg-[rgba(11,31,58,0.7)] text-muted-foreground hover:bg-white/10 hover:text-foreground/90",
                             )}
                             aria-label={`${opt.label} para pergunta ${q.id}`}
                           >
@@ -369,7 +369,7 @@ export default function QuestionnairePage() {
               "w-full rounded-xl px-6 py-4 text-base font-semibold transition-all",
               allAnswered && pageState !== "submitting"
                 ? "bg-amber-600 text-white hover:bg-amber-500 shadow-lg shadow-amber-600/20"
-                : "bg-zinc-800 text-zinc-600 cursor-not-allowed",
+                : "bg-[rgba(11,31,58,0.7)] text-muted-foreground/50 cursor-not-allowed",
             )}
           >
             {pageState === "submitting"

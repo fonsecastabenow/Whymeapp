@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
@@ -227,33 +227,33 @@ export default function CompanyProfilePage() {
   // ── main render ────────────────────────────────────────────────────────────
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-50">
-      <header className="sticky top-0 z-30 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur">
+    <main className="min-h-screen bg-background text-foreground">
+      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-4">
           <div>
             <div className="flex items-center gap-2">
               <a
                 href={`/company/${companyId}/dashboard`}
-                className="text-xs text-zinc-500 transition-colors hover:text-zinc-300"
+                className="text-xs text-foreground0 transition-colors hover:text-foreground/85"
               >
                 {company?.name ?? "Empresa"}
               </a>
-              <span className="text-xs text-zinc-700">/</span>
-              <h1 className="text-sm font-bold text-zinc-50">Perfil</h1>
+              <span className="text-xs text-muted-foreground/40">/</span>
+              <h1 className="text-sm font-bold text-foreground">Perfil</h1>
             </div>
-            <p className="mt-0.5 text-xs text-zinc-500">Informações e cultura organizacional</p>
+            <p className="mt-0.5 text-xs text-foreground0">Informações e cultura organizacional</p>
           </div>
-          {user && <span className="text-sm text-zinc-400">{user.name}</span>}
+          {user && <span className="text-sm text-muted-foreground">{user.name}</span>}
         </div>
       </header>
 
       <div className="mx-auto max-w-2xl space-y-6 px-4 py-6">
         {/* Company Info */}
-        <section className="rounded-xl border border-zinc-800 bg-zinc-900">
-          <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4">
+        <section className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)]">
+          <div className="flex items-center justify-between border-b border-[#3AB0FF]/10 px-5 py-4">
             <div>
-              <h2 className="font-semibold text-zinc-50">Informações da Empresa</h2>
-              <p className="mt-0.5 text-xs text-zinc-500">Nome, setor e descrição</p>
+              <h2 className="font-semibold text-foreground">Informações da Empresa</h2>
+              <p className="mt-0.5 text-xs text-foreground0">Nome, setor e descrição</p>
             </div>
             {!editing && (
               <Button variant="outline" size="sm" onClick={handleEdit}>Editar</Button>
@@ -262,48 +262,48 @@ export default function CompanyProfilePage() {
 
           <div className="space-y-4 px-5 py-5">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Nome</label>
+              <label className="text-xs font-medium text-muted-foreground">Nome</label>
               {editing ? (
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nome da empresa"
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+                  className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
                 />
               ) : (
-                <p className="text-sm text-zinc-50">{company?.name ?? "—"}</p>
+                <p className="text-sm text-foreground">{company?.name ?? "—"}</p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Setor</label>
+              <label className="text-xs font-medium text-muted-foreground">Setor</label>
               {editing ? (
                 <input
                   type="text"
                   value={industry}
                   onChange={(e) => setIndustry(e.target.value)}
                   placeholder="ex: Tecnologia, Saúde, Educação…"
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+                  className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
                 />
               ) : (
-                <p className="text-sm text-zinc-50">{company?.industry ?? <span className="text-zinc-600">Não informado</span>}</p>
+                <p className="text-sm text-foreground">{company?.industry ?? <span className="text-muted-foreground/50">Não informado</span>}</p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">Descrição</label>
+              <label className="text-xs font-medium text-muted-foreground">Descrição</label>
               {editing ? (
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Descreva a empresa, missão, valores…"
                   rows={4}
-                  className="w-full resize-none rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+                  className="w-full resize-none rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
                 />
               ) : (
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
-                  {company?.description ?? <span className="text-zinc-600">Não informado</span>}
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/85">
+                  {company?.description ?? <span className="text-muted-foreground/50">Não informado</span>}
                 </p>
               )}
             </div>
@@ -311,10 +311,10 @@ export default function CompanyProfilePage() {
         </section>
 
         {/* OCEAN Culture Profile */}
-        <section className="rounded-xl border border-zinc-800 bg-zinc-900">
-          <div className="border-b border-zinc-800 px-5 py-4">
-            <h2 className="font-semibold text-zinc-50">Perfil de Cultura OCEAN</h2>
-            <p className="mt-0.5 text-xs text-zinc-500">
+        <section className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)]">
+          <div className="border-b border-[#3AB0FF]/10 px-5 py-4">
+            <h2 className="font-semibold text-foreground">Perfil de Cultura OCEAN</h2>
+            <p className="mt-0.5 text-xs text-foreground0">
               Defina os traços de personalidade que refletem a cultura da empresa
             </p>
           </div>
@@ -330,10 +330,10 @@ export default function CompanyProfilePage() {
               <div className="w-full space-y-3">
                 {OCEAN_KEYS.map((key) => (
                   <div key={key} className="flex items-center gap-3">
-                    <span className="w-6 shrink-0 text-center text-xs font-bold text-zinc-500">
+                    <span className="w-6 shrink-0 text-center text-xs font-bold text-foreground0">
                       {key.toUpperCase()}
                     </span>
-                    <span className="w-32 shrink-0 text-xs text-zinc-400">{OCEAN_LABELS[key]}</span>
+                    <span className="w-32 shrink-0 text-xs text-muted-foreground">{OCEAN_LABELS[key]}</span>
                     <input
                       type="range"
                       min={0}
@@ -343,9 +343,9 @@ export default function CompanyProfilePage() {
                       onChange={(e) =>
                         setSliders((prev) => ({ ...prev, [key]: Number(e.target.value) }))
                       }
-                      className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-zinc-700 accent-blue-500 disabled:cursor-default disabled:opacity-60"
+                      className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/10 accent-[#3AB0FF] disabled:cursor-default disabled:opacity-60"
                     />
-                    <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-blue-400">
+                    <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-[#3AB0FF]">
                       {sliders[key]}
                     </span>
                   </div>

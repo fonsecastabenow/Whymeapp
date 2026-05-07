@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"e:\\\\iA\\\\GitHub\\\\Whymeapp\\\\apps\\\\web\\\\components\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\"e:\\\\iA\\\\GitHub\\\\Whymeapp\\\\apps\\\\web\\\\components\\\\\", \"\"\\) })"
+    ]
+  }
+}

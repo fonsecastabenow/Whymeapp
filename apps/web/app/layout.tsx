@@ -19,12 +19,12 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${inter.className} flex min-h-screen flex-col`}>
         <main className="flex-1">{children}</main>
-        <footer className="border-t border-zinc-800 bg-zinc-950 px-6 py-4">
+        <footer className="border-t border-[#3AB0FF]/10 bg-background px-6 py-4">
           <div className="mx-auto max-w-7xl flex items-center justify-between">
-            <span className="text-xs text-zinc-600">© 2026 Whyme Tecnologia Ltda.</span>
+            <span className="text-xs text-muted-foreground/50">© 2026 Whyme Tecnologia Ltda.</span>
             <Link
               href="/privacy"
-              className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+              className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
             >
               Política de Privacidade
             </Link>

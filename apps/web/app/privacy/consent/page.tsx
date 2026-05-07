@@ -55,14 +55,14 @@ export default function ConsentPage() {
   const canSave = consents.data_policy
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-300">
+    <div className="min-h-screen bg-background text-foreground/85">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
 
         {/* Header */}
         <div className="mb-10">
           <Link
             href="/privacy"
-            className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors mb-8"
+            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors mb-8"
           >
             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -76,22 +76,22 @@ export default function ConsentPage() {
             </span>
           </div>
 
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-50 mb-2">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
             Gerenciar Consentimentos
           </h1>
-          <p className="text-zinc-500 text-sm">
+          <p className="text-muted-foreground text-sm">
             Você controla quais dados são usados e compartilhados na plataforma Whyme.
             Altere suas preferências a qualquer momento.
           </p>
         </div>
 
         {/* Info banner */}
-        <div className="mb-8 rounded-xl border border-blue-400/20 bg-blue-400/5 p-4">
+        <div className="mb-8 rounded-xl border border-[#3AB0FF]/20 bg-[#3AB0FF]/5 p-4">
           <div className="flex gap-3">
-            <svg className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="h-5 w-5 text-[#3AB0FF] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-sm text-blue-300">
+            <p className="text-sm text-[#3AB0FF]/80">
               As suas escolhas aqui não afetam a funcionalidade básica da plataforma, apenas
               como e com quem seus dados são compartilhados.
             </p>
@@ -106,28 +106,26 @@ export default function ConsentPage() {
               <div
                 key={item.id}
                 onClick={() => toggle(item.id, item.required)}
-                className={`
-                  rounded-xl border p-5 transition-all
-                  ${item.required
-                    ? "border-zinc-700 cursor-default"
+                className={[
+                  "rounded-xl border p-5 transition-all",
+                  item.required
+                    ? "border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.4)] cursor-default"
                     : checked
                       ? "border-emerald-500/40 bg-emerald-500/5 cursor-pointer"
-                      : "border-zinc-800 hover:border-zinc-700 cursor-pointer"
-                  }
-                `}
+                      : "border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.3)] hover:border-[#3AB0FF]/25 cursor-pointer",
+                ].join(" ")}
               >
                 <div className="flex items-start gap-4">
                   {/* Checkbox */}
                   <div
-                    className={`
-                      mt-0.5 h-5 w-5 shrink-0 rounded border-2 flex items-center justify-center transition-colors
-                      ${item.required
-                        ? "border-zinc-600 bg-zinc-700 cursor-not-allowed"
+                    className={[
+                      "mt-0.5 h-5 w-5 shrink-0 rounded border-2 flex items-center justify-center transition-colors",
+                      item.required
+                        ? "border-[#3AB0FF]/20 bg-[#3AB0FF]/10 cursor-not-allowed"
                         : checked
                           ? "border-emerald-500 bg-emerald-500"
-                          : "border-zinc-600 bg-transparent"
-                      }
-                    `}
+                          : "border-[#3AB0FF]/20 bg-transparent",
+                    ].join(" ")}
                   >
                     {(checked || item.required) && (
                       <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -139,16 +137,16 @@ export default function ConsentPage() {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`text-sm font-medium ${checked || item.required ? "text-zinc-100" : "text-zinc-300"}`}>
+                      <span className={`text-sm font-medium ${checked || item.required ? "text-foreground" : "text-foreground/80"}`}>
                         {item.label}
                       </span>
                       {item.required && (
-                        <span className="rounded-full border border-zinc-700 bg-zinc-800 px-2 py-0.5 text-xs text-zinc-500">
+                        <span className="rounded-full border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.5)] px-2 py-0.5 text-xs text-muted-foreground/60">
                           Obrigatório
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-zinc-500 leading-relaxed">{item.description}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
                   </div>
                 </div>
               </div>
@@ -157,11 +155,11 @@ export default function ConsentPage() {
         </div>
 
         {/* Required notice */}
-        <p className="text-xs text-zinc-600 mb-6">
-          * O consentimento marcado como <strong className="text-zinc-500">Obrigatório</strong> é
+        <p className="text-xs text-muted-foreground/50 mb-6">
+          * O consentimento marcado como <strong className="text-muted-foreground/70">Obrigatório</strong> é
           necessário para o uso da plataforma e não pode ser revogado sem exclusão da conta.
           Para excluir sua conta e dados, entre em contato em{" "}
-          <a href="mailto:lgpd@whyme.app" className="text-blue-500 hover:text-blue-400">
+          <a href="mailto:lgpd@whyme.app" className="text-[#3AB0FF] hover:text-[#3AB0FF]/80 underline underline-offset-2">
             lgpd@whyme.app
           </a>
           .
@@ -172,13 +170,12 @@ export default function ConsentPage() {
           <button
             onClick={handleSave}
             disabled={!canSave}
-            className={`
-              inline-flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-medium transition-colors
-              ${canSave
-                ? "bg-zinc-100 text-zinc-900 hover:bg-white"
-                : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
-              }
-            `}
+            className={[
+              "inline-flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-medium transition-all",
+              canSave
+                ? "bg-gradient-to-r from-[#3AB0FF] to-[#1a8fdb] text-white shadow-lg shadow-[#3AB0FF]/20 hover:opacity-90"
+                : "bg-[rgba(16,34,68,0.5)] text-muted-foreground/40 border border-[#3AB0FF]/8 cursor-not-allowed",
+            ].join(" ")}
           >
             Salvar preferências
           </button>
@@ -194,9 +191,9 @@ export default function ConsentPage() {
         </div>
 
         {/* Note */}
-        <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900/30 p-5">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 mb-2">Nota</p>
-          <p className="text-sm text-zinc-500">
+        <div className="mt-12 rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.4)] p-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2">Nota</p>
+          <p className="text-sm text-muted-foreground/70">
             Esta é uma interface de demonstração. A integração com o backend de persistência
             de consentimentos será implementada em breve. As preferências salvas aqui ainda
             não são persistidas entre sessões.

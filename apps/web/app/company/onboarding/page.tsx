@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -46,9 +46,9 @@ const OCEAN_LABELS: Record<OceanKey, string> = {
 }
 
 const INPUT_CLS =
-  "w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+  "w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
 const SELECT_CLS =
-  "w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 outline-none transition-colors focus:border-blue-500"
+  "w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-[#3AB0FF]/60"
 
 // ─── step dots ─────────────────────────────────────────────────────────────────
 
@@ -60,10 +60,10 @@ function StepDots({ current, total }: { current: number; total: number }) {
           key={i}
           className={`h-2 w-2 rounded-full transition-colors ${
             i + 1 === current
-              ? "bg-blue-500"
+              ? "bg-[#3AB0FF]"
               : i + 1 < current
                 ? "bg-emerald-500"
-                : "bg-zinc-700"
+                : "bg-white/10"
           }`}
         />
       ))}
@@ -264,26 +264,26 @@ export default function CompanyOnboardingPage() {
     ) ?? []
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
+    <main className="flex min-h-screen items-center justify-center bg-background p-4">
       <div className="w-full max-w-xl">
         {/* Header */}
         <div className="mb-6 text-center">
-          <h1 className="text-xl font-bold text-zinc-50">Configurar Empresa</h1>
-          <p className="mt-1 text-sm text-zinc-500">Passo {step} de 4</p>
+          <h1 className="text-xl font-bold text-foreground">Configurar Empresa</h1>
+          <p className="mt-1 text-sm text-foreground0">Passo {step} de 4</p>
           <div className="mt-3">
             <StepDots current={step} total={4} />
           </div>
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 shadow-xl">
+        <div className="rounded-2xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)] p-6 shadow-xl">
           {/* Step 1: Company Data */}
           {step === 1 && (
             <div className="space-y-4">
-              <h2 className="text-sm font-semibold text-zinc-50">Dados da Empresa</h2>
+              <h2 className="text-sm font-semibold text-foreground">Dados da Empresa</h2>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Nome *</label>
+                <label className="text-xs font-medium text-muted-foreground">Nome *</label>
                 <input
                   type="text"
                   value={name}
@@ -294,7 +294,7 @@ export default function CompanyOnboardingPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Setor</label>
+                <label className="text-xs font-medium text-muted-foreground">Setor</label>
                 <select
                   value={industry}
                   onChange={(e) => setIndustry(e.target.value)}
@@ -310,7 +310,7 @@ export default function CompanyOnboardingPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Porte</label>
+                <label className="text-xs font-medium text-muted-foreground">Porte</label>
                 <select
                   value={size}
                   onChange={(e) => setSize(e.target.value)}
@@ -326,7 +326,7 @@ export default function CompanyOnboardingPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Site</label>
+                <label className="text-xs font-medium text-muted-foreground">Site</label>
                 <input
                   type="text"
                   value={website}
@@ -337,7 +337,7 @@ export default function CompanyOnboardingPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">LinkedIn</label>
+                <label className="text-xs font-medium text-muted-foreground">LinkedIn</label>
                 <input
                   type="text"
                   value={linkedinUrl}
@@ -352,23 +352,23 @@ export default function CompanyOnboardingPage() {
           {/* Step 2: Culture Questionnaire */}
           {step === 2 && (
             <div className="space-y-4">
-              <h2 className="text-sm font-semibold text-zinc-50">Questionário de Cultura</h2>
-              <p className="text-xs text-zinc-500">
+              <h2 className="text-sm font-semibold text-foreground">Questionário de Cultura</h2>
+              <p className="text-xs text-foreground0">
                 Responda de 1 (Discordo Totalmente) a 5 (Concordo Totalmente) para cada afirmação.
               </p>
 
               {questionsLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-zinc-700 border-t-blue-500" />
+                  <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#3AB0FF]/15 border-t-blue-500" />
                 </div>
               ) : questions.length === 0 ? (
-                <p className="text-sm text-zinc-500">Nenhuma pergunta disponível.</p>
+                <p className="text-sm text-foreground0">Nenhuma pergunta disponível.</p>
               ) : (
                 <div className="space-y-5">
                   {questions.map((q, idx) => (
-                    <div key={q.id} className="rounded-xl border border-zinc-800 bg-zinc-800/40 p-4">
-                      <p className="text-sm text-zinc-50">
-                        <span className="text-zinc-500">{idx + 1}.</span> {q.question_pt}
+                    <div key={q.id} className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] p-4">
+                      <p className="text-sm text-foreground">
+                        <span className="text-foreground0">{idx + 1}.</span> {q.question_pt}
                       </p>
                       <div className="mt-3 flex items-center justify-between gap-1">
                         {[1, 2, 3, 4, 5].map((score) => {
@@ -389,8 +389,8 @@ export default function CompanyOnboardingPage() {
                               }
                               className={`flex flex-col items-center gap-1 rounded-lg px-2 py-2 text-[10px] leading-tight transition-colors sm:px-3 ${
                                 isSelected
-                                  ? "bg-blue-600 text-white"
-                                  : "bg-zinc-800 text-zinc-500 hover:bg-zinc-700"
+                                  ? "bg-[#3AB0FF] text-white"
+                                  : "bg-[rgba(16,34,68,0.6)] text-foreground0 hover:bg-white/10"
                               }`}
                             >
                               <span className="text-xs font-bold">{score}</span>
@@ -409,10 +409,10 @@ export default function CompanyOnboardingPage() {
           {/* Step 3: Create First Job */}
           {step === 3 && (
             <div className="space-y-4">
-              <h2 className="text-sm font-semibold text-zinc-50">Criar Primeira Vaga</h2>
+              <h2 className="text-sm font-semibold text-foreground">Criar Primeira Vaga</h2>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Título *</label>
+                <label className="text-xs font-medium text-muted-foreground">Título *</label>
                 <input
                   type="text"
                   value={jobTitle}
@@ -423,25 +423,25 @@ export default function CompanyOnboardingPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Descrição</label>
+                <label className="text-xs font-medium text-muted-foreground">Descrição</label>
                 <textarea
                   value={jobDescription}
                   onChange={(e) => setJobDescription(e.target.value)}
                   placeholder="Descreva a vaga, responsabilidades, benefícios..."
                   rows={3}
-                  className="w-full resize-none rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2.5 text-sm text-zinc-50 placeholder-zinc-600 outline-none transition-colors focus:border-blue-500"
+                  className="w-full resize-none rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
                 />
               </div>
 
               {/* Hard Skills */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">
+                <label className="text-xs font-medium text-muted-foreground">
                   Hard Skills Requeridas (máx. 10)
                 </label>
                 {refDataLoading ? (
                   <div className="flex items-center gap-2 py-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-700 border-t-blue-500" />
-                    <span className="text-xs text-zinc-500">Carregando habilidades...</span>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#3AB0FF]/15 border-t-blue-500" />
+                    <span className="text-xs text-foreground0">Carregando habilidades...</span>
                   </div>
                 ) : refData ? (
                   <>
@@ -459,13 +459,13 @@ export default function CompanyOnboardingPage() {
                           return skill ? (
                             <span
                               key={id}
-                              className="flex items-center gap-1 rounded-md bg-blue-500/20 px-2 py-1 text-xs text-blue-400"
+                              className="flex items-center gap-1 rounded-md bg-[#3AB0FF]/20 px-2 py-1 text-xs text-[#3AB0FF]"
                             >
                               {skill.name}
                               <button
                                 type="button"
                                 onClick={() => toggleHardSkill(id)}
-                                className="ml-0.5 text-blue-300 hover:text-blue-100"
+                                className="ml-0.5 text-[#3AB0FF] hover:text-white"
                               >
                                 ×
                               </button>
@@ -474,9 +474,9 @@ export default function CompanyOnboardingPage() {
                         })}
                       </div>
                     )}
-                    <div className="max-h-40 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-800/40">
+                    <div className="max-h-40 overflow-y-auto rounded-lg border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)]">
                       {filteredHardSkills.length === 0 ? (
-                        <p className="p-3 text-xs text-zinc-500">Nenhuma habilidade encontrada.</p>
+                        <p className="p-3 text-xs text-foreground0">Nenhuma habilidade encontrada.</p>
                       ) : (
                         filteredHardSkills.map((skill) => {
                           const active = selectedHardSkills.includes(skill.id)
@@ -488,12 +488,12 @@ export default function CompanyOnboardingPage() {
                               disabled={!active && selectedHardSkills.length >= 10}
                               className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
                                 active
-                                  ? "bg-blue-500/10 text-blue-400"
-                                  : "text-zinc-400 hover:bg-zinc-800"
+                                  ? "bg-[#3AB0FF]/10 text-[#3AB0FF]"
+                                  : "text-muted-foreground hover:bg-[rgba(16,34,68,0.6)]"
                               } disabled:opacity-40`}
                             >
                               <span>{skill.name}</span>
-                              <span className="text-zinc-600">{skill.category}</span>
+                              <span className="text-muted-foreground/50">{skill.category}</span>
                             </button>
                           )
                         })
@@ -501,13 +501,13 @@ export default function CompanyOnboardingPage() {
                     </div>
                   </>
                 ) : (
-                  <p className="text-xs text-zinc-500">Erro ao carregar habilidades.</p>
+                  <p className="text-xs text-foreground0">Erro ao carregar habilidades.</p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-400">Nível Formação Mín.</label>
+                  <label className="text-xs font-medium text-muted-foreground">Nível Formação Mín.</label>
                   <select
                     value={educationLevelMin}
                     onChange={(e) => setEducationLevelMin(e.target.value)}
@@ -527,7 +527,7 @@ export default function CompanyOnboardingPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-400">Anos Exp. Mínimos</label>
+                  <label className="text-xs font-medium text-muted-foreground">Anos Exp. Mínimos</label>
                   <input
                     type="number"
                     min={0}
@@ -543,7 +543,7 @@ export default function CompanyOnboardingPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Modelo de Trabalho</label>
+                <label className="text-xs font-medium text-muted-foreground">Modelo de Trabalho</label>
                 <select
                   value={workModel}
                   onChange={(e) => setWorkModel(e.target.value)}
@@ -560,7 +560,7 @@ export default function CompanyOnboardingPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-400">Salário Mín.</label>
+                  <label className="text-xs font-medium text-muted-foreground">Salário Mín.</label>
                   <input
                     type="number"
                     min={0}
@@ -573,7 +573,7 @@ export default function CompanyOnboardingPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-zinc-400">Salário Máx.</label>
+                  <label className="text-xs font-medium text-muted-foreground">Salário Máx.</label>
                   <input
                     type="number"
                     min={0}
@@ -588,7 +588,7 @@ export default function CompanyOnboardingPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-zinc-400">Localização</label>
+                <label className="text-xs font-medium text-muted-foreground">Localização</label>
                 <input
                   type="text"
                   value={location}
@@ -601,15 +601,15 @@ export default function CompanyOnboardingPage() {
               {/* OCEAN Sliders */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-zinc-400">Perfil OCEAN Ideal</label>
+                  <label className="text-xs font-medium text-muted-foreground">Perfil OCEAN Ideal</label>
                 </div>
-                <div className="space-y-3 rounded-xl border border-zinc-800 bg-zinc-800/40 px-4 py-3">
+                <div className="space-y-3 rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] px-4 py-3">
                   {OCEAN_KEYS.map((key) => (
                     <div key={key} className="flex items-center gap-3">
-                      <span className="w-6 shrink-0 text-center text-xs font-bold text-zinc-500">
+                      <span className="w-6 shrink-0 text-center text-xs font-bold text-foreground0">
                         {key.toUpperCase()}
                       </span>
-                      <span className="w-28 shrink-0 text-xs text-zinc-400">
+                      <span className="w-28 shrink-0 text-xs text-muted-foreground">
                         {OCEAN_LABELS[key]}
                       </span>
                       <input
@@ -618,9 +618,9 @@ export default function CompanyOnboardingPage() {
                         max={100}
                         value={oceanSliders[key]}
                         onChange={(e) => setOceanSlider(key, Number(e.target.value))}
-                        className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-zinc-700 accent-blue-500"
+                        className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/10 accent-[#3AB0FF]"
                       />
-                      <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-blue-400">
+                      <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-[#3AB0FF]">
                         {oceanSliders[key]}
                       </span>
                     </div>
@@ -633,57 +633,57 @@ export default function CompanyOnboardingPage() {
           {/* Step 4: Confirmation */}
           {step === 4 && (
             <div className="space-y-4">
-              <h2 className="text-sm font-semibold text-zinc-50">Confirmar Dados</h2>
-              <p className="text-xs text-zinc-500">
+              <h2 className="text-sm font-semibold text-foreground">Confirmar Dados</h2>
+              <p className="text-xs text-foreground0">
                 Revise os dados antes de finalizar o cadastro.
               </p>
 
               <div className="space-y-3">
                 {/* Company summary */}
-                <div className="rounded-xl border border-zinc-800 bg-zinc-800/40 p-4">
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <div className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] p-4">
+                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Empresa
                   </h3>
-                  <div className="space-y-1 text-sm text-zinc-300">
-                    <p><span className="text-zinc-500">Nome:</span> {name || "—"}</p>
-                    <p><span className="text-zinc-500">Setor:</span> {industry || "—"}</p>
-                    <p><span className="text-zinc-500">Porte:</span> {size || "—"}</p>
-                    <p><span className="text-zinc-500">Site:</span> {website || "—"}</p>
-                    <p><span className="text-zinc-500">LinkedIn:</span> {linkedinUrl || "—"}</p>
+                  <div className="space-y-1 text-sm text-foreground/85">
+                    <p><span className="text-foreground0">Nome:</span> {name || "—"}</p>
+                    <p><span className="text-foreground0">Setor:</span> {industry || "—"}</p>
+                    <p><span className="text-foreground0">Porte:</span> {size || "—"}</p>
+                    <p><span className="text-foreground0">Site:</span> {website || "—"}</p>
+                    <p><span className="text-foreground0">LinkedIn:</span> {linkedinUrl || "—"}</p>
                   </div>
                 </div>
 
                 {/* Culture summary */}
-                <div className="rounded-xl border border-zinc-800 bg-zinc-800/40 p-4">
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <div className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] p-4">
+                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Questionário de Cultura
                   </h3>
-                  <p className="text-sm text-zinc-300">
+                  <p className="text-sm text-foreground/85">
                     {Object.keys(answers).length} pergunta{Object.keys(answers).length !== 1 ? "s" : ""} respondida{Object.keys(answers).length !== 1 ? "s" : ""}
                   </p>
                 </div>
 
                 {/* Job summary */}
-                <div className="rounded-xl border border-zinc-800 bg-zinc-800/40 p-4">
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <div className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] p-4">
+                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Primeira Vaga
                   </h3>
-                  <div className="space-y-1 text-sm text-zinc-300">
-                    <p><span className="text-zinc-500">Título:</span> {jobTitle || "—"}</p>
+                  <div className="space-y-1 text-sm text-foreground/85">
+                    <p><span className="text-foreground0">Título:</span> {jobTitle || "—"}</p>
                     {refData && selectedHardSkills.length > 0 && (
                       <p>
-                        <span className="text-zinc-500">Hard Skills:</span>{" "}
+                        <span className="text-foreground0">Hard Skills:</span>{" "}
                         {selectedHardSkills
                           .map((id) => refData.hard_skills.find((s) => s.id === id)?.name)
                           .filter(Boolean)
                           .join(", ")}
                       </p>
                     )}
-                    <p><span className="text-zinc-500">Modelo:</span> {workModel || "—"}</p>
-                    <p><span className="text-zinc-500">Local:</span> {location || "—"}</p>
+                    <p><span className="text-foreground0">Modelo:</span> {workModel || "—"}</p>
+                    <p><span className="text-foreground0">Local:</span> {location || "—"}</p>
                     {salaryMin !== "" && (
                       <p>
-                        <span className="text-zinc-500">Faixa salarial:</span> R${" "}
+                        <span className="text-foreground0">Faixa salarial:</span> R${" "}
                         {Number(salaryMin).toLocaleString("pt-BR")}
                         {salaryMax !== ""
                           ? ` — R$ ${Number(salaryMax).toLocaleString("pt-BR")}`
@@ -703,13 +703,13 @@ export default function CompanyOnboardingPage() {
           )}
 
           {/* Navigation buttons */}
-          <div className="mt-6 flex gap-3 border-t border-zinc-800 pt-5">
+          <div className="mt-6 flex gap-3 border-t border-[#3AB0FF]/10 pt-5">
             {step > 1 ? (
               <button
                 type="button"
                 onClick={handlePrev}
                 disabled={submitting}
-                className="flex-1 rounded-lg border border-zinc-700 px-4 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 disabled:opacity-50"
+                className="flex-1 rounded-lg border border-[#3AB0FF]/15 px-4 py-2.5 text-sm font-medium text-foreground/85 transition-colors hover:bg-[rgba(16,34,68,0.6)] disabled:opacity-50"
               >
                 Voltar
               </button>
@@ -726,7 +726,7 @@ export default function CompanyOnboardingPage() {
                   (step === 2 && Object.keys(answers).length === 0) ||
                   (step === 3 && !jobTitle.trim())
                 }
-                className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="flex-1 rounded-lg bg-[#3AB0FF] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 Próximo
               </button>
