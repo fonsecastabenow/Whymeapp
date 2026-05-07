@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
+import {
+  getCandidateReferenceData,
+  submitCandidateOnboarding,
+  updateCandidateProfile,
+  startTelegramInterview,
+} from "@/lib/api"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ErrorState } from "@/components/ui/error-state"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://whymeapp.io"
 const TOTAL_STEPS = 6
 
 const LANGUAGE_OPTIONS = ["Inglês", "Espanhol", "Francês", "Alemão", "Italiano", "Mandarim", "Japonês"]
@@ -93,10 +98,8 @@ export default function OnboardingPage() {
   useEffect(() => {
     async function loadRef() {
       try {
-        const res = await fetch(`${API_BASE}/candidates/reference-data`)
-        if (!res.ok) throw new Error("Erro ao carregar dados de referência")
-        const data: ReferenceData = await res.json()
-        setRefData(data)
+        const data = await getCandidateReferenceData()
+        setRefData(data as unknown as ReferenceData)
       } catch (err) {
         setRefError(err instanceof Error ? err.message : "Erro ao carregar dados")
       } finally {
@@ -170,52 +173,45 @@ export default function OnboardingPage() {
     const token = typeof window !== "undefined" ? localStorage.getItem("whyme_token") ?? "" : ""
 
     try {
-      const payload = {
-        phone: form.phone || null,
-        education: {
-          level: form.educationLevel || null,
-          course: form.course || null,
-          institution: form.institution || null,
+      await submitCandidateOnboarding(
+        candidateId,
+        {
+          phone: form.phone || null,
+          education: {
+            level: form.educationLevel || null,
+            course: form.course || null,
+            institution: form.institution || null,
+          },
+          languages: form.languages,
+          hard_skills: form.hardSkills,
+          city: form.city,
+          state: form.state,
+          country: form.country,
+          salary_expectation:
+            form.salaryMin || form.salaryMax
+              ? {
+                  min: form.salaryMin ? parseFloat(form.salaryMin) : null,
+                  max: form.salaryMax ? parseFloat(form.salaryMax) : null,
+                  currency: "BRL",
+                }
+              : null,
+          work_model: form.workModel,
+          linkedin_url: form.linkedinUrl || null,
+          professional_level: form.professionalLevel,
         },
-        languages: form.languages,
-        hard_skills: form.hardSkills,
-        city: form.city,
-        state: form.state,
-        country: form.country,
-        salary_expectation:
-          form.salaryMin || form.salaryMax
-            ? {
-                min: form.salaryMin ? parseFloat(form.salaryMin) : null,
-                max: form.salaryMax ? parseFloat(form.salaryMax) : null,
-                currency: "BRL",
-              }
-            : null,
-        work_model: form.workModel,
-        linkedin_url: form.linkedinUrl || null,
-        professional_level: form.professionalLevel,
-      }
+        token,
+      )
 
-      const res = await fetch(`${API_BASE}/candidates/${candidateId}/onboarding`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(payload),
-      })
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}))
-        throw new Error((body as { detail?: string }).detail ?? `Erro ${res.status}`)
-      }
-
-      // Save headline and experience_years via PATCH (non-critical)
+      // Save headline and experience_years (non-critical)
       if (form.headline || form.experienceYears) {
-        const patch: Record<string, unknown> = {}
-        if (form.headline) patch.headline = form.headline
-        if (form.experienceYears) patch.experience_years = parseFloat(form.experienceYears)
-        await fetch(`${API_BASE}/candidates/${candidateId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify(patch),
-        }).catch(() => {})
+        await updateCandidateProfile(
+          candidateId,
+          {
+            headline: form.headline || null,
+            experience_years: form.experienceYears ? parseFloat(form.experienceYears) : null,
+          },
+          token,
+        ).catch(() => {})
       }
 
       router.push(`/candidate/${candidateId}/dashboard`)
@@ -239,15 +235,8 @@ export default function OnboardingPage() {
       setTelegramLoading(true)
       try {
         const token = localStorage.getItem("whyme_token") ?? ""
-        const res = await fetch(`${API_BASE}/interviews/telegram/start`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ candidate_id: candidateId }),
-        })
-        if (res.ok) {
-          const data = await res.json()
-          setTelegramLink(data.telegram_link)
-        }
+        const data = await startTelegramInterview(candidateId, token)
+        setTelegramLink(data.telegram_link)
       } catch {
         // Silent — Telegram link is optional
       } finally {

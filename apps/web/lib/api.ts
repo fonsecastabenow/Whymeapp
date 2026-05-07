@@ -320,6 +320,17 @@ export function updateInterviewStatus(
   })
 }
 
+export function startTelegramInterview(
+  candidateId: string,
+  authToken: string,
+): Promise<{ telegram_link: string }> {
+  return apiFetch(
+    "/interviews/telegram/start",
+    { method: "POST", body: JSON.stringify({ candidate_id: candidateId }) },
+    authToken,
+  )
+}
+
 export function submitQuestionnaire(
   interviewId: string,
   respostas: number[],
@@ -421,6 +432,22 @@ export function getCompanySummary(companyId: string, authToken: string, filters?
 
 export function getUserNotifications(userId: string, authToken: string): Promise<NotificationData[]> {
   return apiFetch(`/api/v1/notifications/user/${encodeURIComponent(userId)}`, undefined, authToken)
+}
+
+export function markNotificationRead(notificationId: string, authToken: string): Promise<void> {
+  return apiFetch(
+    `/api/v1/notifications/${encodeURIComponent(notificationId)}/read`,
+    { method: "PATCH" },
+    authToken,
+  )
+}
+
+export function markAllNotificationsRead(userId: string, authToken: string): Promise<void> {
+  return apiFetch(
+    `/api/v1/notifications/read-all`,
+    { method: "POST", body: JSON.stringify({ user_id: userId }) },
+    authToken,
+  )
 }
 
 export function updateMatchStatus(

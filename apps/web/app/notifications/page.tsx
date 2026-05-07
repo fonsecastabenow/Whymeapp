@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback } from "react"
 import {
   getCurrentUser,
   getUserNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
   type NotificationData,
   type UserData,
 } from "@/lib/api"
@@ -11,8 +13,6 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ErrorState } from "@/components/ui/error-state"
 import { EmptyState } from "@/components/ui/empty-state"
 import { Button } from "@/components/ui/button"
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
 
 function typeLabel(type: string): string {
   switch (type) {
@@ -61,20 +61,13 @@ export default function NotificationsPage() {
   useEffect(() => { load() }, [load])
 
   async function markAsRead(id: string) {
-    await fetch(`${API_BASE}/api/v1/notifications/${id}/read`, {
-      method: "PATCH",
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    await markNotificationRead(id, token)
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)))
   }
 
   async function markAllRead() {
     if (!user) return
-    await fetch(`${API_BASE}/api/v1/notifications/read-all`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ user_id: user.id }),
-    })
+    await markAllNotificationsRead(user.id, token)
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
   }
 
