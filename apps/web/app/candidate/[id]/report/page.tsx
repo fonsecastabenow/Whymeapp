@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import Link from "next/link"
 import { getCandidateProfile, getCandidateMatchDetails, API_BASE } from "@/lib/api"
 import type { CandidateProfileData, MatchDetailItem } from "@/lib/api"
+import { useAuthGuard } from "@/lib/hooks"
 
 type PageState = "loading" | "error" | "ready"
 
@@ -38,6 +39,7 @@ function scoreColor(score: number): string {
 }
 
 export default function CandidateReportPage({ params }: { params: { id: string } }) {
+  useAuthGuard()
   const [state, setState] = useState<PageState>("loading")
   const [candidate, setCandidate] = useState<CandidateProfileData | null>(null)
   const [matches, setMatches] = useState<MatchDetailItem[]>([])

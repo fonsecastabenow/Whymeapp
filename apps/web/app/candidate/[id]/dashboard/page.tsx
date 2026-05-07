@@ -17,6 +17,7 @@ import {
   type CandidateProfileData,
   type MatchDetailItem,
 } from "@/lib/api"
+import { useAuthGuard } from "@/lib/hooks"
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -177,6 +178,7 @@ function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProf
 export default function CandidateDashboardPage() {
   const params = useParams()
   const candidateId = params.id as string
+  const { ready } = useAuthGuard()
 
   const [candidate, setCandidate] = useState<CandidateProfileData | null>(null)
   const [matches, setMatches] = useState<MatchDetailItem[]>([])
@@ -184,7 +186,7 @@ export default function CandidateDashboardPage() {
   const [error, setError] = useState("")
 
   useEffect(() => {
-    if (!candidateId) return
+    if (!candidateId || !ready) return
     let cancelled = false
 
     async function load() {

@@ -7,6 +7,7 @@ import { getCandidateMatchDetails } from "@/lib/api"
 import type { MatchDetailItem, OCEANScores } from "@/lib/api"
 import { DIMENSION_LABELS, DIMENSIONS } from "@whyme/shared"
 import { LoadingSpinner, ErrorState, EmptyState } from "@/components/ui"
+import { useAuthGuard } from "@/lib/hooks"
 
 const DIMENSION_COLORS: Record<string, string> = {
   openness: "#8B5CF6",
@@ -19,6 +20,7 @@ const DIMENSION_COLORS: Record<string, string> = {
 type PageState = "loading" | "error" | "empty" | "ready"
 
 export default function CandidateOrbitaPage() {
+  useAuthGuard()
   const [state, setState] = useState<PageState>("loading")
   const [matches, setMatches] = useState<MatchDetailItem[]>([])
   const [selectedMatch, setSelectedMatch] = useState<MatchDetailItem | null>(null)

@@ -10,6 +10,7 @@ import {
 } from "@/lib/api"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ErrorState } from "@/components/ui/error-state"
+import { useAuthGuard } from "@/lib/hooks"
 
 const TOTAL_STEPS = 6
 
@@ -63,6 +64,7 @@ const inputCls =
 const labelCls = "block text-sm font-medium text-zinc-400 mb-1.5"
 
 export default function OnboardingPage() {
+  useAuthGuard()
   const params = useParams()
   const router = useRouter()
   const candidateId = params.id as string

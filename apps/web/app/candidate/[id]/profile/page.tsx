@@ -7,6 +7,7 @@ import { OceanRadar, OCEAN_DIMS } from "@/components/ocean/radar"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ErrorState } from "@/components/ui/error-state"
 import { Button } from "@/components/ui/button"
+import { useAuthGuard } from "@/lib/hooks"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -41,6 +42,7 @@ function extractSkills(raw: Record<string, unknown> | null): string[] {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CandidateProfilePage({ params }: { params: { id: string } }) {
+  useAuthGuard()
   const [state, setState] = useState<PageState>("loading")
   const [candidate, setCandidate] = useState<CandidateProfileData | null>(null)
   const [matches, setMatches] = useState<MatchDetailItem[]>([])
