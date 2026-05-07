@@ -10,8 +10,10 @@ import {
   updateJob,
   updateJobStatus,
   getCompanyReferenceData,
+  getJobMatchDetails,
+  updateMatchStatus,
 } from "@/lib/api"
-import type { JobData, CompanyData, UserData, JobCreateRequest, JobUpdateRequest, CompanyReferenceData } from "@/lib/api"
+import type { JobData, CompanyData, UserData, JobCreateRequest, JobUpdateRequest, CompanyReferenceData, CandidateMatchData } from "@/lib/api"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ErrorState } from "@/components/ui/error-state"
 import { EmptyState } from "@/components/ui/empty-state"
@@ -489,6 +491,20 @@ function JobFormModal({
 
 // ─── job card ─────────────────────────────────────────────────────────────────
 
+const STATUS_LABELS: Record<string, string> = {
+  pending:   "Pendente",
+  accepted:  "Aceito",
+  rejected:  "Recusado",
+  bilateral: "Bilateral",
+}
+
+const STATUS_COLORS: Record<string, string> = {
+  pending:   "bg-zinc-700/60 text-zinc-400",
+  accepted:  "bg-emerald-500/15 text-emerald-400",
+  rejected:  "bg-rose-500/15 text-rose-400",
+  bilateral: "bg-purple-500/15 text-purple-400",
+}
+
 function JobCard({
   job,
   token,
@@ -501,6 +517,11 @@ function JobCard({
   onStatusChanged: (job: JobData) => void
 }) {
   const [toggling, setToggling] = useState(false)
+  const [showCandidates, setShowCandidates] = useState(false)
+  const [candidates, setCandidates] = useState<CandidateMatchData[]>([])
+  const [loadingCandidates, setLoadingCandidates] = useState(false)
+  const [candidatesLoaded, setCandidatesLoaded] = useState(false)
+  const [actioning, setActioning] = useState<string | null>(null)
 
   async function handleToggle() {
     setToggling(true)
@@ -515,53 +536,164 @@ function JobCard({
     }
   }
 
+  async function handleViewCandidates() {
+    setShowCandidates((prev) => !prev)
+    if (!candidatesLoaded) {
+      setLoadingCandidates(true)
+      try {
+        const data = await getJobMatchDetails(job.id, token)
+        setCandidates(data)
+        setCandidatesLoaded(true)
+      } catch {
+        setCandidatesLoaded(true)
+      } finally {
+        setLoadingCandidates(false)
+      }
+    }
+  }
+
+  async function handleMatchAction(matchId: string, status: "accepted" | "rejected") {
+    setActioning(matchId)
+    try {
+      await updateMatchStatus(matchId, status, token)
+      setCandidates((prev) => prev.map((c) => (c.id === matchId ? { ...c, status } : c)))
+    } catch {
+      // silently fail
+    } finally {
+      setActioning(null)
+    }
+  }
+
   const isActive = job.status === "active"
+  const pendingCount = candidates.filter((c) => c.status === "pending").length
 
   return (
-    <div className="flex flex-col rounded-xl border border-zinc-800 bg-zinc-900 p-5 transition-colors hover:border-zinc-700">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate font-semibold text-zinc-50">{job.title}</h3>
-          {job.description && (
-            <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-zinc-500">
-              {job.description}
-            </p>
-          )}
-        </div>
-        <span
-          className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-            isActive
-              ? "bg-emerald-500/15 text-emerald-400"
-              : "bg-zinc-700/60 text-zinc-500"
-          }`}
-        >
-          {isActive ? "Ativa" : "Inativa"}
-        </span>
-      </div>
-
-      <div className="mt-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <RadarChart ocean={job.ocean_ideal} />
-          {!job.ocean_ideal && (
-            <span className="text-xs text-zinc-600">Sem perfil OCEAN</span>
-          )}
-        </div>
-
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => onEdit(job)}>Editar</Button>
-          <button
-            onClick={handleToggle}
-            disabled={toggling}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
+    <div className="flex flex-col rounded-xl border border-zinc-800 bg-zinc-900 transition-colors hover:border-zinc-700">
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate font-semibold text-zinc-50">{job.title}</h3>
+            {job.description && (
+              <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-zinc-500">
+                {job.description}
+              </p>
+            )}
+          </div>
+          <span
+            className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
               isActive
-                ? "border border-rose-800/60 text-rose-400 hover:bg-rose-500/10"
-                : "border border-emerald-800/60 text-emerald-400 hover:bg-emerald-500/10"
+                ? "bg-emerald-500/15 text-emerald-400"
+                : "bg-zinc-700/60 text-zinc-500"
             }`}
           >
-            {toggling ? "…" : isActive ? "Desativar" : "Ativar"}
-          </button>
+            {isActive ? "Ativa" : "Inativa"}
+          </span>
         </div>
+
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <RadarChart ocean={job.ocean_ideal} />
+            {!job.ocean_ideal && (
+              <span className="text-xs text-zinc-600">Sem perfil OCEAN</span>
+            )}
+          </div>
+
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => onEdit(job)}>Editar</Button>
+            <button
+              onClick={handleToggle}
+              disabled={toggling}
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
+                isActive
+                  ? "border border-rose-800/60 text-rose-400 hover:bg-rose-500/10"
+                  : "border border-emerald-800/60 text-emerald-400 hover:bg-emerald-500/10"
+              }`}
+            >
+              {toggling ? "…" : isActive ? "Desativar" : "Ativar"}
+            </button>
+          </div>
+        </div>
+
+        <button
+          onClick={handleViewCandidates}
+          className="mt-4 flex w-full items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/40 px-3 py-2 text-xs font-medium text-zinc-400 transition-colors hover:border-zinc-700 hover:text-zinc-200"
+        >
+          <span>
+            {showCandidates ? "Ocultar candidatos" : "Ver candidatos"}
+            {candidatesLoaded && candidates.length > 0 && (
+              <span className="ml-1.5 rounded-full bg-blue-600/20 px-1.5 py-0.5 text-blue-400">
+                {candidates.length}
+                {pendingCount > 0 && ` · ${pendingCount} pendente${pendingCount !== 1 ? "s" : ""}`}
+              </span>
+            )}
+          </span>
+          <span>{showCandidates ? "▲" : "▼"}</span>
+        </button>
       </div>
+
+      {showCandidates && (
+        <div className="border-t border-zinc-800">
+          {loadingCandidates ? (
+            <div className="flex items-center justify-center py-6 text-xs text-zinc-500">Carregando…</div>
+          ) : candidates.length === 0 ? (
+            <div className="py-6 text-center text-xs text-zinc-600">Nenhum candidato ainda</div>
+          ) : (
+            <div className="divide-y divide-zinc-800">
+              {candidates.map((c) => {
+                const pct = Math.round(c.score * 100)
+                const isActioning = actioning === c.id
+                return (
+                  <div key={c.id} className="flex items-center gap-3 px-5 py-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-zinc-100">{c.candidate_name}</p>
+                      {c.candidate_headline && (
+                        <p className="truncate text-xs text-zinc-500">{c.candidate_headline}</p>
+                      )}
+                    </div>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <div className="flex items-center gap-1.5">
+                        <div className="h-1.5 w-14 overflow-hidden rounded-full bg-zinc-800">
+                          <div
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${pct}%`,
+                              backgroundColor: pct >= 80 ? "#10B981" : pct >= 60 ? "#3B82F6" : "#F59E0B",
+                            }}
+                          />
+                        </div>
+                        <span className="w-9 text-right text-xs font-semibold tabular-nums text-zinc-400">
+                          {pct}%
+                        </span>
+                      </div>
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_COLORS[c.status] ?? "bg-zinc-700/60 text-zinc-400"}`}>
+                        {STATUS_LABELS[c.status] ?? c.status}
+                      </span>
+                      {c.status === "pending" && (
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleMatchAction(c.id, "accepted")}
+                            disabled={!!isActioning}
+                            className="rounded px-2 py-1 text-[10px] font-semibold text-emerald-400 transition-colors hover:bg-emerald-500/15 disabled:opacity-40"
+                          >
+                            {isActioning ? "…" : "Aceitar"}
+                          </button>
+                          <button
+                            onClick={() => handleMatchAction(c.id, "rejected")}
+                            disabled={!!isActioning}
+                            className="rounded px-2 py-1 text-[10px] font-semibold text-rose-400 transition-colors hover:bg-rose-500/15 disabled:opacity-40"
+                          >
+                            {isActioning ? "…" : "Recusar"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -692,7 +824,7 @@ export default function CompanyJobsPage() {
             action={<Button onClick={openCreate}>Criar Primeira Vaga</Button>}
           />
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4">
             {jobs.map((job) => (
               <JobCard
                 key={job.id}
