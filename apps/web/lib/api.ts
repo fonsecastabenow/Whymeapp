@@ -540,42 +540,28 @@ export function getResume(candidateId: string): Promise<ResumeData> {
   return apiFetch(`/candidates/${encodeURIComponent(candidateId)}/resume`)
 }
 
-export async function deleteResume(candidateId: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/candidates/${encodeURIComponent(candidateId)}/resume`, {
-    method: "DELETE",
-  })
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}))
-    throw new Error((body as { detail?: string }).detail ?? `API error ${res.status}`)
-  }
+export function deleteResume(candidateId: string): Promise<void> {
+  return apiFetch(`/candidates/${encodeURIComponent(candidateId)}/resume`, { method: "DELETE" })
 }
 
 // ─── Company Onboarding ───────────────────────────────────────────────────────
 
-export async function getCultureQuestions(): Promise<CultureQuestionType[]> {
-  const res = await fetch(`${API_BASE}/companies/culture-questions`)
-  if (!res.ok) throw new Error(`Erro ao carregar perguntas: ${res.statusText}`)
-  return res.json()
+export function getCultureQuestions(): Promise<CultureQuestionType[]> {
+  return apiFetch("/companies/culture-questions")
 }
 
-export async function submitCultureQuestionnaire(
+export function submitCultureQuestionnaire(
   companyId: string,
   answers: CultureAnswer[],
-  token: string
+  token: string,
 ): Promise<{ culture_vector: Record<string, number>; dimensions: Record<string, number> }> {
-  const res = await fetch(`${API_BASE}/companies/${companyId}/culture-questionnaire`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify({ answers }),
-  })
-  if (!res.ok) throw new Error(`Erro ao enviar questionário: ${res.statusText}`)
-  return res.json()
+  return apiFetch(
+    `/companies/${encodeURIComponent(companyId)}/culture-questionnaire`,
+    { method: "POST", body: JSON.stringify({ answers }) },
+    token,
+  )
 }
 
-export async function getCompanyReferenceData(token?: string): Promise<CompanyReferenceData> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
-  if (token) headers['Authorization'] = `Bearer ${token}`
-  const res = await fetch(`${API_BASE}/companies/reference-data`, { headers })
-  if (!res.ok) throw new Error(`Erro ao carregar dados de referência: ${res.statusText}`)
-  return res.json()
+export function getCompanyReferenceData(token?: string): Promise<CompanyReferenceData> {
+  return apiFetch("/companies/reference-data", undefined, token)
 }

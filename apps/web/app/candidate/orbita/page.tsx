@@ -74,9 +74,9 @@ export default function CandidateOrbitaPage() {
       <header className="border-b px-6 py-4">
         <nav className="mx-auto flex max-w-6xl items-center gap-6 text-sm">
           <span className="text-xl font-bold tracking-tight">Whyme</span>
-          <a href="#" className="text-muted-foreground transition-colors hover:text-foreground">Perfil</a>
-          <a href="#" className="font-semibold text-foreground">ORBITA</a>
-          <a href="#" className="text-muted-foreground transition-colors hover:text-foreground">Vagas</a>
+          <a href={candidateId ? `/candidate/${candidateId}/profile` : "#"} className="text-muted-foreground transition-colors hover:text-foreground">Perfil</a>
+          <a href={candidateId ? `/candidate/orbita?candidate_id=${candidateId}` : "#"} className="font-semibold text-foreground">ORBITA</a>
+          <a href={candidateId ? `/candidate/${candidateId}/dashboard` : "#"} className="text-muted-foreground transition-colors hover:text-foreground">Dashboard</a>
         </nav>
       </header>
 

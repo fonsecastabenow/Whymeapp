@@ -11,62 +11,12 @@ import { StatusBadge } from "@/components/ui/status-badge"
 import { Avatar } from "@/components/ui/avatar"
 import { OceanRadar, OceanBars } from "@/components/ocean/radar"
 import { DashboardLayout } from "@/components/layouts/dashboard-layout"
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://whymeapp.io"
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type EducationData = {
-  level?: string | null
-  course?: string | null
-  institution?: string | null
-}
-
-type LanguageData = {
-  language: string
-  level: string
-}
-
-type SalaryExpectation = {
-  min?: number | null
-  max?: number | null
-  currency?: string
-}
-
-type CandidateData = {
-  id: string
-  user_id: string
-  name: string
-  headline: string | null
-  location: string | null
-  experience_years: number | null
-  ocean_scores: Record<string, number> | null
-  phone: string | null
-  education: EducationData | null
-  languages: LanguageData[] | null
-  hard_skills: string[] | null
-  city: string | null
-  state: string | null
-  country: string | null
-  salary_expectation: SalaryExpectation | null
-  work_model: string | null
-  linkedin_url: string | null
-  professional_level: string | null
-  onboarding_completed: boolean
-  created_at: string
-}
-
-type MatchItem = {
-  id: string
-  job_id: string
-  job_title: string
-  company_id: string
-  company_name: string
-  company_industry: string | null
-  score: number
-  status: string
-  created_at: string
-}
+import {
+  getCandidateProfile,
+  getCandidateMatchDetails,
+  type CandidateProfileData,
+  type MatchDetailItem,
+} from "@/lib/api"
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -97,7 +47,7 @@ function formatCurrency(value: number | null | undefined): string {
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
-function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateData; candidateId: string }) {
+function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProfileData; candidateId: string }) {
   const locationStr = [candidate.city, candidate.state].filter(Boolean).join(", ")
 
   return (
@@ -198,10 +148,22 @@ function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateData
         )}
       </div>
 
-      <div className="border-t border-zinc-800 p-5">
+      <div className="border-t border-zinc-800 p-5 space-y-2">
+        <a
+          href={`/candidate/orbita?candidate_id=${candidateId}`}
+          className="flex w-full items-center justify-center rounded-lg border border-violet-700/50 bg-violet-500/10 px-4 py-2 text-sm font-medium text-violet-300 transition-colors hover:border-violet-500 hover:text-violet-100"
+        >
+          Ver ORBITA
+        </a>
+        <a
+          href={`/candidate/${candidateId}/report`}
+          className="flex w-full items-center justify-center rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-zinc-100"
+        >
+          Relatório OCEAN
+        </a>
         <a
           href={`/candidate/${candidateId}/profile`}
-          className="flex w-full items-center justify-center rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:text-zinc-100"
+          className="flex w-full items-center justify-center rounded-lg border border-zinc-700 px-4 py-2 text-sm font-medium text-zinc-400 transition-colors hover:border-zinc-500 hover:text-zinc-100"
         >
           Editar Perfil
         </a>
@@ -216,8 +178,8 @@ export default function CandidateDashboardPage() {
   const params = useParams()
   const candidateId = params.id as string
 
-  const [candidate, setCandidate] = useState<CandidateData | null>(null)
-  const [matches, setMatches] = useState<MatchItem[]>([])
+  const [candidate, setCandidate] = useState<CandidateProfileData | null>(null)
+  const [matches, setMatches] = useState<MatchDetailItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
@@ -227,18 +189,10 @@ export default function CandidateDashboardPage() {
 
     async function load() {
       try {
-        const [candRes, matchRes] = await Promise.all([
-          fetch(`${API_BASE}/candidates/${candidateId}`),
-          fetch(`${API_BASE}/matches/candidate/${candidateId}/details`).catch(() => null),
+        const [candData, matchData] = await Promise.all([
+          getCandidateProfile(candidateId),
+          getCandidateMatchDetails(candidateId).catch(() => [] as MatchDetailItem[]),
         ])
-
-        if (!candRes.ok) {
-          const body = await candRes.json().catch(() => ({}))
-          throw new Error((body as { detail?: string }).detail ?? `Erro ${candRes.status}`)
-        }
-
-        const candData: CandidateData = await candRes.json()
-        const matchData: MatchItem[] = matchRes?.ok ? await matchRes.json() : []
 
         if (cancelled) return
         setCandidate(candData)
