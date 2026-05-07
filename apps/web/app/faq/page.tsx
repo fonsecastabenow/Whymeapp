@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { PublicLayout } from "@/components/layouts/public-layout"
 
 interface FaqItem {
   q: string
@@ -74,55 +75,35 @@ export default function FaqPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-50">
-      {/* Nav */}
-      <header className="border-b border-zinc-800">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
-          <Link href="/" className="text-xl font-bold tracking-tight">Whyme</Link>
-          <Link href="/login" className="text-sm text-zinc-400 hover:text-zinc-200 transition-colors">Entrar</Link>
-        </div>
-      </header>
+    <PublicLayout>
+      <h1 className="text-3xl font-bold">Perguntas Frequentes</h1>
+      <p className="mt-2 text-sm text-zinc-500">
+        Tire suas dúvidas sobre o Whyme, o modelo OCEAN e como funciona o match.
+      </p>
 
-      <div className="mx-auto max-w-4xl px-4 py-16">
-        <h1 className="text-3xl font-bold">Perguntas Frequentes</h1>
-        <p className="mt-2 text-sm text-zinc-500">
-          Tire suas dúvidas sobre o Whyme, o modelo OCEAN e como funciona o match.
-        </p>
-
-        <div className="mt-10 divide-y divide-zinc-800 rounded-xl border border-zinc-800 bg-zinc-900/50">
-          {FAQS.map((faq, i) => (
-            <FaqAccordion
-              key={i}
-              item={faq}
-              isOpen={openIndex === i}
-              onClick={() => setOpenIndex(openIndex === i ? null : i)}
-            />
-          ))}
-        </div>
-
-        <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900 p-8 text-center">
-          <p className="text-sm text-zinc-400">Ainda tem dúvidas?</p>
-          <p className="mt-1 text-sm text-zinc-500">
-            Fale conosco pelo email{" "}
-            <a href="mailto:lgpd@whyme.app" className="text-blue-400 hover:underline">lgpd@whyme.app</a>
-          </p>
-          <div className="mt-4 flex items-center justify-center gap-4 text-sm">
-            <Link href="/privacy" className="text-zinc-500 hover:text-zinc-300 transition-colors">Política de Privacidade</Link>
-            <span className="text-zinc-700">·</span>
-            <Link href="/register" className="text-blue-400 hover:underline">Criar conta</Link>
-          </div>
-        </div>
+      <div className="mt-10 divide-y divide-zinc-800 rounded-xl border border-zinc-800 bg-zinc-900/50">
+        {FAQS.map((faq, i) => (
+          <FaqAccordion
+            key={i}
+            item={faq}
+            isOpen={openIndex === i}
+            onClick={() => setOpenIndex(openIndex === i ? null : i)}
+          />
+        ))}
       </div>
 
-      <footer className="border-t border-zinc-800">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-6">
-          <span className="text-sm text-zinc-600">Whyme © 2026</span>
-          <div className="flex gap-6 text-sm text-zinc-500">
-            <Link href="/privacy" className="hover:text-zinc-300 transition-colors">Privacidade</Link>
-            <Link href="/" className="hover:text-zinc-300 transition-colors">Início</Link>
-          </div>
+      <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900 p-8 text-center">
+        <p className="text-sm text-zinc-400">Ainda tem dúvidas?</p>
+        <p className="mt-1 text-sm text-zinc-500">
+          Fale conosco pelo email{" "}
+          <a href="mailto:lgpd@whyme.app" className="text-blue-400 hover:underline">lgpd@whyme.app</a>
+        </p>
+        <div className="mt-4 flex items-center justify-center gap-4 text-sm">
+          <Link href="/privacy" className="text-zinc-500 transition-colors hover:text-zinc-300">Política de Privacidade</Link>
+          <span className="text-zinc-700">·</span>
+          <Link href="/register" className="text-blue-400 hover:underline">Criar conta</Link>
         </div>
-      </footer>
-    </main>
+      </div>
+    </PublicLayout>
   )
 }

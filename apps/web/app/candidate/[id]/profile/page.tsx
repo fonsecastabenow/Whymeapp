@@ -3,18 +3,14 @@
 import { useEffect, useState, useRef } from "react"
 import { getCandidateProfile, getCandidateMatchDetails, getResume, uploadResume, deleteResume, updateCandidateProfile } from "@/lib/api"
 import type { CandidateProfileData, MatchDetailItem, OCEANScores, ResumeData } from "@/lib/api"
+import { OceanRadar, OCEAN_DIMS } from "@/components/ocean/radar"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { ErrorState } from "@/components/ui/error-state"
+import { Button } from "@/components/ui/button"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type PageState = "loading" | "error" | "ready"
-
-const OCEAN_DIMS: { key: keyof OCEANScores; label: string; fullLabel: string }[] = [
-  { key: "openness", label: "O", fullLabel: "Abertura" },
-  { key: "conscientiousness", label: "C", fullLabel: "Conscienciosidade" },
-  { key: "extraversion", label: "E", fullLabel: "Extroversão" },
-  { key: "agreeableness", label: "A", fullLabel: "Amabilidade" },
-  { key: "neuroticism", label: "N", fullLabel: "Neuroticismo" },
-]
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "Pendente",
@@ -28,107 +24,6 @@ const STATUS_COLORS: Record<string, string> = {
   accepted: "text-green-400 bg-green-400/10 border-green-400/20",
   rejected: "text-red-400 bg-red-400/10 border-red-400/20",
   bilateral: "text-purple-400 bg-purple-400/10 border-purple-400/20",
-}
-
-// ─── OCEAN Radar SVG ─────────────────────────────────────────────────────────
-
-function normalize(scores: OCEANScores): OCEANScores {
-  const vals = Object.values(scores) as number[]
-  if (vals.some((v) => v > 1)) {
-    return {
-      openness: scores.openness / 100,
-      conscientiousness: scores.conscientiousness / 100,
-      extraversion: scores.extraversion / 100,
-      agreeableness: scores.agreeableness / 100,
-      neuroticism: scores.neuroticism / 100,
-    }
-  }
-  return scores
-}
-
-function OceanRadar({ scores }: { scores: OCEANScores }) {
-  const s = normalize(scores)
-  const cx = 125
-  const cy = 125
-  const R = 88
-  const dims = OCEAN_DIMS.map((d) => d.key)
-  const angles = dims.map((_, i) => (i * 2 * Math.PI) / 5 - Math.PI / 2)
-
-  const pt = (angle: number, ratio: number) => ({
-    x: cx + R * ratio * Math.cos(angle),
-    y: cy + R * ratio * Math.sin(angle),
-  })
-
-  const scorePoints = dims
-    .map((d, i) => {
-      const v = Math.max(0, Math.min(1, s[d] ?? 0))
-      const p = pt(angles[i], v)
-      return `${p.x},${p.y}`
-    })
-    .join(" ")
-
-  return (
-    <svg width={250} height={250} viewBox="0 0 250 250" aria-label="Gráfico OCEAN">
-      {/* grid pentagons */}
-      {[0.25, 0.5, 0.75, 1].map((ratio) => (
-        <polygon
-          key={ratio}
-          points={angles.map((a) => `${pt(a, ratio).x},${pt(a, ratio).y}`).join(" ")}
-          fill="none"
-          stroke={ratio === 1 ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.07)"}
-          strokeWidth="1"
-        />
-      ))}
-
-      {/* axis lines */}
-      {angles.map((a, i) => (
-        <line
-          key={i}
-          x1={cx}
-          y1={cy}
-          x2={pt(a, 1).x}
-          y2={pt(a, 1).y}
-          stroke="rgba(255,255,255,0.1)"
-          strokeWidth="1"
-        />
-      ))}
-
-      {/* score fill */}
-      <polygon
-        points={scorePoints}
-        fill="rgba(139,92,246,0.25)"
-        stroke="#8B5CF6"
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-
-      {/* score dots */}
-      {dims.map((d, i) => {
-        const v = Math.max(0, Math.min(1, s[d] ?? 0))
-        const p = pt(angles[i], v)
-        return <circle key={d} cx={p.x} cy={p.y} r="4" fill="#8B5CF6" stroke="#fff" strokeWidth="1" />
-      })}
-
-      {/* dimension labels */}
-      {angles.map((a, i) => {
-        const p = pt(a, 1.2)
-        return (
-          <text
-            key={i}
-            x={p.x}
-            y={p.y}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="13"
-            fontWeight="700"
-            fill="rgba(255,255,255,0.65)"
-          >
-            {OCEAN_DIMS[i].label}
-          </text>
-        )
-      })}
-    </svg>
-  )
 }
 
 // ─── Skill helpers ────────────────────────────────────────────────────────────
@@ -194,36 +89,8 @@ export default function CandidateProfilePage({ params }: { params: { id: string 
     }
   }, [params])
 
-  if (state === "loading") {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-background">
-        <div className="space-y-4 text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
-          <p className="text-muted-foreground">Carregando perfil…</p>
-        </div>
-      </main>
-    )
-  }
-
-  if (state === "error") {
-    return (
-      <main className="flex min-h-screen items-center justify-center p-4 bg-background">
-        <div className="max-w-sm space-y-4 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 text-2xl">
-            ⚠
-          </div>
-          <h1 className="text-xl font-semibold">Erro ao carregar</h1>
-          <p className="text-sm text-muted-foreground">{errorMsg}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
-          >
-            Tentar novamente
-          </button>
-        </div>
-      </main>
-    )
-  }
+  if (state === "loading") return <LoadingSpinner message="Carregando perfil…" />
+  if (state === "error") return <ErrorState message={errorMsg} onRetry={() => window.location.reload()} />
 
   if (!candidate) return null
 
@@ -337,12 +204,7 @@ export default function CandidateProfilePage({ params }: { params: { id: string 
               <div className="flex items-start justify-between gap-4">
                 <h1 className="text-3xl font-bold tracking-tight">{candidate.name}</h1>
                 {isOwner && !editing && (
-                  <button
-                    onClick={startEditing}
-                    className="shrink-0 rounded-lg border px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
-                  >
-                    Editar Perfil
-                  </button>
+                  <Button variant="outline" size="sm" onClick={startEditing}>Editar Perfil</Button>
                 )}
               </div>
 
@@ -392,20 +254,8 @@ export default function CandidateProfilePage({ params }: { params: { id: string 
                   </div>
                   {saveError && <p className="text-sm text-red-400">{saveError}</p>}
                   <div className="flex gap-2 pt-1">
-                    <button
-                      onClick={handleSave}
-                      disabled={saving}
-                      className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
-                    >
-                      {saving ? "Salvando…" : "Salvar"}
-                    </button>
-                    <button
-                      onClick={cancelEditing}
-                      disabled={saving}
-                      className="rounded-lg border px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground disabled:opacity-50"
-                    >
-                      Cancelar
-                    </button>
+                    <Button loading={saving} onClick={handleSave}>Salvar</Button>
+                    <Button variant="secondary" onClick={cancelEditing} disabled={saving}>Cancelar</Button>
                   </div>
                 </div>
               ) : (

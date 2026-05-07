@@ -6,6 +6,7 @@ import OrbitaChart from "@/app/components/orbita-chart"
 import { getCandidateMatchDetails } from "@/lib/api"
 import type { MatchDetailItem, OCEANScores } from "@/lib/api"
 import { DIMENSION_LABELS, DIMENSIONS } from "@whyme/shared"
+import { LoadingSpinner, ErrorState, EmptyState } from "@/components/ui"
 
 const DIMENSION_COLORS: Record<string, string> = {
   openness: "#8B5CF6",
@@ -56,9 +57,9 @@ export default function CandidateOrbitaPage() {
     return () => { cancelled = true }
   }, [candidateId])
 
-  if (state === "loading") return <LoadingState />
+  if (state === "loading") return <LoadingSpinner message="Carregando seu ORBITA…" />
   if (state === "error") return <ErrorState message={errorMsg} onRetry={() => window.location.reload()} />
-  if (state === "empty") return <EmptyState />
+  if (state === "empty") return <EmptyState title="Nenhuma empresa encontrada ainda" description="Complete sua entrevista OCEAN para descobrir quais empresas combinam com seu perfil." />
 
   // Extract base OCEAN from the first match's breakdown
   // (ideally would come from candidate profile)
@@ -232,42 +233,3 @@ function MatchModal({ match, onClose }: { match: MatchDetailItem; onClose: () =>
   )
 }
 
-function LoadingState() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="space-y-4 text-center">
-        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
-        <p className="text-muted-foreground">Carregando seu ORBITA…</p>
-      </div>
-    </main>
-  )
-}
-
-function ErrorState({ message, onRetry }: { message: string; onRetry: () => void }) {
-  return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <div className="max-w-sm space-y-4 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 text-2xl">⚠</div>
-        <h1 className="text-xl font-semibold">Erro ao carregar</h1>
-        <p className="text-sm text-muted-foreground">{message}</p>
-        <button onClick={onRetry} className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-          Tentar novamente
-        </button>
-      </div>
-    </main>
-  )
-}
-
-function EmptyState() {
-  return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <div className="max-w-sm space-y-4 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted text-2xl opacity-40">◎</div>
-        <h1 className="text-xl font-semibold">Nenhuma empresa encontrada ainda</h1>
-        <p className="text-sm text-muted-foreground">
-          Complete sua entrevista OCEAN para descobrir quais empresas combinam com seu perfil.
-        </p>
-      </div>
-    </main>
-  )
-}

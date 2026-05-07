@@ -11,6 +11,7 @@ import {
 } from "@/lib/api"
 import type { CandidateMatchData, JobData, OCEANScores, UserData } from "@/lib/api"
 import { DIMENSION_LABELS, DIMENSIONS } from "@whyme/shared"
+import { LoadingSpinner, ErrorState } from "@/components/ui"
 
 // ─── constants ──────────────────────────────────────────────────────────────
 
@@ -172,8 +173,8 @@ export default function CompanyOrbitaPage() {
 
   // ── render states ──────────────────────────────────────────────────────────
 
-  if (pageState === "loading") return <LoadingState />
-  if (pageState === "auth-error") return <AuthErrorState />
+  if (pageState === "loading") return <LoadingSpinner message="Carregando painel…" />
+  if (pageState === "auth-error") return <ErrorState title="Autenticação necessária" message="Você precisa estar logado como empresa para acessar esta página." onRetry={() => window.location.href = "/login"} retryLabel="Fazer login" />
   if (pageState === "error") return <ErrorState message={error} />
 
   return (
@@ -663,52 +664,6 @@ function EmptyChartPlaceholder({ size }: { size: number }) {
   )
 }
 
-function LoadingState() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="space-y-4 text-center">
-        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-muted border-t-primary" />
-        <p className="text-muted-foreground">Carregando painel…</p>
-      </div>
-    </main>
-  )
-}
-
-function AuthErrorState() {
-  return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <div className="max-w-sm space-y-4 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 text-2xl">
-          ⚠
-        </div>
-        <h1 className="text-xl font-semibold">Autenticação necessária</h1>
-        <p className="text-muted-foreground">
-          Você precisa estar logado como empresa para acessar esta página.
-        </p>
-        <a
-          href="/login"
-          className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-        >
-          Fazer login
-        </a>
-      </div>
-    </main>
-  )
-}
-
-function ErrorState({ message }: { message: string }) {
-  return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <div className="max-w-sm space-y-4 text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10 text-2xl">
-          ⚠
-        </div>
-        <h1 className="text-xl font-semibold">Erro ao carregar</h1>
-        <p className="text-muted-foreground">{message}</p>
-      </div>
-    </main>
-  )
-}
 
 function EmptyJobsState() {
   return (

@@ -4,6 +4,9 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { getCurrentUser, getCompany, updateCompany } from "@/lib/api"
 import type { CompanyData, UserData } from "@/lib/api"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { ErrorState } from "@/components/ui/error-state"
+import { Button } from "@/components/ui/button"
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -217,50 +220,9 @@ export default function CompanyProfilePage() {
 
   // ── states ─────────────────────────────────────────────────────────────────
 
-  if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950">
-        <div className="space-y-4 text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-zinc-700 border-t-blue-500" />
-          <p className="text-zinc-400">Carregando perfil…</p>
-        </div>
-      </main>
-    )
-  }
-
-  if (!token) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="max-w-sm space-y-4 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800 text-2xl text-zinc-300">
-            ⚠
-          </div>
-          <h1 className="text-xl font-semibold text-zinc-50">Autenticação necessária</h1>
-          <p className="text-zinc-400">Você precisa estar logado para acessar o perfil.</p>
-          <a
-            href="/login"
-            className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            Fazer login
-          </a>
-        </div>
-      </main>
-    )
-  }
-
-  if (error) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="max-w-sm space-y-4 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800 text-2xl text-zinc-300">
-            ⚠
-          </div>
-          <h1 className="text-xl font-semibold text-zinc-50">Erro ao carregar</h1>
-          <p className="text-zinc-400">{error}</p>
-        </div>
-      </main>
-    )
-  }
+  if (loading) return <LoadingSpinner message="Carregando perfil…" />
+  if (!token) return <ErrorState title="Autenticação necessária" message="Você precisa estar logado para acessar o perfil." onRetry={() => window.location.href = "/login"} retryLabel="Fazer login" />
+  if (error) return <ErrorState message={error} />
 
   // ── main render ────────────────────────────────────────────────────────────
 
@@ -294,12 +256,7 @@ export default function CompanyProfilePage() {
               <p className="mt-0.5 text-xs text-zinc-500">Nome, setor e descrição</p>
             </div>
             {!editing && (
-              <button
-                onClick={handleEdit}
-                className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:border-zinc-600 hover:text-zinc-50"
-              >
-                Editar
-              </button>
+              <Button variant="outline" size="sm" onClick={handleEdit}>Editar</Button>
             )}
           </div>
 
@@ -406,21 +363,8 @@ export default function CompanyProfilePage() {
         {/* Action buttons */}
         {editing && (
           <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="flex-1 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-700"
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
-              {saving ? "Salvando…" : "Salvar"}
-            </button>
+            <Button variant="secondary" onClick={handleCancel} className="flex-1">Cancelar</Button>
+            <Button loading={saving} onClick={handleSave} className="flex-1">Salvar</Button>
           </div>
         )}
       </div>

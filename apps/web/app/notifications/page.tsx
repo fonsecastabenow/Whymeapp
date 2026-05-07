@@ -1,31 +1,32 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
-import Link from "next/link"
 import {
   getCurrentUser,
   getUserNotifications,
   type NotificationData,
   type UserData,
 } from "@/lib/api"
-
-type PageState = "loading" | "error" | "ready"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { ErrorState } from "@/components/ui/error-state"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Button } from "@/components/ui/button"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000"
 
 function typeLabel(type: string): string {
   switch (type) {
     case "match_candidate": return "Match como Candidato"
-    case "match_company": return "Match como Empresa"
-    default: return type
+    case "match_company":   return "Match como Empresa"
+    default:                return type
   }
 }
 
 function typeColor(type: string): string {
   switch (type) {
     case "match_candidate": return "bg-violet-500/15 text-violet-400"
-    case "match_company": return "bg-blue-500/15 text-blue-400"
-    default: return "bg-zinc-700/50 text-zinc-400"
+    case "match_company":   return "bg-blue-500/15 text-blue-400"
+    default:                return "bg-zinc-700/50 text-zinc-400"
   }
 }
 
@@ -36,7 +37,7 @@ function formatDate(iso: string): string {
 }
 
 export default function NotificationsPage() {
-  const [state, setState] = useState<PageState>("loading")
+  const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<UserData | null>(null)
   const [notifications, setNotifications] = useState<NotificationData[]>([])
   const [errorMsg, setErrorMsg] = useState("")
@@ -44,16 +45,16 @@ export default function NotificationsPage() {
   const token = typeof window !== "undefined" ? localStorage.getItem("whyme_token") ?? "" : ""
 
   const load = useCallback(async () => {
-    if (!token) { setState("ready"); return }
+    if (!token) { setLoading(false); return }
     try {
       const me = await getCurrentUser(token)
       setUser(me)
       const notifs = await getUserNotifications(me.id, token)
       setNotifications(notifs)
-      setState("ready")
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Erro ao carregar")
-      setState("error")
+    } finally {
+      setLoading(false)
     }
   }, [token])
 
@@ -64,80 +65,54 @@ export default function NotificationsPage() {
       method: "PATCH",
       headers: { Authorization: `Bearer ${token}` },
     })
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-    )
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)))
   }
 
   async function markAllRead() {
     if (!user) return
     await fetch(`${API_BASE}/api/v1/notifications/read-all`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ user_id: user.id }),
     })
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })))
   }
 
-  if (state === "loading") {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950">
-        <div className="animate-spin h-12 w-12 rounded-full border-4 border-zinc-700 border-t-blue-500" />
-      </main>
-    )
-  }
-
-  if (!token) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="max-w-sm text-center space-y-4">
-          <h1 className="text-xl font-semibold text-zinc-50">Autenticação necessária</h1>
-          <p className="text-sm text-zinc-500">Faça login para ver suas notificações.</p>
-          <Link href="/login" className="inline-block rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white">Fazer login</Link>
-        </div>
-      </main>
-    )
-  }
+  if (loading) return <LoadingSpinner />
+  if (!token) return <ErrorState title="Autenticação necessária" message="Faça login para ver suas notificações." onRetry={() => window.location.href = "/login"} retryLabel="Fazer login" />
+  if (errorMsg) return <ErrorState message={errorMsg} onRetry={load} />
 
   const unread = notifications.filter((n) => !n.is_read)
 
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-50">
-      <header className="border-b border-zinc-800 bg-zinc-950/95 backdrop-blur sticky top-0 z-30">
+      <header className="sticky top-0 z-30 border-b border-zinc-800 bg-zinc-950/95 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
           <div>
             <h1 className="text-lg font-bold">Notificações</h1>
-            <p className="text-xs text-zinc-500 mt-0.5">
-              {notifications.length} no total{unread.length > 0 ? ` · ${unread.length} não lida${unread.length !== 1 ? "s" : ""}` : ""}
+            <p className="mt-0.5 text-xs text-zinc-500">
+              {notifications.length} no total
+              {unread.length > 0 ? ` · ${unread.length} não lida${unread.length !== 1 ? "s" : ""}` : ""}
             </p>
           </div>
           {unread.length > 0 && (
-            <button onClick={markAllRead} className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-zinc-500 transition-colors">
+            <Button variant="outline" size="sm" onClick={markAllRead}>
               Marcar todas como lidas
-            </button>
+            </Button>
           )}
         </div>
       </header>
 
       <div className="mx-auto max-w-4xl px-4 py-6">
         {notifications.length === 0 ? (
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-12 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800 text-2xl opacity-40">🔔</div>
-            <h2 className="text-lg font-semibold text-zinc-400">Nenhuma notificação</h2>
-            <p className="mt-1 text-sm text-zinc-600">Você receberá notificações quando houver novos matches.</p>
-          </div>
+          <EmptyState icon="🔔" title="Nenhuma notificação" description="Você receberá notificações quando houver novos matches." />
         ) : (
           <div className="space-y-2">
             {notifications.map((n) => (
               <div
                 key={n.id}
                 className={`rounded-xl border transition-colors ${
-                  n.is_read
-                    ? "border-zinc-800/50 bg-zinc-900/30"
-                    : "border-zinc-700 bg-zinc-900"
+                  n.is_read ? "border-zinc-800/50 bg-zinc-900/30" : "border-zinc-700 bg-zinc-900"
                 }`}
               >
                 <div className="flex items-start gap-4 p-4">

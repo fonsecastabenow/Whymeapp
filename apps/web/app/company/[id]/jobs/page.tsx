@@ -12,6 +12,10 @@ import {
   getCompanyReferenceData,
 } from "@/lib/api"
 import type { JobData, CompanyData, UserData, JobCreateRequest, JobUpdateRequest, CompanyReferenceData } from "@/lib/api"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { ErrorState } from "@/components/ui/error-state"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Button } from "@/components/ui/button"
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -472,20 +476,10 @@ function JobFormModal({
           )}
 
           <div className="flex gap-3 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-700"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-            >
-              {submitting ? "Salvando…" : editing ? "Salvar" : "Criar Vaga"}
-            </button>
+            <Button type="button" variant="secondary" onClick={onClose} className="flex-1">Cancelar</Button>
+            <Button type="submit" loading={submitting} className="flex-1">
+              {editing ? "Salvar" : "Criar Vaga"}
+            </Button>
           </div>
         </form>
       </div>
@@ -554,12 +548,7 @@ function JobCard({
         </div>
 
         <div className="flex gap-2">
-          <button
-            onClick={() => onEdit(job)}
-            className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:border-zinc-600 hover:text-zinc-50"
-          >
-            Editar
-          </button>
+          <Button variant="outline" size="sm" onClick={() => onEdit(job)}>Editar</Button>
           <button
             onClick={handleToggle}
             disabled={toggling}
@@ -660,50 +649,9 @@ export default function CompanyJobsPage() {
 
   // ── states ─────────────────────────────────────────────────────────────────
 
-  if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950">
-        <div className="space-y-4 text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-zinc-700 border-t-blue-500" />
-          <p className="text-zinc-400">Carregando vagas…</p>
-        </div>
-      </main>
-    )
-  }
-
-  if (!token) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="max-w-sm space-y-4 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800 text-2xl text-zinc-300">
-            ⚠
-          </div>
-          <h1 className="text-xl font-semibold text-zinc-50">Autenticação necessária</h1>
-          <p className="text-zinc-400">Você precisa estar logado para gerenciar vagas.</p>
-          <a
-            href="/login"
-            className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            Fazer login
-          </a>
-        </div>
-      </main>
-    )
-  }
-
-  if (error) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="max-w-sm space-y-4 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800 text-2xl text-zinc-300">
-            ⚠
-          </div>
-          <h1 className="text-xl font-semibold text-zinc-50">Erro ao carregar</h1>
-          <p className="text-zinc-400">{error}</p>
-        </div>
-      </main>
-    )
-  }
+  if (loading) return <LoadingSpinner message="Carregando vagas…" />
+  if (!token) return <ErrorState title="Autenticação necessária" message="Você precisa estar logado para gerenciar vagas." onRetry={() => window.location.href = "/login"} retryLabel="Fazer login" />
+  if (error) return <ErrorState message={error} />
 
   const activeCount = jobs.filter((j) => j.status === "active").length
 
@@ -730,31 +678,19 @@ export default function CompanyJobsPage() {
           </div>
           <div className="flex items-center gap-3">
             {user && <span className="text-sm text-zinc-400">{user.name}</span>}
-            <button
-              onClick={openCreate}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            >
-              + Nova Vaga
-            </button>
+            <Button onClick={openCreate}>+ Nova Vaga</Button>
           </div>
         </div>
       </header>
 
       <div className="mx-auto max-w-4xl px-4 py-6">
         {jobs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-800 py-20 text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-800 text-2xl">
-              💼
-            </div>
-            <h2 className="font-semibold text-zinc-50">Nenhuma vaga cadastrada</h2>
-            <p className="mt-1 text-sm text-zinc-500">Crie a primeira vaga para começar a receber candidatos.</p>
-            <button
-              onClick={openCreate}
-              className="mt-5 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            >
-              Criar Primeira Vaga
-            </button>
-          </div>
+          <EmptyState
+            icon="💼"
+            title="Nenhuma vaga cadastrada"
+            description="Crie a primeira vaga para começar a receber candidatos."
+            action={<Button onClick={openCreate}>Criar Primeira Vaga</Button>}
+          />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {jobs.map((job) => (

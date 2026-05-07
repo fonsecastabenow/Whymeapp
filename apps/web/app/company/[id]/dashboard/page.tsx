@@ -9,6 +9,10 @@ import {
   getCompanyJobs,
   getUserNotifications,
 } from "@/lib/api"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { ErrorState } from "@/components/ui/error-state"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Card } from "@/components/ui/card"
 import type {
   CompanyData,
   CompanySummaryData,
@@ -179,50 +183,9 @@ export default function CompanyDashboardPage() {
 
   // ── loading / error states ─────────────────────────────────────────────────
 
-  if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950">
-        <div className="space-y-4 text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-zinc-700 border-t-blue-500" />
-          <p className="text-zinc-400">Carregando painel…</p>
-        </div>
-      </main>
-    )
-  }
-
-  if (!token) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="max-w-sm space-y-4 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800 text-2xl text-zinc-300">
-            ⚠
-          </div>
-          <h1 className="text-xl font-semibold text-zinc-50">Autenticação necessária</h1>
-          <p className="text-zinc-400">Você precisa estar logado para acessar o dashboard.</p>
-          <a
-            href="/login"
-            className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-          >
-            Fazer login
-          </a>
-        </div>
-      </main>
-    )
-  }
-
-  if (error) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="max-w-sm space-y-4 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800 text-2xl text-zinc-300">
-            ⚠
-          </div>
-          <h1 className="text-xl font-semibold text-zinc-50">Erro ao carregar</h1>
-          <p className="text-zinc-400">{error}</p>
-        </div>
-      </main>
-    )
-  }
+  if (loading) return <LoadingSpinner message="Carregando painel…" />
+  if (!token) return <ErrorState title="Autenticação necessária" message="Você precisa estar logado para acessar o dashboard." onRetry={() => window.location.href = "/login"} retryLabel="Fazer login" />
+  if (error) return <ErrorState message={error} />
 
   // ── main render ────────────────────────────────────────────────────────────
 
@@ -384,7 +347,7 @@ export default function CompanyDashboardPage() {
                 </p>
               </div>
               {!summary || summary.top_candidates.length === 0 ? (
-                <p className="px-5 py-10 text-center text-sm text-zinc-500">Nenhum candidato encontrado</p>
+                <EmptyState title="Nenhum candidato encontrado" className="rounded-none border-0" />
               ) : (
                 <div className="divide-y divide-zinc-800">
                   {summary.top_candidates.map((c, i) => (
@@ -445,7 +408,7 @@ export default function CompanyDashboardPage() {
                 <p className="mt-0.5 text-xs text-zinc-500">Matches por vaga</p>
               </div>
               {jobs.length === 0 ? (
-                <p className="px-5 py-10 text-center text-sm text-zinc-500">Nenhuma vaga cadastrada</p>
+                <EmptyState title="Nenhuma vaga cadastrada" className="rounded-none border-0" />
               ) : (
                 <div className="divide-y divide-zinc-800">
                   {jobs.map((job) => {
@@ -485,7 +448,7 @@ export default function CompanyDashboardPage() {
               <p className="mt-0.5 text-xs text-zinc-500">Últimas 5 notificações</p>
             </div>
             {notifications.length === 0 ? (
-              <p className="px-5 py-10 text-center text-sm text-zinc-500">Sem notificações</p>
+              <EmptyState title="Sem notificações" className="rounded-none border-0" />
             ) : (
               <div className="divide-y divide-zinc-800">
                 {notifications.slice(0, 5).map((n) => (

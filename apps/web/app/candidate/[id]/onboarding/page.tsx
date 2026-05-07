@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { ErrorState } from "@/components/ui/error-state"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://whymeapp.io"
 const TOTAL_STEPS = 6
@@ -297,36 +299,8 @@ export default function OnboardingPage() {
     )
   }
 
-  if (pageLoading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950">
-        <div className="space-y-4 text-center">
-          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-zinc-700 border-t-blue-500" />
-          <p className="text-sm text-zinc-400">Carregando…</p>
-        </div>
-      </main>
-    )
-  }
-
-  if (refError) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="max-w-sm space-y-4 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-zinc-800 text-2xl text-zinc-300">
-            ⚠
-          </div>
-          <h1 className="text-xl font-semibold text-zinc-50">Erro ao carregar</h1>
-          <p className="text-sm text-zinc-400">{refError}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
-          >
-            Tentar novamente
-          </button>
-        </div>
-      </main>
-    )
-  }
+  if (pageLoading) return <LoadingSpinner message="Carregando…" />
+  if (refError) return <ErrorState message={refError} onRetry={() => window.location.reload()} />
 
   const levelOptions = refData?.professional_levels ?? ["junior", "pleno", "senior", "tech-lead", "specialist"]
   const langLevels = refData?.language_levels ?? ["Iniciante", "Básico", "Intermediário", "Avançado", "Fluente/Nativo"]

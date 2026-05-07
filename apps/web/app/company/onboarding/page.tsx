@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
+import { ErrorState } from "@/components/ui/error-state"
 import {
   getCurrentUser,
   getCultureQuestions,
@@ -244,48 +246,17 @@ export default function CompanyOnboardingPage() {
     }
   }
 
-  // ── loading state ────────────────────────────────────────────────────────
+  // ── loading / auth states ─────────────────────────────────────────────────
 
-  if (loading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950">
-        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-zinc-700 border-t-blue-500" />
-      </main>
-    )
-  }
-
-  if (error) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="max-w-md text-center">
-          <p className="text-rose-400">{error}</p>
-          <button
-            onClick={() => router.push("/login")}
-            className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
-          >
-            Fazer login
-          </button>
-        </div>
-      </main>
-    )
-  }
-
-  if (!token || !user) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-zinc-950 p-4">
-        <div className="max-w-sm space-y-4 text-center">
-          <h1 className="text-xl font-semibold text-zinc-50">Autenticação necessária</h1>
-          <p className="text-zinc-400">Você precisa estar logado para continuar.</p>
-          <button
-            onClick={() => router.push("/login")}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white"
-          >
-            Fazer login
-          </button>
-        </div>
-      </main>
-    )
-  }
+  if (loading) return <LoadingSpinner />
+  if (error || !token || !user) return (
+    <ErrorState
+      title={error ? "Erro ao carregar" : "Autenticação necessária"}
+      message={error || "Você precisa estar logado para continuar."}
+      onRetry={() => router.push("/login")}
+      retryLabel="Fazer login"
+    />
+  )
 
   const filteredHardSkills =
     refData?.hard_skills.filter((s) =>
