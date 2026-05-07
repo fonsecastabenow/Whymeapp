@@ -209,7 +209,7 @@ export default function CandidateDashboardPage() {
 
     load()
     return () => { cancelled = true }
-  }, [candidateId])
+  }, [candidateId, ready])
 
   if (loading) return <LoadingSpinner />
   if (error) return <ErrorState message={error} onRetry={() => window.location.reload()} />
