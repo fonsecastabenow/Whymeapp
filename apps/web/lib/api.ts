@@ -575,3 +575,76 @@ export function submitCultureQuestionnaire(
 export function getCompanyReferenceData(token?: string): Promise<CompanyReferenceData> {
   return apiFetch("/companies/reference-data", undefined, token)
 }
+
+// ─── Admin ────────────────────────────────────────────────────────────────────
+
+export type AdminRecentCompany = {
+  id: string
+  name: string
+  industry: string | null
+  created_at: string
+}
+
+export type AdminRecentCandidate = {
+  id: string
+  name: string
+  onboarding_completed: boolean
+  created_at: string
+}
+
+export type AdminStatsData = {
+  total_companies: number
+  total_candidates: number
+  total_jobs: number
+  active_jobs: number
+  total_matches: number
+  pending_matches: number
+  total_interviews: number
+  completed_interviews: number
+  candidates_with_ocean: number
+  recent_companies: AdminRecentCompany[]
+  recent_candidates: AdminRecentCandidate[]
+}
+
+export function getAdminStats(authToken: string): Promise<AdminStatsData> {
+  return apiFetch("/admin/stats", undefined, authToken)
+}
+
+// ─── Interview Chat ───────────────────────────────────────────────────────────
+
+export type ChatStartResponse = {
+  token: string
+  question: string
+  question_number: number
+  total: number
+}
+
+export type ChatAnswerResponse = {
+  completed: boolean
+  question?: string
+  question_number?: number
+  total: number
+}
+
+export type ChatScoreResponse = {
+  ocean_scores: OCEANScores
+}
+
+export function startInterviewChat(candidateId: string, authToken: string): Promise<ChatStartResponse> {
+  return apiFetch(
+    "/interviews/chat/start",
+    { method: "POST", body: JSON.stringify({ candidate_id: candidateId }) },
+    authToken,
+  )
+}
+
+export function submitChatAnswer(token: string, answer: string): Promise<ChatAnswerResponse> {
+  return apiFetch(`/interviews/chat/${encodeURIComponent(token)}/answer`, {
+    method: "POST",
+    body: JSON.stringify({ answer }),
+  })
+}
+
+export function scoreChatInterview(token: string): Promise<ChatScoreResponse> {
+  return apiFetch(`/interviews/chat/${encodeURIComponent(token)}/score`, { method: "POST" })
+}

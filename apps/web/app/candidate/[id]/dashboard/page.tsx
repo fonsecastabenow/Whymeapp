@@ -18,6 +18,7 @@ import {
   type MatchDetailItem,
 } from "@/lib/api"
 import { useAuthGuard } from "@/lib/hooks"
+import InterviewChat from "./InterviewChat"
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -48,7 +49,15 @@ function formatCurrency(value: number | null | undefined): string {
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
-function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProfileData; candidateId: string }) {
+function CandidateSidebar({
+  candidate,
+  candidateId,
+  onStartInterview,
+}: {
+  candidate: CandidateProfileData
+  candidateId: string
+  onStartInterview: () => void
+}) {
   const locationStr = [candidate.city, candidate.state].filter(Boolean).join(", ")
 
   return (
@@ -150,6 +159,15 @@ function CandidateSidebar({ candidate, candidateId }: { candidate: CandidateProf
       </div>
 
       <div className="border-t border-[#3AB0FF]/10 p-5 space-y-2">
+        <button
+          onClick={onStartInterview}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          Fazer Entrevista
+        </button>
         <a
           href={`/candidate/orbita?candidate_id=${candidateId}`}
           className="flex w-full items-center justify-center rounded-xl border border-violet-500/30 bg-violet-500/8 px-4 py-2 text-sm font-medium text-violet-300 transition-colors hover:border-violet-500/60 hover:bg-violet-500/15"
@@ -184,6 +202,21 @@ export default function CandidateDashboardPage() {
   const [matches, setMatches] = useState<MatchDetailItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [activeTab, setActiveTab] = useState<"matches" | "interview">("matches")
+
+  async function refetchCandidate() {
+    try {
+      const [candData, matchData] = await Promise.all([
+        getCandidateProfile(candidateId),
+        getCandidateMatchDetails(candidateId).catch(() => [] as MatchDetailItem[]),
+      ])
+      setCandidate(candData)
+      setMatches(matchData)
+      setActiveTab("matches")
+    } catch {
+      // silently ignore refetch errors — page already loaded
+    }
+  }
 
   useEffect(() => {
     if (!candidateId || !ready) return
@@ -219,7 +252,13 @@ export default function CandidateDashboardPage() {
 
   return (
     <DashboardLayout
-      sidebar={<CandidateSidebar candidate={candidate} candidateId={candidateId} />}
+      sidebar={
+        <CandidateSidebar
+          candidate={candidate}
+          candidateId={candidateId}
+          onStartInterview={() => setActiveTab("interview")}
+        />
+      }
       title="Dashboard"
       subtitle="Seu perfil e matches"
     >
@@ -236,54 +275,95 @@ export default function CandidateDashboardPage() {
             </div>
           </Card>
         ) : (
-          <EmptyState
-            title="Faça a entrevista OCEAN para ver seu perfil"
-            description="Conclua o questionário para descobrir sua órbita"
-          />
+          <div className="flex flex-col items-center gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/30 p-8 text-center">
+            <p className="font-semibold text-zinc-300">Faça a entrevista OCEAN para ver seu perfil</p>
+            <p className="text-sm text-zinc-500">Responda 8 perguntas e descubra sua órbita de personalidade profissional</p>
+            <button
+              onClick={() => setActiveTab("interview")}
+              className="mt-1 flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+              Iniciar Entrevista
+            </button>
+          </div>
         )}
       </section>
 
-      {/* Matches section */}
+      {/* Tabs: Matches / Entrevista */}
       <section>
-        <SectionLabel>Matches{matches.length > 0 ? ` — ${matches.length}` : ""}</SectionLabel>
-        {matches.length === 0 ? (
-          <EmptyState
-            title="Nenhum match ainda"
-            description="Complete sua entrevista OCEAN para começar"
+        <div className="mb-4 flex gap-1 rounded-xl border border-zinc-800 bg-zinc-900/50 p-1">
+          <button
+            onClick={() => setActiveTab("matches")}
+            className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
+              activeTab === "matches"
+                ? "bg-zinc-800 text-zinc-100 shadow-sm"
+                : "text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            Matches{matches.length > 0 ? ` (${matches.length})` : ""}
+          </button>
+          <button
+            onClick={() => setActiveTab("interview")}
+            className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
+              activeTab === "interview"
+                ? "bg-zinc-800 text-zinc-100 shadow-sm"
+                : "text-zinc-500 hover:text-zinc-300"
+            }`}
+          >
+            Entrevista
+          </button>
+        </div>
+
+        {activeTab === "matches" && (
+          matches.length === 0 ? (
+            <EmptyState
+              title="Nenhum match ainda"
+              description="Complete sua entrevista OCEAN para começar"
+            />
+          ) : (
+            <div className="space-y-3">
+              {matches.map((match) => {
+                const pct = Math.round(match.score * 100)
+                const barColor = pct >= 80 ? "#10B981" : pct >= 60 ? "#F59E0B" : "#EF4444"
+                return (
+                  <div
+                    key={match.id}
+                    className="flex flex-col gap-4 rounded-2xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.7)] p-4 transition-all hover:border-[#3AB0FF]/25 hover:bg-[rgba(16,34,68,0.9)] sm:flex-row sm:items-center sm:gap-6"
+                  >
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
+                      <Avatar name={match.company_name ?? "?"} />
+                      <div className="min-w-0">
+                        <div className="truncate font-semibold text-foreground">{match.job_title}</div>
+                        <div className="truncate text-sm text-muted-foreground/70">{match.company_name}</div>
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-4">
+                      <div className="w-24 sm:w-36">
+                        <div className="mb-1.5 flex justify-between text-xs">
+                          <span className="text-muted-foreground/70">Compatibilidade</span>
+                          <span className="font-semibold tabular-nums text-foreground/90">{pct}%</span>
+                        </div>
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-white/8">
+                          <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
+                        </div>
+                      </div>
+                      <StatusBadge status={match.status} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        )}
+
+        {activeTab === "interview" && (
+          <InterviewChat
+            candidateId={candidateId}
+            hasExistingScores={hasOcean}
+            onComplete={refetchCandidate}
           />
-        ) : (
-          <div className="space-y-3">
-            {matches.map((match) => {
-              const pct = Math.round(match.score * 100)
-              const barColor = pct >= 80 ? "#10B981" : pct >= 60 ? "#F59E0B" : "#EF4444"
-              return (
-                <div
-                  key={match.id}
-                  className="flex flex-col gap-4 rounded-2xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.7)] p-4 transition-all hover:border-[#3AB0FF]/25 hover:bg-[rgba(16,34,68,0.9)] sm:flex-row sm:items-center sm:gap-6"
-                >
-                  <div className="flex min-w-0 flex-1 items-center gap-3">
-                    <Avatar name={match.company_name ?? "?"} />
-                    <div className="min-w-0">
-                      <div className="truncate font-semibold text-foreground">{match.job_title}</div>
-                      <div className="truncate text-sm text-muted-foreground/70">{match.company_name}</div>
-                    </div>
-                  </div>
-                  <div className="flex shrink-0 items-center gap-4">
-                    <div className="w-24 sm:w-36">
-                      <div className="mb-1.5 flex justify-between text-xs">
-                        <span className="text-muted-foreground/70">Compatibilidade</span>
-                        <span className="font-semibold tabular-nums text-foreground/90">{pct}%</span>
-                      </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-white/8">
-                        <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
-                      </div>
-                    </div>
-                    <StatusBadge status={match.status} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
         )}
       </section>
     </DashboardLayout>

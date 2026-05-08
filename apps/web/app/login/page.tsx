@@ -42,6 +42,8 @@ export default function LoginPage() {
         router.push(`/company/${me.company_id}/dashboard`)
       } else if (me.role === "candidate") {
         router.push(`/candidate/${me.id}/dashboard`)
+      } else if (me.role === "admin") {
+        router.push("/admin/dashboard")
       } else {
         router.push("/")
       }
