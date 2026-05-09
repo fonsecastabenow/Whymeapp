@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     r2_access_key: str = ""
     r2_secret_key: str = ""
     r2_bucket_name: str = "whyme-resumes"
+    deepseek_api_key: str = ""
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
 
