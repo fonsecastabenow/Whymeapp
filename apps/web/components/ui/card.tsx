@@ -16,14 +16,22 @@ const paddingMap = {
 export function Card({ children, className, padding = "md", glass = false }: CardProps) {
   return (
     <div
-      className={cn(
-        "rounded-2xl",
+      className={cn("rounded-[18px]", paddingMap[padding], className)}
+      style={
         glass
-          ? "glass-card"
-          : "border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)] shadow-lg shadow-black/20",
-        paddingMap[padding],
-        className,
-      )}
+          ? {
+              background: "rgba(16,34,68,0.70)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(58,176,255,0.12)",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.30)",
+            }
+          : {
+              background: "rgba(16,34,68,0.80)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(58,176,255,0.12)",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.28)",
+            }
+      }
     >
       {children}
     </div>

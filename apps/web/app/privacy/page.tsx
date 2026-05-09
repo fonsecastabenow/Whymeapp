@@ -397,9 +397,7 @@ export default function PrivacyPage() {
 
         {/* Índice */}
         <nav className="mb-12 rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.7)]/50 p-5">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70 mb-3">
-            Índice
-          </p>
+          <p className="eyebrow mb-3">Índice</p>
           <ol className="space-y-1.5">
             {sections.map((s) => (
               <li key={s.id}>

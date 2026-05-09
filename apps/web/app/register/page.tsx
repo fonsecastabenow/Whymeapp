@@ -109,7 +109,7 @@ export default function RegisterPage() {
         </div>
 
         <div>
-          <p className="mb-1.5 text-sm font-medium text-muted-foreground">Tipo de conta</p>
+          <p className="eyebrow mb-1.5 block">Tipo de conta</p>
           <div className="grid grid-cols-2 gap-2">
             {(["candidate", "company"] as const).map((r) => (
               <button

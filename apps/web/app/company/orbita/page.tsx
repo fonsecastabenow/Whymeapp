@@ -12,6 +12,8 @@ import {
 import type { CandidateMatchData, JobData, OCEANScores, UserData } from "@/lib/api"
 import { DIMENSION_LABELS, DIMENSIONS } from "@whyme/shared"
 import { LoadingSpinner, ErrorState } from "@/components/ui"
+import { StatusBadge } from "@/components/ui/status-badge"
+import { scoreColor } from "@/lib/utils"
 
 // ─── constants ──────────────────────────────────────────────────────────────
 
@@ -192,16 +194,19 @@ export default function CompanyOrbitaPage() {
 
       <main className="min-h-screen bg-background">
         {/* header */}
-        <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
+        <header
+          className="sticky top-0 z-30 border-b px-6 py-4"
+          style={{ background: "rgba(11,31,58,0.85)", backdropFilter: "blur(14px)", borderColor: "var(--line)" }}
+        >
+          <div className="mx-auto flex max-w-7xl items-center justify-between">
             <div className="flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-primary" />
-              <span className="text-lg font-black tracking-widest text-gradient-gold uppercase">WHY ME?</span>
-              <span className="text-muted-foreground">/</span>
-              <span className="text-sm font-medium text-muted-foreground">ORBITA</span>
+              <Building2 className="h-4 w-4 text-[#3AB0FF]" />
+              <span className="text-sm font-black tracking-widest text-gradient-gold uppercase">WHY ME?</span>
+              <span style={{ color: "var(--fg-3)" }}>/</span>
+              <span className="text-[17px] font-bold tracking-[-0.01em] text-foreground">ORBITA</span>
             </div>
             {user && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm" style={{ color: "var(--fg-2)" }}>
                 <Users className="h-4 w-4" />
                 <span>{user.name}</span>
               </div>
@@ -211,7 +216,7 @@ export default function CompanyOrbitaPage() {
 
         <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
           {/* filter bar */}
-          <div className="flex flex-wrap items-center gap-3 rounded-xl border bg-card px-4 py-3">
+          <div className="flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3" style={{ background: "var(--surface)", borderColor: "var(--line)" }}>
             {/* job selector */}
             <div className="relative">
               <select
@@ -495,45 +500,29 @@ function SlideOver({
       <div className="flex flex-1 flex-col gap-6 px-6 py-5">
         {/* meta row */}
         <div className="flex flex-wrap gap-3">
-          <span className={`rounded-full px-3 py-1 text-sm font-semibold ${scoreBadgeClass(candidate.score)}`}>
+          <span
+            className="font-data rounded-full border px-3 py-1 text-sm font-semibold tabular-nums"
+            style={{
+              color: scoreColor(pct),
+              borderColor: `${scoreColor(pct)}40`,
+              background: `${scoreColor(pct)}12`,
+            }}
+          >
             {pct}% match
           </span>
           {candidate.candidate_experience_years != null && (
-            <span className="rounded-full border bg-muted px-3 py-1 text-xs text-muted-foreground">
-              {candidate.candidate_experience_years} anos exp.
-            </span>
+            <span className="chip">{candidate.candidate_experience_years} anos exp.</span>
           )}
-          <span
-            className={`rounded-full border px-3 py-1 text-xs font-medium ${
-              candidate.status === "accepted"
-                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-500"
-                : candidate.status === "rejected"
-                ? "border-rose-500/30 bg-rose-500/10 text-rose-500"
-                : "border-border bg-muted text-muted-foreground"
-            }`}
-          >
-            {candidate.status === "accepted"
-              ? "Aceito"
-              : candidate.status === "rejected"
-              ? "Recusado"
-              : "Pendente"}
-          </span>
+          <StatusBadge status={candidate.status} />
         </div>
 
         {/* skills */}
         {skills.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Habilidades
-            </p>
+            <div className="section-label mb-3">Habilidades</div>
             <div className="flex flex-wrap gap-1.5">
               {skills.slice(0, 12).map((s) => (
-                <span
-                  key={s}
-                  className="rounded-md border bg-muted px-2 py-0.5 text-xs text-foreground"
-                >
-                  {s}
-                </span>
+                <span key={s} className="chip">{s}</span>
               ))}
             </div>
           </div>
@@ -543,9 +532,7 @@ function SlideOver({
         {candidate.candidate_ocean_scores ? (
           <>
             <div>
-              <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Perfil OCEAN
-              </p>
+              <div className="section-label mb-3">Perfil OCEAN</div>
               <div className="flex justify-around gap-4">
                 <div className="flex flex-col items-center gap-1">
                   <OrbitaChart scores={candidate.candidate_ocean_scores} size={130} />
@@ -562,9 +549,7 @@ function SlideOver({
 
             {/* dimension bars */}
             <div className="space-y-3.5">
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Comparação por dimensão
-              </p>
+              <div className="section-label mb-1">Comparação por dimensão</div>
               {DIMENSIONS.map((dim) => {
                 const candidateVal = candidate.candidate_ocean_scores![dim]
                 const jobVal = jobIdeal?.[dim] ?? null
@@ -621,18 +606,22 @@ function SlideOver({
       </div>
 
       {/* sticky footer actions */}
-      <div className="sticky bottom-0 border-t bg-background/95 px-6 py-4 backdrop-blur">
+      <div
+        className="sticky bottom-0 border-t px-6 py-4"
+        style={{ background: "rgba(11,31,58,0.95)", backdropFilter: "blur(14px)", borderColor: "var(--line)" }}
+      >
         <div className="flex gap-3">
           <button
             disabled={actionLoading || candidate.status === "accepted"}
             onClick={() => onMatchAction(candidate.id, "accepted")}
-            className="flex-1 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex-1 rounded-xl bg-[#3AB0FF] px-4 py-2.5 text-sm font-semibold text-[#0B1F3A] transition-all hover:bg-[#5BC2FF] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {candidate.status === "accepted" ? "Aceito" : "Match"}
           </button>
           <a
             href={`mailto:?subject=Oportunidade via Whyme&body=Olá ${candidate.candidate_name},`}
-            className="flex-1 rounded-lg border px-4 py-2.5 text-center text-sm font-semibold transition-colors hover:bg-muted"
+            className="flex-1 rounded-xl border px-4 py-2.5 text-center text-sm font-semibold transition-colors hover:bg-[rgba(255,255,255,0.05)]"
+            style={{ borderColor: "var(--line-strong)", color: "var(--fg-2)" }}
           >
             Contactar
           </a>
@@ -640,7 +629,7 @@ function SlideOver({
             <button
               disabled={actionLoading}
               onClick={() => onMatchAction(candidate.id, "rejected")}
-              className="rounded-lg border border-rose-500/30 px-4 py-2.5 text-sm font-semibold text-rose-500 transition-colors hover:bg-rose-500/10 disabled:opacity-40"
+              className="rounded-xl border border-[rgba(240,107,107,0.30)] px-4 py-2.5 text-sm font-semibold text-[#f06b6b] transition-colors hover:bg-[rgba(240,107,107,0.10)] disabled:opacity-40"
             >
               Recusar
             </button>

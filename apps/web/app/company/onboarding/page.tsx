@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
@@ -17,26 +17,19 @@ import {
   type UserData,
 } from "@/lib/api"
 
-// ─── constants ─────────────────────────────────────────────────────────────────
+// ─── constants ────────────────────────────────────────────────────────────────
 
 const INDUSTRIES = [
-  "Tecnologia",
-  "Saúde",
-  "Educação",
-  "Finanças",
-  "Varejo",
-  "Indústria",
-  "Consultoria",
-  "Marketing",
-  "Outro",
+  "Tecnologia", "Saúde", "Educação", "Finanças", "Varejo",
+  "Indústria", "Consultoria", "Marketing", "Jurídico", "Imobiliário", "Outro",
 ]
 
 const SIZES = ["1-10", "11-50", "51-200", "201-500", "500+"]
-
 const WORK_MODELS = ["presencial", "hibrido", "remoto"]
 
 const OCEAN_KEYS = ["o", "c", "e", "a", "n"] as const
 type OceanKey = (typeof OCEAN_KEYS)[number]
+
 const OCEAN_LABELS: Record<OceanKey, string> = {
   o: "Abertura",
   c: "Conscienciosidade",
@@ -45,33 +38,142 @@ const OCEAN_LABELS: Record<OceanKey, string> = {
   n: "Neuroticismo",
 }
 
-const INPUT_CLS =
-  "w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
-const SELECT_CLS =
-  "w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-[#3AB0FF]/60"
+const OCEAN_COLORS: Record<OceanKey, string> = {
+  o: "#8B5CF6",
+  c: "#3B82F6",
+  e: "#F59E0B",
+  a: "#10B981",
+  n: "#EF4444",
+}
 
-// ─── step dots ─────────────────────────────────────────────────────────────────
+const STEPS = [
+  { n: 1, label: "Empresa" },
+  { n: 2, label: "Cultura" },
+  { n: 3, label: "Vaga" },
+  { n: 4, label: "Confirmar" },
+]
 
-function StepDots({ current, total }: { current: number; total: number }) {
+const INPUT_STYLE = {
+  background: "rgba(8,22,46,0.72)",
+  border: "1px solid rgba(58,176,255,0.15)",
+}
+
+// ─── step indicator ───────────────────────────────────────────────────────────
+
+function StepIndicator({ current }: { current: number }) {
   return (
-    <div className="flex items-center justify-center gap-2">
-      {Array.from({ length: total }, (_, i) => (
-        <div
-          key={i}
-          className={`h-2 w-2 rounded-full transition-colors ${
-            i + 1 === current
-              ? "bg-[#3AB0FF]"
-              : i + 1 < current
-                ? "bg-emerald-500"
-                : "bg-white/10"
-          }`}
-        />
-      ))}
+    <div className="flex items-center justify-center gap-0">
+      {STEPS.map((s, i) => {
+        const done = s.n < current
+        const active = s.n === current
+        return (
+          <div key={s.n} className="flex items-center">
+            <div className="flex flex-col items-center gap-1">
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all"
+                style={
+                  done
+                    ? { background: "rgba(56,211,145,0.15)", border: "1.5px solid rgba(56,211,145,0.6)", color: "#38d391" }
+                    : active
+                      ? { background: "rgba(58,176,255,0.20)", border: "1.5px solid rgba(58,176,255,0.8)", color: "#3AB0FF", boxShadow: "0 0 14px rgba(58,176,255,0.30)" }
+                      : { background: "rgba(8,22,46,0.5)", border: "1.5px solid rgba(58,176,255,0.12)", color: "rgba(200,213,234,0.35)" }
+                }
+              >
+                {done ? "✓" : s.n}
+              </div>
+              <span
+                className="text-[10px] font-semibold uppercase tracking-[0.10em]"
+                style={
+                  active
+                    ? { color: "rgba(58,176,255,0.9)" }
+                    : done
+                      ? { color: "rgba(56,211,145,0.7)" }
+                      : { color: "rgba(200,213,234,0.25)" }
+                }
+              >
+                {s.label}
+              </span>
+            </div>
+            {i < STEPS.length - 1 && (
+              <div
+                className="mb-4 h-px w-10 transition-all sm:w-14"
+                style={{
+                  background: done
+                    ? "rgba(56,211,145,0.40)"
+                    : "rgba(58,176,255,0.10)",
+                }}
+              />
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
 
-// ─── page ──────────────────────────────────────────────────────────────────────
+// ─── field helpers ────────────────────────────────────────────────────────────
+
+function Label({ children }: { children: React.ReactNode }) {
+  return (
+    <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+      {children}
+    </label>
+  )
+}
+
+function StyledInput({
+  type = "text",
+  value,
+  onChange,
+  placeholder,
+  min,
+  max,
+}: {
+  type?: string
+  value: string | number
+  onChange: (v: string) => void
+  placeholder?: string
+  min?: number
+  max?: number
+}) {
+  return (
+    <input
+      type={type}
+      min={min}
+      max={max}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className="w-full rounded-xl px-3 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/40"
+      style={INPUT_STYLE}
+      onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(58,176,255,0.55)" }}
+      onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(58,176,255,0.15)" }}
+    />
+  )
+}
+
+function StyledSelect({
+  value,
+  onChange,
+  children,
+}: {
+  value: string
+  onChange: (v: string) => void
+  children: React.ReactNode
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full rounded-xl px-3 py-2.5 text-sm text-foreground outline-none"
+      style={INPUT_STYLE}
+    >
+      {children}
+    </select>
+  )
+}
+
+// ─── page ─────────────────────────────────────────────────────────────────────
 
 export default function CompanyOnboardingPage() {
   const router = useRouter()
@@ -80,7 +182,6 @@ export default function CompanyOnboardingPage() {
   const [token, setToken] = useState("")
   const [user, setUser] = useState<UserData | null>(null)
   const [error, setError] = useState("")
-
   const [step, setStep] = useState(1)
 
   // Step 1 – Company data
@@ -109,74 +210,51 @@ export default function CompanyOnboardingPage() {
   const [salaryMax, setSalaryMax] = useState<number | "">("")
   const [location, setLocation] = useState("")
   const [oceanSliders, setOceanSliders] = useState<Record<OceanKey, number>>({
-    o: 50,
-    c: 50,
-    e: 50,
-    a: 50,
-    n: 50,
+    o: 50, c: 50, e: 50, a: 50, n: 50,
   })
 
-  // Submission
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState("")
 
-  // ── auth ──────────────────────────────────────────────────────────────────
+  // ── auth ───────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const t = typeof window !== "undefined" ? localStorage.getItem("whyme_token") ?? "" : ""
     setToken(t)
-    if (!t) {
-      setLoading(false)
-      return
-    }
+    if (!t) { setLoading(false); return }
     getCurrentUser(t)
       .then((u) => {
         setUser(u)
-        if (!u.company_id) {
-          setError("Conta sem empresa vinculada. Contate o suporte.")
-        }
+        if (!u.company_id) setError("Conta sem empresa vinculada. Contate o suporte.")
       })
       .catch(() => setError("Erro ao carregar dados do usuário"))
       .finally(() => setLoading(false))
   }, [])
 
-  // ── load step 2 data ─────────────────────────────────────────────────────
-
   useEffect(() => {
     if (step === 2 && questions.length === 0 && !questionsLoading) {
       setQuestionsLoading(true)
       getCultureQuestions()
-        .then((qs) => {
-          setQuestions(qs.sort((a, b) => a.sort_order - b.sort_order))
-        })
+        .then((qs) => setQuestions(qs.sort((a, b) => a.sort_order - b.sort_order)))
         .catch(() => setError("Erro ao carregar perguntas do questionário"))
         .finally(() => setQuestionsLoading(false))
     }
   }, [step, questions.length, questionsLoading])
-
-  // ── load step 3 data ─────────────────────────────────────────────────────
 
   useEffect(() => {
     if (step === 3 && !refData && !refDataLoading) {
       setRefDataLoading(true)
       getCompanyReferenceData(token || undefined)
         .then((data) => setRefData(data))
-        .catch(() => setError("Erro ao carregar dados de referência"))
+        .catch(() => {/* silently allow step 3 without refData */})
         .finally(() => setRefDataLoading(false))
     }
   }, [step, refData, refDataLoading, token])
 
-  // ── handlers ─────────────────────────────────────────────────────────────
-
   const companyId = user?.company_id
 
-  function handlePrev() {
-    if (step > 1) setStep(step - 1)
-  }
-
-  function handleNext() {
-    if (step < 4) setStep(step + 1)
-  }
+  function handlePrev() { if (step > 1) setStep(step - 1) }
+  function handleNext() { if (step < 4) setStep(step + 1) }
 
   function toggleHardSkill(id: string) {
     setSelectedHardSkills((prev) =>
@@ -192,9 +270,7 @@ export default function CompanyOnboardingPage() {
     if (!companyId || !token) return
     setSubmitting(true)
     setSubmitError("")
-
     try {
-      // 1. Update company
       await updateCompany(
         companyId,
         {
@@ -207,7 +283,6 @@ export default function CompanyOnboardingPage() {
         token,
       )
 
-      // 2. Submit culture questionnaire
       if (Object.keys(answers).length > 0) {
         const cultureAnswers: CultureAnswer[] = Object.entries(answers).map(
           ([question_id, score]) => ({ question_id, score }),
@@ -215,7 +290,6 @@ export default function CompanyOnboardingPage() {
         await submitCultureQuestionnaire(companyId, cultureAnswers, token)
       }
 
-      // 3. Create first job
       const oceanIdeal = Object.fromEntries(
         OCEAN_KEYS.map((k) => [k, oceanSliders[k] / 100]),
       ) as Record<string, number>
@@ -237,7 +311,6 @@ export default function CompanyOnboardingPage() {
         token,
       )
 
-      // 4. Redirect to dashboard
       router.push(`/company/${companyId}/dashboard`)
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : "Erro ao finalizar cadastro")
@@ -246,7 +319,7 @@ export default function CompanyOnboardingPage() {
     }
   }
 
-  // ── loading / auth states ─────────────────────────────────────────────────
+  // ── states ─────────────────────────────────────────────────────────────────
 
   if (loading) return <LoadingSpinner />
   if (error || !token || !user) return (
@@ -263,453 +336,515 @@ export default function CompanyOnboardingPage() {
       s.name.toLowerCase().includes(hardSkillSearch.toLowerCase()),
     ) ?? []
 
+  const nextDisabled =
+    (step === 1 && !name.trim()) ||
+    (step === 2 && Object.keys(answers).length === 0) ||
+    (step === 3 && !jobTitle.trim())
+
+  // ── render ─────────────────────────────────────────────────────────────────
+
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div
+      className="flex min-h-screen items-center justify-center bg-background p-4 sm:p-6"
+      style={{
+        backgroundImage:
+          "radial-gradient(900px 500px at 75% -10%, rgba(58,176,255,0.09), transparent 60%), radial-gradient(700px 400px at -5% 110%, rgba(139,92,246,0.08), transparent 65%)",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <div className="w-full max-w-xl">
+
         {/* Header */}
-        <div className="mb-6 text-center">
-          <h1 className="text-xl font-bold text-foreground">Configurar Empresa</h1>
-          <p className="mt-1 text-sm text-foreground0">Passo {step} de 4</p>
-          <div className="mt-3">
-            <StepDots current={step} total={4} />
+        <div className="mb-7 text-center">
+          <p
+            className="text-[11px] font-bold uppercase tracking-[0.18em]"
+            style={{ color: "rgba(58,176,255,0.7)" }}
+          >
+            WHY ME?
+          </p>
+          <h1 className="mt-1 text-[22px] font-bold tracking-tight text-foreground">
+            Configurar Empresa
+          </h1>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Configure seu perfil e crie a primeira vaga
+          </p>
+          <div className="mt-5">
+            <StepIndicator current={step} />
           </div>
         </div>
 
-        {/* Card */}
-        <div className="rounded-2xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)] p-6 shadow-xl">
-          {/* Step 1: Company Data */}
-          {step === 1 && (
-            <div className="space-y-4">
-              <h2 className="text-sm font-semibold text-foreground">Dados da Empresa</h2>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Nome *</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Nome da sua empresa"
-                  className={INPUT_CLS}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Setor</label>
-                <select
-                  value={industry}
-                  onChange={(e) => setIndustry(e.target.value)}
-                  className={SELECT_CLS}
-                >
-                  <option value="">Selecione um setor</option>
-                  {INDUSTRIES.map((ind) => (
-                    <option key={ind} value={ind}>
-                      {ind}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Porte</label>
-                <select
-                  value={size}
-                  onChange={(e) => setSize(e.target.value)}
-                  className={SELECT_CLS}
-                >
-                  <option value="">Selecione o porte</option>
-                  {SIZES.map((s) => (
-                    <option key={s} value={s}>
-                      {s} funcionários
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Site</label>
-                <input
-                  type="text"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                  placeholder="https://meusite.com.br"
-                  className={INPUT_CLS}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">LinkedIn</label>
-                <input
-                  type="text"
-                  value={linkedinUrl}
-                  onChange={(e) => setLinkedinUrl(e.target.value)}
-                  placeholder="https://linkedin.com/company/..."
-                  className={INPUT_CLS}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Step 2: Culture Questionnaire */}
-          {step === 2 && (
-            <div className="space-y-4">
-              <h2 className="text-sm font-semibold text-foreground">Questionário de Cultura</h2>
-              <p className="text-xs text-foreground0">
-                Responda de 1 (Discordo Totalmente) a 5 (Concordo Totalmente) para cada afirmação.
+        {/* Main card */}
+        <div
+          className="rounded-[18px] shadow-[0_8px_32px_rgba(0,0,0,0.35)]"
+          style={{
+            background: "rgba(16,34,68,0.80)",
+            border: "1px solid rgba(58,176,255,0.13)",
+            backdropFilter: "blur(24px)",
+          }}
+        >
+          {/* Card header */}
+          <div
+            className="px-6 pt-6 pb-5"
+            style={{ borderBottom: "1px solid rgba(58,176,255,0.08)" }}
+          >
+            <p
+              className="text-[11px] font-bold uppercase tracking-[0.16em]"
+              style={{ color: "rgba(58,176,255,0.7)" }}
+            >
+              Passo {step} de {STEPS.length}
+            </p>
+            <h2 className="mt-0.5 text-[17px] font-bold text-foreground">
+              {step === 1 && "Dados da Empresa"}
+              {step === 2 && "Questionário de Cultura"}
+              {step === 3 && "Criar Primeira Vaga"}
+              {step === 4 && "Confirmar Dados"}
+            </h2>
+            {step === 2 && (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Responda de 1 (Discordo) a 5 (Concordo) para cada afirmação
               </p>
+            )}
+            {step === 4 && (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Revise os dados antes de finalizar o cadastro
+              </p>
+            )}
+          </div>
 
-              {questionsLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#3AB0FF]/15 border-t-blue-500" />
+          {/* Step body */}
+          <div className="px-6 py-5">
+
+            {/* ── Step 1: Company Data ── */}
+            {step === 1 && (
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label>Nome *</Label>
+                  <StyledInput
+                    value={name}
+                    onChange={setName}
+                    placeholder="Nome da sua empresa"
+                  />
                 </div>
-              ) : questions.length === 0 ? (
-                <p className="text-sm text-foreground0">Nenhuma pergunta disponível.</p>
-              ) : (
-                <div className="space-y-5">
-                  {questions.map((q, idx) => (
-                    <div key={q.id} className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] p-4">
-                      <p className="text-sm text-foreground">
-                        <span className="text-foreground0">{idx + 1}.</span> {q.question_pt}
-                      </p>
-                      <div className="mt-3 flex items-center justify-between gap-1">
-                        {[1, 2, 3, 4, 5].map((score) => {
-                          const labels: Record<number, string> = {
-                            1: "Discordo Totalmente",
-                            2: "Discordo",
-                            3: "Neutro",
-                            4: "Concordo",
-                            5: "Concordo Totalmente",
-                          }
-                          const isSelected = (answers[q.id] ?? 0) === score
-                          return (
-                            <button
-                              key={score}
-                              type="button"
-                              onClick={() =>
-                                setAnswers((prev) => ({ ...prev, [q.id]: score }))
-                              }
-                              className={`flex flex-col items-center gap-1 rounded-lg px-2 py-2 text-[10px] leading-tight transition-colors sm:px-3 ${
-                                isSelected
-                                  ? "bg-[#3AB0FF] text-white"
-                                  : "bg-[rgba(16,34,68,0.6)] text-foreground0 hover:bg-white/10"
-                              }`}
-                            >
-                              <span className="text-xs font-bold">{score}</span>
-                              <span className="hidden sm:inline">{labels[score]}</span>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
 
-          {/* Step 3: Create First Job */}
-          {step === 3 && (
-            <div className="space-y-4">
-              <h2 className="text-sm font-semibold text-foreground">Criar Primeira Vaga</h2>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Título *</label>
-                <input
-                  type="text"
-                  value={jobTitle}
-                  onChange={(e) => setJobTitle(e.target.value)}
-                  placeholder="ex: Desenvolvedor Full Stack"
-                  className={INPUT_CLS}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Descrição</label>
-                <textarea
-                  value={jobDescription}
-                  onChange={(e) => setJobDescription(e.target.value)}
-                  placeholder="Descreva a vaga, responsabilidades, benefícios..."
-                  rows={3}
-                  className="w-full resize-none rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
-                />
-              </div>
-
-              {/* Hard Skills */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">
-                  Hard Skills Requeridas (máx. 10)
-                </label>
-                {refDataLoading ? (
-                  <div className="flex items-center gap-2 py-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#3AB0FF]/15 border-t-blue-500" />
-                    <span className="text-xs text-foreground0">Carregando habilidades...</span>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Setor</Label>
+                    <StyledSelect value={industry} onChange={setIndustry}>
+                      <option value="">Selecione um setor</option>
+                      {INDUSTRIES.map((ind) => (
+                        <option key={ind} value={ind}>{ind}</option>
+                      ))}
+                    </StyledSelect>
                   </div>
-                ) : refData ? (
-                  <>
-                    <input
-                      type="text"
-                      value={hardSkillSearch}
-                      onChange={(e) => setHardSkillSearch(e.target.value)}
-                      placeholder="Buscar habilidades..."
-                      className={INPUT_CLS}
+
+                  <div className="space-y-1.5">
+                    <Label>Porte</Label>
+                    <StyledSelect value={size} onChange={setSize}>
+                      <option value="">Selecione</option>
+                      {SIZES.map((s) => (
+                        <option key={s} value={s}>{s} funcionários</option>
+                      ))}
+                    </StyledSelect>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Site</Label>
+                  <StyledInput
+                    value={website}
+                    onChange={setWebsite}
+                    placeholder="https://meusite.com.br"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>LinkedIn</Label>
+                  <StyledInput
+                    value={linkedinUrl}
+                    onChange={setLinkedinUrl}
+                    placeholder="https://linkedin.com/company/..."
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* ── Step 2: Culture Questionnaire ── */}
+            {step === 2 && (
+              <div className="space-y-4">
+                {questionsLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="h-10 w-10 animate-spin rounded-full" style={{ border: "3px solid rgba(58,176,255,0.12)", borderTopColor: "#3AB0FF" }} />
+                  </div>
+                ) : questions.length === 0 ? (
+                  <p className="py-6 text-center text-sm text-muted-foreground">Nenhuma pergunta disponível.</p>
+                ) : (
+                  <div className="max-h-[420px] overflow-y-auto space-y-3 pr-1">
+                    {questions.map((q, idx) => {
+                      const answered = answers[q.id]
+                      return (
+                        <div
+                          key={q.id}
+                          className="rounded-[14px] p-4 transition-all"
+                          style={{
+                            background: answered
+                              ? "rgba(58,176,255,0.05)"
+                              : "rgba(8,22,46,0.50)",
+                            border: answered
+                              ? "1px solid rgba(58,176,255,0.20)"
+                              : "1px solid rgba(58,176,255,0.08)",
+                          }}
+                        >
+                          <p className="text-sm leading-snug text-foreground/90">
+                            <span className="mr-1.5 font-bold tabular-nums" style={{ color: "rgba(58,176,255,0.6)" }}>
+                              {idx + 1}.
+                            </span>
+                            {q.question_pt}
+                          </p>
+
+                          <div className="mt-3 flex gap-2">
+                            {[1, 2, 3, 4, 5].map((score) => {
+                              const isSelected = (answers[q.id] ?? 0) === score
+                              return (
+                                <button
+                                  key={score}
+                                  type="button"
+                                  onClick={() => setAnswers((prev) => ({ ...prev, [q.id]: score }))}
+                                  className="flex flex-1 flex-col items-center gap-0.5 rounded-xl py-2 text-center transition-all"
+                                  style={
+                                    isSelected
+                                      ? { background: "rgba(58,176,255,0.22)", border: "1.5px solid rgba(58,176,255,0.70)", color: "#3AB0FF" }
+                                      : { background: "rgba(8,22,46,0.6)", border: "1px solid rgba(58,176,255,0.10)", color: "rgba(200,213,234,0.5)" }
+                                  }
+                                >
+                                  <span className="text-sm font-bold">{score}</span>
+                                </button>
+                              )
+                            })}
+                          </div>
+
+                          {/* Label row */}
+                          <div className="mt-1.5 flex justify-between px-0.5">
+                            <span className="text-[10px] text-muted-foreground/50">Discordo</span>
+                            <span className="text-[10px] text-muted-foreground/50">Concordo</span>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Progress counter */}
+                {questions.length > 0 && (
+                  <div className="flex items-center justify-between rounded-xl px-3 py-2" style={{ background: "rgba(8,22,46,0.5)", border: "1px solid rgba(58,176,255,0.08)" }}>
+                    <span className="text-xs text-muted-foreground">
+                      {Object.keys(answers).length} de {questions.length} respondidas
+                    </span>
+                    <div className="h-1.5 w-32 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{
+                          width: `${(Object.keys(answers).length / questions.length) * 100}%`,
+                          background: "linear-gradient(90deg,#3AB0FF,#1a8fdb)",
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Step 3: First Job ── */}
+            {step === 3 && (
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label>Título da Vaga *</Label>
+                  <StyledInput value={jobTitle} onChange={setJobTitle} placeholder="ex: Desenvolvedor Full Stack" />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Descrição</Label>
+                  <textarea
+                    value={jobDescription}
+                    onChange={(e) => setJobDescription(e.target.value)}
+                    placeholder="Descreva a vaga, responsabilidades, benefícios..."
+                    rows={3}
+                    className="w-full resize-none rounded-xl px-3 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/40"
+                    style={INPUT_STYLE}
+                    onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(58,176,255,0.55)" }}
+                    onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(58,176,255,0.15)" }}
+                  />
+                </div>
+
+                {/* Hard Skills */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Hard Skills Requeridas</Label>
+                    <span className="text-[11px] text-muted-foreground/60">{selectedHardSkills.length}/10</span>
+                  </div>
+
+                  {refDataLoading ? (
+                    <div className="flex items-center gap-2 py-2">
+                      <div className="h-4 w-4 animate-spin rounded-full" style={{ border: "2px solid rgba(58,176,255,0.12)", borderTopColor: "#3AB0FF" }} />
+                      <span className="text-xs text-muted-foreground">Carregando habilidades...</span>
+                    </div>
+                  ) : refData ? (
+                    <>
+                      {selectedHardSkills.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5">
+                          {selectedHardSkills.map((id) => {
+                            const skill = refData.hard_skills.find((s) => s.id === id)
+                            return skill ? (
+                              <span
+                                key={id}
+                                className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium"
+                                style={{ background: "rgba(58,176,255,0.12)", border: "1px solid rgba(58,176,255,0.30)", color: "#BFE0FF" }}
+                              >
+                                {skill.name}
+                                <button
+                                  type="button"
+                                  onClick={() => toggleHardSkill(id)}
+                                  className="ml-0.5 opacity-70 hover:opacity-100"
+                                >×</button>
+                              </span>
+                            ) : null
+                          })}
+                        </div>
+                      )}
+                      <StyledInput value={hardSkillSearch} onChange={setHardSkillSearch} placeholder="Buscar habilidades..." />
+                      <div
+                        className="max-h-36 overflow-y-auto rounded-xl"
+                        style={{ background: "rgba(8,22,46,0.5)", border: "1px solid rgba(58,176,255,0.10)" }}
+                      >
+                        {filteredHardSkills.length === 0 ? (
+                          <p className="p-3 text-xs text-muted-foreground/50">Nenhuma habilidade encontrada.</p>
+                        ) : (
+                          filteredHardSkills.map((skill) => {
+                            const active = selectedHardSkills.includes(skill.id)
+                            return (
+                              <button
+                                key={skill.id}
+                                type="button"
+                                onClick={() => toggleHardSkill(skill.id)}
+                                disabled={!active && selectedHardSkills.length >= 10}
+                                className="flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors disabled:opacity-40"
+                                style={active ? { background: "rgba(58,176,255,0.10)", color: "#BFE0FF" } : { color: "rgba(200,213,234,0.7)" }}
+                                onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = "rgba(58,176,255,0.05)" }}
+                                onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = "" }}
+                              >
+                                <span>{skill.name}</span>
+                                <span className="text-muted-foreground/40">{skill.category}</span>
+                              </button>
+                            )
+                          })
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-xs text-muted-foreground/60">Habilidades não disponíveis. Continue sem selecionar.</p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Formação Mín.</Label>
+                    <StyledSelect value={educationLevelMin} onChange={setEducationLevelMin}>
+                      <option value="">Qualquer</option>
+                      {refData?.education_levels.map((el) => {
+                        const id = typeof el === "string" ? el : el.id
+                        const elName = typeof el === "string" ? el : el.name
+                        return <option key={id} value={id}>{elName}</option>
+                      })}
+                    </StyledSelect>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Anos Exp. Mín.</Label>
+                    <StyledInput
+                      type="number"
+                      min={0}
+                      max={50}
+                      value={experienceYearsMin}
+                      onChange={(v) => setExperienceYearsMin(v ? Number(v) : "")}
+                      placeholder="0"
                     />
-                    {selectedHardSkills.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Modelo de Trabalho</Label>
+                  <StyledSelect value={workModel} onChange={setWorkModel}>
+                    <option value="">Selecione</option>
+                    {WORK_MODELS.map((wm) => (
+                      <option key={wm} value={wm}>{wm.charAt(0).toUpperCase() + wm.slice(1)}</option>
+                    ))}
+                  </StyledSelect>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label>Salário Mín.</Label>
+                    <StyledInput type="number" min={0} value={salaryMin} onChange={(v) => setSalaryMin(v ? Number(v) : "")} placeholder="0" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Salário Máx.</Label>
+                    <StyledInput type="number" min={0} value={salaryMax} onChange={(v) => setSalaryMax(v ? Number(v) : "")} placeholder="0" />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label>Localização</Label>
+                  <StyledInput value={location} onChange={setLocation} placeholder="ex: São Paulo, SP" />
+                </div>
+
+                {/* OCEAN Sliders */}
+                <div className="space-y-2">
+                  <Label>Perfil OCEAN Ideal</Label>
+                  <div
+                    className="space-y-3.5 rounded-[14px] px-4 py-3.5"
+                    style={{ background: "rgba(8,22,46,0.50)", border: "1px solid rgba(58,176,255,0.10)" }}
+                  >
+                    {OCEAN_KEYS.map((key) => (
+                      <div key={key} className="flex items-center gap-3">
+                        <span
+                          className="w-5 shrink-0 text-center text-[11px] font-black"
+                          style={{ color: OCEAN_COLORS[key] }}
+                        >
+                          {key.toUpperCase()}
+                        </span>
+                        <span className="w-28 shrink-0 text-xs text-muted-foreground">{OCEAN_LABELS[key]}</span>
+                        <input
+                          type="range"
+                          min={0}
+                          max={100}
+                          value={oceanSliders[key]}
+                          onChange={(e) => setOceanSlider(key, Number(e.target.value))}
+                          className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full"
+                          style={{ accentColor: OCEAN_COLORS[key], background: "rgba(255,255,255,0.08)" }}
+                        />
+                        <span
+                          className="w-9 shrink-0 text-right text-xs font-bold tabular-nums"
+                          style={{ color: OCEAN_COLORS[key] }}
+                        >
+                          {oceanSliders[key]}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── Step 4: Confirmation ── */}
+            {step === 4 && (
+              <div className="space-y-3">
+                {/* Company summary */}
+                <div
+                  className="rounded-[14px] p-4"
+                  style={{ background: "rgba(8,22,46,0.50)", border: "1px solid rgba(58,176,255,0.10)" }}
+                >
+                  <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "rgba(58,176,255,0.7)" }}>
+                    Empresa
+                  </p>
+                  <div className="space-y-1.5">
+                    {[
+                      { label: "Nome", value: name },
+                      { label: "Setor", value: industry },
+                      { label: "Porte", value: size ? `${size} funcionários` : "" },
+                      { label: "Site", value: website },
+                      { label: "LinkedIn", value: linkedinUrl },
+                    ].map(({ label, value }) => (
+                      <div key={label} className="flex items-baseline gap-2 text-sm">
+                        <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 w-16">{label}</span>
+                        <span className="text-foreground/85 truncate">{value || <span className="text-muted-foreground/40">—</span>}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Culture summary */}
+                <div
+                  className="rounded-[14px] p-4"
+                  style={{ background: "rgba(8,22,46,0.50)", border: "1px solid rgba(58,176,255,0.10)" }}
+                >
+                  <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "rgba(58,176,255,0.7)" }}>
+                    Questionário de Cultura
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span className="text-[22px] font-bold tabular-nums" style={{ color: Object.keys(answers).length > 0 ? "#38d391" : "#f06b6b" }}>
+                      {Object.keys(answers).length}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      de {questions.length} pergunta{questions.length !== 1 ? "s" : ""} respondida{Object.keys(answers).length !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Job summary */}
+                <div
+                  className="rounded-[14px] p-4"
+                  style={{ background: "rgba(8,22,46,0.50)", border: "1px solid rgba(58,176,255,0.10)" }}
+                >
+                  <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.14em]" style={{ color: "rgba(58,176,255,0.7)" }}>
+                    Primeira Vaga
+                  </p>
+                  <div className="space-y-1.5">
+                    {[
+                      { label: "Título", value: jobTitle },
+                      { label: "Modelo", value: workModel ? workModel.charAt(0).toUpperCase() + workModel.slice(1) : "" },
+                      { label: "Local", value: location },
+                      ...(salaryMin !== ""
+                        ? [{ label: "Salário", value: `R$ ${Number(salaryMin).toLocaleString("pt-BR")}${salaryMax !== "" ? ` — R$ ${Number(salaryMax).toLocaleString("pt-BR")}` : "+"}` }]
+                        : []),
+                    ].map(({ label, value }) => (
+                      <div key={label} className="flex items-baseline gap-2 text-sm">
+                        <span className="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70 w-16">{label}</span>
+                        <span className="text-foreground/85 truncate">{value || <span className="text-muted-foreground/40">—</span>}</span>
+                      </div>
+                    ))}
+                    {refData && selectedHardSkills.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
                         {selectedHardSkills.map((id) => {
                           const skill = refData.hard_skills.find((s) => s.id === id)
                           return skill ? (
                             <span
                               key={id}
-                              className="flex items-center gap-1 rounded-md bg-[#3AB0FF]/20 px-2 py-1 text-xs text-[#3AB0FF]"
+                              className="rounded-lg px-2 py-0.5 text-[11px] font-medium"
+                              style={{ background: "rgba(58,176,255,0.10)", border: "1px solid rgba(58,176,255,0.20)", color: "#BFE0FF" }}
                             >
                               {skill.name}
-                              <button
-                                type="button"
-                                onClick={() => toggleHardSkill(id)}
-                                className="ml-0.5 text-[#3AB0FF] hover:text-white"
-                              >
-                                ×
-                              </button>
                             </span>
                           ) : null
                         })}
                       </div>
                     )}
-                    <div className="max-h-40 overflow-y-auto rounded-lg border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)]">
-                      {filteredHardSkills.length === 0 ? (
-                        <p className="p-3 text-xs text-foreground0">Nenhuma habilidade encontrada.</p>
-                      ) : (
-                        filteredHardSkills.map((skill) => {
-                          const active = selectedHardSkills.includes(skill.id)
-                          return (
-                            <button
-                              key={skill.id}
-                              type="button"
-                              onClick={() => toggleHardSkill(skill.id)}
-                              disabled={!active && selectedHardSkills.length >= 10}
-                              className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors ${
-                                active
-                                  ? "bg-[#3AB0FF]/10 text-[#3AB0FF]"
-                                  : "text-muted-foreground hover:bg-[rgba(16,34,68,0.6)]"
-                              } disabled:opacity-40`}
-                            >
-                              <span>{skill.name}</span>
-                              <span className="text-muted-foreground/50">{skill.category}</span>
-                            </button>
-                          )
-                        })
-                      )}
-                    </div>
-                  </>
-                ) : (
-                  <p className="text-xs text-foreground0">Erro ao carregar habilidades.</p>
+                  </div>
+                </div>
+
+                {submitError && (
+                  <p
+                    className="rounded-xl px-4 py-3 text-sm"
+                    style={{ background: "rgba(239,68,68,0.10)", color: "#f87171" }}
+                  >
+                    {submitError}
+                  </p>
                 )}
               </div>
+            )}
+          </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Nível Formação Mín.</label>
-                  <select
-                    value={educationLevelMin}
-                    onChange={(e) => setEducationLevelMin(e.target.value)}
-                    className={SELECT_CLS}
-                  >
-                    <option value="">Qualquer</option>
-                    {refData?.education_levels.map((el) => {
-                      const id = typeof el === "string" ? el : el.id
-                      const name = typeof el === "string" ? el : el.name
-                      return (
-                        <option key={id} value={id}>
-                          {name}
-                        </option>
-                      )
-                    })}
-                  </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Anos Exp. Mínimos</label>
-                  <input
-                    type="number"
-                    min={0}
-                    max={50}
-                    value={experienceYearsMin}
-                    onChange={(e) =>
-                      setExperienceYearsMin(e.target.value ? Number(e.target.value) : "")
-                    }
-                    placeholder="0"
-                    className={INPUT_CLS}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Modelo de Trabalho</label>
-                <select
-                  value={workModel}
-                  onChange={(e) => setWorkModel(e.target.value)}
-                  className={SELECT_CLS}
-                >
-                  <option value="">Selecione</option>
-                  {WORK_MODELS.map((wm) => (
-                    <option key={wm} value={wm}>
-                      {wm.charAt(0).toUpperCase() + wm.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Salário Mín.</label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={salaryMin}
-                    onChange={(e) =>
-                      setSalaryMin(e.target.value ? Number(e.target.value) : "")
-                    }
-                    placeholder="0"
-                    className={INPUT_CLS}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Salário Máx.</label>
-                  <input
-                    type="number"
-                    min={0}
-                    value={salaryMax}
-                    onChange={(e) =>
-                      setSalaryMax(e.target.value ? Number(e.target.value) : "")
-                    }
-                    placeholder="0"
-                    className={INPUT_CLS}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Localização</label>
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="ex: São Paulo, SP"
-                  className={INPUT_CLS}
-                />
-              </div>
-
-              {/* OCEAN Sliders */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-muted-foreground">Perfil OCEAN Ideal</label>
-                </div>
-                <div className="space-y-3 rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] px-4 py-3">
-                  {OCEAN_KEYS.map((key) => (
-                    <div key={key} className="flex items-center gap-3">
-                      <span className="w-6 shrink-0 text-center text-xs font-bold text-foreground0">
-                        {key.toUpperCase()}
-                      </span>
-                      <span className="w-28 shrink-0 text-xs text-muted-foreground">
-                        {OCEAN_LABELS[key]}
-                      </span>
-                      <input
-                        type="range"
-                        min={0}
-                        max={100}
-                        value={oceanSliders[key]}
-                        onChange={(e) => setOceanSlider(key, Number(e.target.value))}
-                        className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/10 accent-[#3AB0FF]"
-                      />
-                      <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-[#3AB0FF]">
-                        {oceanSliders[key]}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Step 4: Confirmation */}
-          {step === 4 && (
-            <div className="space-y-4">
-              <h2 className="text-sm font-semibold text-foreground">Confirmar Dados</h2>
-              <p className="text-xs text-foreground0">
-                Revise os dados antes de finalizar o cadastro.
-              </p>
-
-              <div className="space-y-3">
-                {/* Company summary */}
-                <div className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] p-4">
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Empresa
-                  </h3>
-                  <div className="space-y-1 text-sm text-foreground/85">
-                    <p><span className="text-foreground0">Nome:</span> {name || "—"}</p>
-                    <p><span className="text-foreground0">Setor:</span> {industry || "—"}</p>
-                    <p><span className="text-foreground0">Porte:</span> {size || "—"}</p>
-                    <p><span className="text-foreground0">Site:</span> {website || "—"}</p>
-                    <p><span className="text-foreground0">LinkedIn:</span> {linkedinUrl || "—"}</p>
-                  </div>
-                </div>
-
-                {/* Culture summary */}
-                <div className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] p-4">
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Questionário de Cultura
-                  </h3>
-                  <p className="text-sm text-foreground/85">
-                    {Object.keys(answers).length} pergunta{Object.keys(answers).length !== 1 ? "s" : ""} respondida{Object.keys(answers).length !== 1 ? "s" : ""}
-                  </p>
-                </div>
-
-                {/* Job summary */}
-                <div className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.25)] p-4">
-                  <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    Primeira Vaga
-                  </h3>
-                  <div className="space-y-1 text-sm text-foreground/85">
-                    <p><span className="text-foreground0">Título:</span> {jobTitle || "—"}</p>
-                    {refData && selectedHardSkills.length > 0 && (
-                      <p>
-                        <span className="text-foreground0">Hard Skills:</span>{" "}
-                        {selectedHardSkills
-                          .map((id) => refData.hard_skills.find((s) => s.id === id)?.name)
-                          .filter(Boolean)
-                          .join(", ")}
-                      </p>
-                    )}
-                    <p><span className="text-foreground0">Modelo:</span> {workModel || "—"}</p>
-                    <p><span className="text-foreground0">Local:</span> {location || "—"}</p>
-                    {salaryMin !== "" && (
-                      <p>
-                        <span className="text-foreground0">Faixa salarial:</span> R${" "}
-                        {Number(salaryMin).toLocaleString("pt-BR")}
-                        {salaryMax !== ""
-                          ? ` — R$ ${Number(salaryMax).toLocaleString("pt-BR")}`
-                          : "+"}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {submitError && (
-                <p className="rounded-lg bg-rose-500/10 px-3 py-2 text-xs text-rose-400">
-                  {submitError}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Navigation buttons */}
-          <div className="mt-6 flex gap-3 border-t border-[#3AB0FF]/10 pt-5">
+          {/* Navigation footer */}
+          <div
+            className="flex gap-3 px-6 pb-6 pt-5"
+            style={{ borderTop: "1px solid rgba(58,176,255,0.08)" }}
+          >
             {step > 1 ? (
               <button
                 type="button"
                 onClick={handlePrev}
                 disabled={submitting}
-                className="flex-1 rounded-lg border border-[#3AB0FF]/15 px-4 py-2.5 text-sm font-medium text-foreground/85 transition-colors hover:bg-[rgba(16,34,68,0.6)] disabled:opacity-50"
+                className="flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all disabled:opacity-50"
+                style={{ border: "1px solid rgba(58,176,255,0.20)", color: "rgba(200,213,234,0.8)", background: "transparent" }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(58,176,255,0.06)" }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent" }}
               >
                 Voltar
               </button>
@@ -721,12 +856,13 @@ export default function CompanyOnboardingPage() {
               <button
                 type="button"
                 onClick={handleNext}
-                disabled={
-                  (step === 1 && !name.trim()) ||
-                  (step === 2 && Object.keys(answers).length === 0) ||
-                  (step === 3 && !jobTitle.trim())
-                }
-                className="flex-1 rounded-lg bg-[#3AB0FF] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                disabled={nextDisabled}
+                className="flex-1 rounded-xl px-4 py-2.5 text-sm font-bold transition-all disabled:opacity-40"
+                style={{
+                  background: "linear-gradient(135deg,#3AB0FF,#1a8fdb)",
+                  color: "#06223e",
+                  boxShadow: nextDisabled ? "none" : "0 0 24px rgba(58,176,255,0.25)",
+                }}
               >
                 Próximo
               </button>
@@ -735,21 +871,31 @@ export default function CompanyOnboardingPage() {
                 type="button"
                 onClick={handleFinish}
                 disabled={submitting}
-                className="flex-1 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="flex-1 rounded-xl px-4 py-2.5 text-sm font-bold transition-all disabled:opacity-40"
+                style={{
+                  background: submitting ? "rgba(56,211,145,0.3)" : "linear-gradient(135deg,#38d391,#0F9C6F)",
+                  color: "#012b1a",
+                  boxShadow: submitting ? "none" : "0 0 24px rgba(56,211,145,0.22)",
+                }}
               >
                 {submitting ? (
                   <span className="flex items-center justify-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    <span className="h-4 w-4 animate-spin rounded-full" style={{ border: "2px solid rgba(1,43,26,0.3)", borderTopColor: "#012b1a" }} />
                     Finalizando…
                   </span>
                 ) : (
-                  "Finalizar"
+                  "Finalizar Cadastro"
                 )}
               </button>
             )}
           </div>
         </div>
+
+        {/* Footer */}
+        <p className="mt-5 text-center text-[11px] text-muted-foreground/40">
+          WHY ME? · Plataforma de Recrutamento OCEAN · v1.0
+        </p>
       </div>
-    </main>
+    </div>
   )
 }

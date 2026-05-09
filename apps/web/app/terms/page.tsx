@@ -4,7 +4,7 @@ import { PublicLayout } from "@/components/layouts/public-layout"
 export default function TermsPage() {
   return (
     <PublicLayout>
-      <span className="text-sm text-[#3AB0FF] font-semibold tracking-widest uppercase">Legal</span>
+      <span className="eyebrow">Legal</span>
       <h1 className="mt-3 text-4xl font-black tracking-tight">
         Termos de <span className="text-gradient-gold">Serviço</span>
       </h1>

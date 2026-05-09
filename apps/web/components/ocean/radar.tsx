@@ -1,11 +1,13 @@
 "use client"
 
+import { OCEAN_COLORS } from "@/lib/utils"
+
 export const OCEAN_DIMS = [
-  { key: "openness",          label: "O", fullLabel: "Abertura" },
-  { key: "conscientiousness", label: "C", fullLabel: "Conscienciosidade" },
-  { key: "extraversion",      label: "E", fullLabel: "Extroversão" },
-  { key: "agreeableness",     label: "A", fullLabel: "Amabilidade" },
-  { key: "neuroticism",       label: "N", fullLabel: "Neuroticismo" },
+  { key: "openness",          label: "O", fullLabel: "Abertura",           color: OCEAN_COLORS.O },
+  { key: "conscientiousness", label: "C", fullLabel: "Conscienciosidade",  color: OCEAN_COLORS.C },
+  { key: "extraversion",      label: "E", fullLabel: "Extroversão",        color: OCEAN_COLORS.E },
+  { key: "agreeableness",     label: "A", fullLabel: "Amabilidade",        color: OCEAN_COLORS.A },
+  { key: "neuroticism",       label: "N", fullLabel: "Neuroticismo",       color: OCEAN_COLORS.N },
 ] as const
 
 export type OceanScores = Record<string, number>
@@ -44,30 +46,55 @@ export function OceanRadar({ scores, size = 250 }: OceanRadarProps) {
     })
     .join(" ")
 
+  const gradId = `ocean-grad-${size}`
+
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-label="Gráfico OCEAN">
+      <defs>
+        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stopColor="#3AB0FF" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.25" />
+        </linearGradient>
+      </defs>
+
+      {/* Grid rings */}
       {[0.25, 0.5, 0.75, 1].map((ratio) => (
         <polygon
           key={ratio}
           points={angles.map((a) => `${pt(a, ratio).x},${pt(a, ratio).y}`).join(" ")}
           fill="none"
-          stroke={ratio === 1 ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.07)"}
+          stroke={ratio === 1 ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.06)"}
           strokeWidth="1"
         />
       ))}
+
+      {/* Axis lines */}
       {angles.map((a, i) => (
-        <line key={i} x1={cx} y1={cy} x2={pt(a, 1).x} y2={pt(a, 1).y} stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <line key={i} x1={cx} y1={cy} x2={pt(a, 1).x} y2={pt(a, 1).y}
+          stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
       ))}
-      <polygon points={scorePoints} fill="rgba(139,92,246,0.25)" stroke="#8B5CF6" strokeWidth="2" strokeLinejoin="round" />
+
+      {/* Score polygon */}
+      <polygon points={scorePoints} fill={`url(#${gradId})`}
+        stroke="#3AB0FF" strokeWidth="1.5" strokeLinejoin="round" />
+
+      {/* Vertex dots — per-dimension color */}
       {keys.map((k, i) => {
         const v = Math.max(0, Math.min(1, s[k] ?? 0))
         const p = pt(angles[i], v)
-        return <circle key={k} cx={p.x} cy={p.y} r="4" fill="#8B5CF6" stroke="#fff" strokeWidth="1" />
-      })}
-      {angles.map((a, i) => {
-        const p = pt(a, 1.22)
         return (
-          <text key={i} x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle" fontSize="13" fontWeight="700" fill="rgba(255,255,255,0.65)">
+          <circle key={k} cx={p.x} cy={p.y} r="4"
+            fill={OCEAN_DIMS[i].color} stroke="rgba(11,31,58,0.8)" strokeWidth="1.5" />
+        )
+      })}
+
+      {/* Axis labels — per-dimension color */}
+      {angles.map((a, i) => {
+        const p = pt(a, 1.24)
+        return (
+          <text key={i} x={p.x} y={p.y}
+            textAnchor="middle" dominantBaseline="middle"
+            fontSize="13" fontWeight="800" fill={OCEAN_DIMS[i].color}>
             {OCEAN_DIMS[i].label}
           </text>
         )
@@ -83,17 +110,21 @@ interface OceanBarsProps {
 export function OceanBars({ scores }: OceanBarsProps) {
   const s = normalizeOceanScores(scores)
   return (
-    <div className="w-full space-y-3">
-      {OCEAN_DIMS.map(({ key, label, fullLabel }) => {
+    <div className="w-full space-y-2.5">
+      {OCEAN_DIMS.map(({ key, label, fullLabel, color }) => {
         const pct = Math.round((s[key] ?? 0) * 100)
         return (
           <div key={key} className="flex items-center gap-3">
-            <span className="w-4 text-sm font-bold text-[#3AB0FF]/80">{label}</span>
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/8">
-              <div className="h-full rounded-full bg-violet-500" style={{ width: `${pct}%` }} />
+            <span className="w-4 text-[11px] font-[800] font-data" style={{ color }}>{label}</span>
+            <div className="h-[6px] flex-1 overflow-hidden rounded-full bg-white/6">
+              <div className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${pct}%`, background: color }} />
             </div>
-            <span className="w-8 text-right text-sm font-semibold tabular-nums text-foreground/85">{pct}</span>
-            <span className="hidden w-32 text-xs text-muted-foreground/70 md:block">{fullLabel}</span>
+            <span className="w-7 text-right text-[12px] font-[700] font-data tabular-nums"
+              style={{ color }}>{pct}</span>
+            <span className="hidden w-32 text-[11px] text-[rgba(200,213,234,0.62)] md:block">
+              {fullLabel}
+            </span>
           </div>
         )
       })}

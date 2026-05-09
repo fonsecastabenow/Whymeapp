@@ -6,14 +6,14 @@
   :root {
     /* WHY ME? — deep navy + electric blue palette */
     --background: 220 38% 11%;       /* #0B1F3A deep navy */
-    --foreground: 0 0% 98%;          /* near white */
-    --card: 220 32% 15%;             /* slightly lifted surface */
+    --foreground: 0 0% 98%;
+    --card: 220 32% 15%;
     --card-foreground: 0 0% 98%;
     --popover: 220 32% 15%;
     --popover-foreground: 0 0% 98%;
     --primary: 204 100% 61%;         /* #3AB0FF electric blue */
     --primary-foreground: 220 38% 8%;
-    --secondary: 220 26% 18%;        /* surface layer */
+    --secondary: 220 26% 18%;
     --secondary-foreground: 0 0% 98%;
     --muted: 220 32% 15%;
     --muted-foreground: 215 16% 55%; /* #94A3B8 slate */
@@ -25,6 +25,36 @@
     --input: 220 26% 18%;
     --ring: 204 100% 61%;
     --radius: 0.625rem;
+
+    /* CodeDesign surface layers */
+    --surface:   rgba(16, 34, 68, 0.78);
+    --surface-2: rgba(20, 42, 80, 0.62);
+    --surface-3: rgba(8, 22, 46, 0.72);
+
+    /* CodeDesign border tokens */
+    --line:        rgba(58, 176, 255, 0.12);
+    --line-strong: rgba(58, 176, 255, 0.22);
+    --line-soft:   rgba(58, 176, 255, 0.06);
+    --primary-soft: rgba(58, 176, 255, 0.10);
+
+    /* CodeDesign text scale */
+    --fg-2: #C8D5EA;
+    --fg-3: rgba(200, 213, 234, 0.62);
+
+    /* OCEAN per-dimension colors */
+    --o: #8B5CF6;  /* Abertura */
+    --c: #3B82F6;  /* Conscienciosidade */
+    --e: #F59E0B;  /* Extroversão */
+    --a: #10B981;  /* Amabilidade */
+    --n: #EF4444;  /* Neuroticismo */
+
+    /* Score / status colors */
+    --good: #38d391;
+    --warn: #f5b454;
+    --bad:  #f06b6b;
+
+    /* Mono font */
+    --mono: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
   }
 }
 
@@ -35,6 +65,13 @@
   body {
     @apply bg-background text-foreground;
     font-family: "Inter", system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background-image:
+      radial-gradient(1100px 600px at 80% -10%, rgba(58, 176, 255, 0.08), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(139, 92, 246, 0.07), transparent 65%);
+    background-attachment: fixed;
   }
 }
 
@@ -77,6 +114,183 @@
 
   .animate-float {
     animation: float 6s ease-in-out infinite;
+  }
+
+  /* ── CodeDesign utilities ─────────────────────────────────── */
+
+  /* Eyebrow / section label */
+  .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(58, 176, 255, 0.7);
+  }
+
+  /* Section label with trailing gradient line */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(58, 176, 255, 0.7);
+  }
+  .section-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(58,176,255,0.22), transparent);
+  }
+
+  /* Mono for numeric data (scores, IDs, percentages) */
+  .font-data {
+    font-family: var(--mono);
+    font-feature-settings: "tnum";
+  }
+
+  /* Score color helpers */
+  .score-good { color: #38d391; }
+  .score-ok   { color: #3AB0FF; }
+  .score-warn { color: #f5b454; }
+  .score-bad  { color: #f06b6b; }
+
+  /* Card hover lift */
+  .card-lift {
+    transition: transform 0.2s cubic-bezier(.2,.8,.2,1),
+                border-color 0.2s cubic-bezier(.2,.8,.2,1),
+                box-shadow 0.2s cubic-bezier(.2,.8,.2,1);
+  }
+  .card-lift:hover {
+    transform: translateY(-2px);
+    border-color: rgba(58, 176, 255, 0.22) !important;
+    box-shadow: 0 16px 40px -16px rgba(58, 176, 255, 0.35);
+  }
+
+  /* Nav active state (left accent bar) */
+  .nav-active {
+    background: linear-gradient(90deg, rgba(58,176,255,0.18), rgba(58,176,255,0.04));
+    box-shadow: inset 2px 0 0 #3AB0FF;
+    color: #F5F8FF;
+  }
+
+  /* Stat mini-card */
+  .stat-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: var(--surface-3);
+  }
+  .stat-k {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .stat-v {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 4px;
+    letter-spacing: -0.02em;
+    font-family: var(--mono);
+  }
+  .stat-delta { font-size: 11px; margin-top: 2px; color: var(--good); }
+  .stat-delta-bad { color: var(--bad); }
+
+  /* Horizontal divider */
+  .divider-h {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(58,176,255,0.22), transparent);
+    margin: 28px 0;
+  }
+
+  /* Status pills — 5 estados CodeDesign */
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+  .status-pill .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .status-new      { color: #BFE0FF; border-color: rgba(58,176,255,0.35);  background: rgba(58,176,255,0.08); }
+  .status-new .dot { background: #3AB0FF; }
+  .status-contacted      { color: #f5e1a8; border-color: rgba(245,180,84,0.35);  background: rgba(245,180,84,0.08); }
+  .status-contacted .dot { background: #f5b454; }
+  .status-interview      { color: #DDD0FF; border-color: rgba(139,92,246,0.35);  background: rgba(139,92,246,0.10); }
+  .status-interview .dot { background: #8B5CF6; }
+  .status-advanced      { color: #b6e8d2; border-color: rgba(56,211,145,0.35);  background: rgba(56,211,145,0.08); }
+  .status-advanced .dot { background: #38d391; }
+  .status-declined      { color: #f0bdbd; border-color: rgba(240,107,107,0.30); background: rgba(240,107,107,0.06); }
+  .status-declined .dot { background: #f06b6b; }
+
+  /* Bilateral badge (match recíproco) */
+  .bilateral-badge {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 11.5px;
+    color: #DDD0FF;
+    background: rgba(139, 92, 246, 0.10);
+    border: 1px solid rgba(139, 92, 246, 0.35);
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+  .bilateral-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #8B5CF6;
+    animation: bilateral-ring 1.8s infinite;
+  }
+  @keyframes bilateral-ring {
+    0%   { box-shadow: 0 0 0 0   rgba(139, 92, 246, 0.6); }
+    70%  { box-shadow: 0 0 0 8px rgba(139, 92, 246, 0);   }
+    100% { box-shadow: 0 0 0 0   rgba(139, 92, 246, 0);   }
+  }
+
+  /* Chip variants */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    border: 1px solid var(--line);
+    background: var(--surface-3);
+    border-radius: 6px;
+    font-size: 11.5px;
+    color: var(--fg-2);
+  }
+  .chip-primary { border-color: rgba(58,176,255,0.35); background: rgba(58,176,255,0.10); color: #BFE0FF; }
+  .chip-violet  { border-color: rgba(139,92,246,0.35); background: rgba(139,92,246,0.10); color: #DDD0FF; }
+
+  /* Hero grid pattern overlay (needs position:relative on parent) */
+  .hero-grid {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(58,176,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(58,176,255,0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(180deg, #000 0%, transparent 80%);
+    pointer-events: none;
+    z-index: 0;
   }
 }
 

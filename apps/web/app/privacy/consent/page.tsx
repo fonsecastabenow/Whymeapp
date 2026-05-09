@@ -192,7 +192,7 @@ export default function ConsentPage() {
 
         {/* Note */}
         <div className="mt-12 rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.4)] p-5">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/50 mb-2">Nota</p>
+          <p className="eyebrow mb-2">Nota</p>
           <p className="text-sm text-muted-foreground/70">
             Esta é uma interface de demonstração. A integração com o backend de persistência
             de consentimentos será implementada em breve. As preferências salvas aqui ainda

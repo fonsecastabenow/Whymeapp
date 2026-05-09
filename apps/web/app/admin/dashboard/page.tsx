@@ -17,10 +17,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     const t = typeof window !== "undefined" ? localStorage.getItem("whyme_token") ?? "" : ""
-    if (!t) {
-      router.replace("/login")
-      return
-    }
+    if (!t) { router.replace("/login"); return }
     setToken(t)
   }, [router])
 
@@ -35,10 +32,7 @@ export default function AdminDashboardPage() {
           getAdminStats(token),
         ])
         if (cancelled) return
-        if (me.role !== "admin") {
-          router.replace("/")
-          return
-        }
+        if (me.role !== "admin") { router.replace("/"); return }
         setAdminName(me.name)
         setStats(statsData)
       } catch (err) {
@@ -65,25 +59,36 @@ export default function AdminDashboardPage() {
     : 0
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-50">
-      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-zinc-950/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+    <main className="min-h-screen bg-background text-foreground">
+      {/* Header */}
+      <header
+        className="sticky top-0 z-30 border-b px-7 py-4"
+        style={{
+          background: "rgba(11,31,58,0.85)",
+          backdropFilter: "blur(14px)",
+          borderColor: "var(--line)",
+        }}
+      >
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold tracking-tight">Painel Administrativo</h1>
-            <p className="mt-0.5 text-xs text-zinc-500">Visão geral da plataforma</p>
+            <h1 className="text-[17px] font-bold tracking-[-0.01em] text-foreground">
+              Painel Administrativo
+            </h1>
+            <p className="mt-0.5 text-[12px]" style={{ color: "var(--fg-3)" }}>
+              Visão geral da plataforma
+            </p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="rounded-full border border-violet-500/30 bg-violet-500/10 px-3 py-1 text-xs font-medium text-violet-300">
-              Sócio
-            </span>
-            <span className="text-sm text-zinc-400">{adminName}</span>
+            <span className="chip chip-violet">Sócio</span>
+            <span className="text-sm" style={{ color: "var(--fg-2)" }}>{adminName}</span>
             <button
               onClick={() => {
                 localStorage.removeItem("whyme_token")
                 localStorage.removeItem("whyme_user")
                 router.push("/login")
               }}
-              className="rounded-lg border border-zinc-700 px-3 py-1.5 text-xs text-zinc-400 hover:border-zinc-600 hover:text-zinc-200 transition-colors"
+              className="rounded-lg border px-3 py-1.5 text-xs transition-colors hover:border-[rgba(58,176,255,0.30)]"
+              style={{ borderColor: "var(--line)", color: "var(--fg-3)" }}
             >
               Sair
             </button>
@@ -93,39 +98,92 @@ export default function AdminDashboardPage() {
 
       <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <MetricCard label="Empresas" value={stats.total_companies} sub="cadastradas" />
-          <MetricCard label="Candidatos" value={stats.total_candidates} sub="na plataforma" />
-          <MetricCard label="Vagas" value={stats.total_jobs} sub={`${stats.active_jobs} ativas`} accent />
-          <MetricCard label="Matches" value={stats.total_matches} sub={`${stats.pending_matches} pendentes`} />
+        {/* Plataforma KPIs */}
+        <div className="section-label">Plataforma</div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="stat-card">
+            <p className="stat-k">Empresas</p>
+            <p className="stat-v font-data">{stats.total_companies}</p>
+            <p className="stat-delta">cadastradas</p>
+          </div>
+          <div className="stat-card">
+            <p className="stat-k">Candidatos</p>
+            <p className="stat-v font-data">{stats.total_candidates}</p>
+            <p className="stat-delta">na plataforma</p>
+          </div>
+          <div className="stat-card">
+            <p className="stat-k">Vagas</p>
+            <p className="stat-v font-data" style={{ color: "#3AB0FF" }}>{stats.total_jobs}</p>
+            <p className="stat-delta">{stats.active_jobs} ativas</p>
+          </div>
+          <div className="stat-card">
+            <p className="stat-k">Matches</p>
+            <p className="stat-v font-data">{stats.total_matches}</p>
+            <p className="stat-delta">{stats.pending_matches} pendentes</p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <MetricCard label="Entrevistas" value={stats.total_interviews} sub="iniciadas" />
-          <MetricCard label="Concluídas" value={stats.completed_interviews} sub={`${interviewConversion}% de conversão`} />
-          <MetricCard label="Perfil OCEAN" value={stats.candidates_with_ocean} sub={`${oceanPercent}% dos candidatos`} violet />
-          <MetricCard label="Vagas Ativas" value={stats.active_jobs} sub={`de ${stats.total_jobs} cadastradas`} accent />
+        {/* Entrevistas KPIs */}
+        <div className="section-label">Entrevistas &amp; OCEAN</div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="stat-card">
+            <p className="stat-k">Iniciadas</p>
+            <p className="stat-v font-data">{stats.total_interviews}</p>
+            <p className="stat-delta">entrevistas</p>
+          </div>
+          <div className="stat-card">
+            <p className="stat-k">Concluídas</p>
+            <p className="stat-v font-data" style={{ color: "#38d391" }}>{stats.completed_interviews}</p>
+            <p className="stat-delta">{interviewConversion}% conversão</p>
+          </div>
+          <div className="stat-card">
+            <p className="stat-k">Perfil OCEAN</p>
+            <p className="stat-v font-data" style={{ color: "#8B5CF6" }}>{stats.candidates_with_ocean}</p>
+            <p className="stat-delta">{oceanPercent}% dos candidatos</p>
+          </div>
+          <div className="stat-card">
+            <p className="stat-k">Vagas Ativas</p>
+            <p className="stat-v font-data" style={{ color: "#3AB0FF" }}>{stats.active_jobs}</p>
+            <p className="stat-delta">de {stats.total_jobs} cadastradas</p>
+          </div>
         </div>
 
+        {/* Recent activity tables */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <section className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)]">
-            <div className="border-b border-[#3AB0FF]/10 px-5 py-4">
-              <h2 className="font-semibold text-zinc-50">Empresas Recentes</h2>
-              <p className="mt-0.5 text-xs text-zinc-500">Últimas 5 empresas cadastradas</p>
+
+          {/* Empresas recentes */}
+          <section
+            className="rounded-2xl border overflow-hidden"
+            style={{ background: "var(--surface)", borderColor: "var(--line)" }}
+          >
+            <div
+              className="border-b px-5 py-4"
+              style={{ borderColor: "var(--line)" }}
+            >
+              <div className="section-label">Empresas Recentes</div>
+              <p className="mt-1 text-xs" style={{ color: "var(--fg-3)" }}>
+                Últimas 5 empresas cadastradas
+              </p>
             </div>
             {stats.recent_companies.length === 0 ? (
-              <p className="px-5 py-6 text-sm text-zinc-500">Nenhuma empresa cadastrada</p>
+              <p className="px-5 py-6 text-sm" style={{ color: "var(--fg-3)" }}>
+                Nenhuma empresa cadastrada
+              </p>
             ) : (
-              <div className="divide-y divide-[#3AB0FF]/10">
+              <div>
                 {stats.recent_companies.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between px-5 py-3.5">
+                  <div
+                    key={c.id}
+                    className="flex items-center justify-between border-b px-5 py-3.5 last:border-b-0 transition-colors hover:bg-[rgba(58,176,255,0.04)]"
+                    style={{ borderColor: "var(--line-soft)" }}
+                  >
                     <div>
-                      <p className="text-sm font-medium text-zinc-50">{c.name}</p>
+                      <p className="text-sm font-medium text-foreground">{c.name}</p>
                       {c.industry && (
-                        <p className="text-xs text-zinc-500">{c.industry}</p>
+                        <p className="text-xs" style={{ color: "var(--fg-3)" }}>{c.industry}</p>
                       )}
                     </div>
-                    <span className="text-xs text-zinc-600">
+                    <span className="font-data text-xs" style={{ color: "var(--fg-3)" }}>
                       {new Date(c.created_at).toLocaleDateString("pt-BR")}
                     </span>
                   </div>
@@ -134,23 +192,41 @@ export default function AdminDashboardPage() {
             )}
           </section>
 
-          <section className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)]">
-            <div className="border-b border-[#3AB0FF]/10 px-5 py-4">
-              <h2 className="font-semibold text-zinc-50">Candidatos Recentes</h2>
-              <p className="mt-0.5 text-xs text-zinc-500">Últimos 5 candidatos registrados</p>
+          {/* Candidatos recentes */}
+          <section
+            className="rounded-2xl border overflow-hidden"
+            style={{ background: "var(--surface)", borderColor: "var(--line)" }}
+          >
+            <div
+              className="border-b px-5 py-4"
+              style={{ borderColor: "var(--line)" }}
+            >
+              <div className="section-label">Candidatos Recentes</div>
+              <p className="mt-1 text-xs" style={{ color: "var(--fg-3)" }}>
+                Últimos 5 candidatos registrados
+              </p>
             </div>
             {stats.recent_candidates.length === 0 ? (
-              <p className="px-5 py-6 text-sm text-zinc-500">Nenhum candidato cadastrado</p>
+              <p className="px-5 py-6 text-sm" style={{ color: "var(--fg-3)" }}>
+                Nenhum candidato cadastrado
+              </p>
             ) : (
-              <div className="divide-y divide-[#3AB0FF]/10">
+              <div>
                 {stats.recent_candidates.map((c) => (
-                  <div key={c.id} className="flex items-center justify-between px-5 py-3.5">
-                    <p className="text-sm font-medium text-zinc-50">{c.name}</p>
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                      c.onboarding_completed
-                        ? "bg-emerald-500/15 text-emerald-400"
-                        : "bg-amber-500/15 text-amber-400"
-                    }`}>
+                  <div
+                    key={c.id}
+                    className="flex items-center justify-between border-b px-5 py-3.5 last:border-b-0 transition-colors hover:bg-[rgba(58,176,255,0.04)]"
+                    style={{ borderColor: "var(--line-soft)" }}
+                  >
+                    <p className="text-sm font-medium text-foreground">{c.name}</p>
+                    <span
+                      className={c.onboarding_completed ? "chip" : "chip"}
+                      style={
+                        c.onboarding_completed
+                          ? { color: "#38d391", borderColor: "rgba(56,211,145,0.30)", background: "rgba(56,211,145,0.08)" }
+                          : { color: "#f5b454", borderColor: "rgba(245,180,84,0.30)", background: "rgba(245,180,84,0.08)" }
+                      }
+                    >
                       {c.onboarding_completed ? "Perfil completo" : "Cadastro parcial"}
                     </span>
                   </div>
@@ -162,27 +238,5 @@ export default function AdminDashboardPage() {
 
       </div>
     </main>
-  )
-}
-
-function MetricCard({
-  label, value, sub, accent = false, violet = false,
-}: {
-  label: string
-  value: number
-  sub: string
-  accent?: boolean
-  violet?: boolean
-}) {
-  return (
-    <div className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)] px-5 py-5">
-      <p className="text-xs font-medium uppercase tracking-wider text-zinc-500">{label}</p>
-      <p className={`mt-2 text-3xl font-bold tabular-nums ${
-        violet ? "text-violet-400" : accent ? "text-[#3AB0FF]" : "text-zinc-50"
-      }`}>
-        {value}
-      </p>
-      <p className="mt-1 text-xs text-zinc-600">{sub}</p>
-    </div>
   )
 }

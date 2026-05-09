@@ -78,7 +78,7 @@ export default function FaqPage() {
   return (
     <PublicLayout>
       <div className="mb-10">
-        <span className="text-sm text-[#3AB0FF] font-semibold tracking-widest uppercase">Suporte</span>
+        <span className="eyebrow">Suporte</span>
         <h1 className="mt-3 text-4xl font-black tracking-tight">
           Perguntas <span className="text-gradient-gold">Frequentes</span>
         </h1>

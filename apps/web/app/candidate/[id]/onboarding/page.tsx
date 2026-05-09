@@ -60,8 +60,8 @@ type FormData = {
 }
 
 const inputCls =
-  "w-full rounded-xl border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.7)] px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground/50 focus:border-[#3AB0FF]/50 focus:outline-none focus:ring-1 focus:ring-[#3AB0FF]/20"
-const labelCls = "block text-sm font-medium text-muted-foreground mb-1.5"
+  "w-full rounded-xl border border-[rgba(58,176,255,0.15)] bg-[rgba(16,34,68,0.7)] px-4 py-2.5 text-sm text-foreground placeholder-[rgba(200,213,234,0.35)] focus:border-[rgba(58,176,255,0.50)] focus:outline-none focus:ring-1 focus:ring-[rgba(58,176,255,0.15)]"
+const labelCls = "eyebrow mb-2 block"
 
 export default function OnboardingPage() {
   useAuthGuard()
@@ -315,7 +315,7 @@ export default function OnboardingPage() {
         <div className="glass-card rounded-2xl p-6 md:p-8">
           {/* Step indicator */}
           <div className="mb-6 flex items-center justify-between">
-            <p className="text-sm font-medium text-muted-foreground">
+            <p className="font-data text-xs" style={{ color: "var(--fg-3)" }}>
               Passo {step} de {TOTAL_STEPS}
             </p>
             <div className="flex gap-1.5">
@@ -538,14 +538,11 @@ export default function OnboardingPage() {
               {form.hardSkills.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {form.hardSkills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="flex items-center gap-1.5 rounded-full border border-[#3AB0FF]/30 bg-[#3AB0FF]/10 px-3 py-1 text-sm font-medium text-[#3AB0FF]"
-                    >
+                    <span key={skill} className="chip chip-primary flex items-center gap-1.5">
                       {skill}
                       <button
                         onClick={() => toggleSkill(skill)}
-                        className="text-[#3AB0FF] transition-colors hover:text-[#3AB0FF]/70"
+                        className="opacity-70 transition-opacity hover:opacity-100"
                         aria-label={`Remover ${skill}`}
                       >
                         ✕
@@ -680,7 +677,7 @@ export default function OnboardingPage() {
             {step < TOTAL_STEPS ? (
               <button
                 onClick={handleNext}
-                className="rounded-xl bg-gradient-to-r from-[#3AB0FF] to-[#1a8fdb] px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#3AB0FF]/20 transition-opacity hover:opacity-90"
+                className="rounded-xl bg-[#3AB0FF] px-5 py-2.5 text-sm font-semibold text-[#0B1F3A] transition-all hover:bg-[#5BC2FF] hover:shadow-[0_0_20px_rgba(58,176,255,0.35)]"
               >
                 Próximo
               </button>
@@ -688,7 +685,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handleFinalSubmit}
                 disabled={submitting}
-                className="rounded-lg bg-green-600 px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="rounded-xl border border-[rgba(56,211,145,0.35)] bg-[rgba(56,211,145,0.12)] px-5 py-2.5 text-sm font-semibold text-[#38d391] transition-all hover:bg-[rgba(56,211,145,0.20)] disabled:opacity-50"
               >
                 {submitting ? "Salvando…" : "Finalizar"}
               </button>

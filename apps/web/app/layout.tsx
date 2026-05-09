@@ -1,9 +1,15 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter, JetBrains_Mono } from "next/font/google"
 import Link from "next/link"
 import "./globals.css"
+import { DevNav } from "@/components/dev-panel/DevNav"
 
 const inter = Inter({ subsets: ["latin"] })
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "600", "800"],
+  variable: "--font-mono",
+})
 
 export const metadata: Metadata = {
   title: "Whyme — Recrutamento por Valores",
@@ -17,7 +23,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.className} flex min-h-screen flex-col`}>
+      <body className={`${inter.className} ${mono.variable} flex min-h-screen flex-col`}>
+        <DevNav />
         <main className="flex-1">{children}</main>
         <footer className="border-t border-[#3AB0FF]/10 bg-background px-6 py-4">
           <div className="mx-auto max-w-7xl flex items-center justify-between">

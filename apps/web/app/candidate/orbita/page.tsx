@@ -7,6 +7,7 @@ import { getCandidateMatchDetails } from "@/lib/api"
 import type { MatchDetailItem, OCEANScores } from "@/lib/api"
 import { DIMENSION_LABELS, DIMENSIONS } from "@whyme/shared"
 import { LoadingSpinner, ErrorState, EmptyState } from "@/components/ui"
+import { scoreColor } from "@/lib/utils"
 import { useAuthGuard } from "@/lib/hooks"
 
 const DIMENSION_COLORS: Record<string, string> = {
@@ -17,19 +18,16 @@ const DIMENSION_COLORS: Record<string, string> = {
   neuroticism: "#EF4444",
 }
 
-type PageState = "loading" | "error" | "empty" | "ready"
-
 export default function CandidateOrbitaPage() {
   useAuthGuard()
-  const [state, setState] = useState<PageState>("loading")
+  const [state, setState] = useState<"loading" | "error" | "empty" | "ready">("loading")
   const [matches, setMatches] = useState<MatchDetailItem[]>([])
   const [selectedMatch, setSelectedMatch] = useState<MatchDetailItem | null>(null)
   const [errorMsg, setErrorMsg] = useState("")
 
   const candidateId = useMemo(() => {
     if (typeof window === "undefined") return null
-    const params = new URLSearchParams(window.location.search)
-    return params.get("candidate_id")
+    return new URLSearchParams(window.location.search).get("candidate_id")
   }, [])
 
   useEffect(() => {
@@ -38,7 +36,6 @@ export default function CandidateOrbitaPage() {
       setState("error")
       return
     }
-
     let cancelled = false
 
     async function load() {
@@ -61,10 +58,13 @@ export default function CandidateOrbitaPage() {
 
   if (state === "loading") return <LoadingSpinner message="Carregando seu ORBITA…" />
   if (state === "error") return <ErrorState message={errorMsg} onRetry={() => window.location.reload()} />
-  if (state === "empty") return <EmptyState title="Nenhuma empresa encontrada ainda" description="Complete sua entrevista OCEAN para descobrir quais empresas combinam com seu perfil." />
+  if (state === "empty") return (
+    <EmptyState
+      title="Nenhuma empresa encontrada ainda"
+      description="Complete sua entrevista OCEAN para descobrir quais empresas combinam com seu perfil."
+    />
+  )
 
-  // Extract base OCEAN from the first match's breakdown
-  // (ideally would come from candidate profile)
   const centerScores = matches[0]?.ocean_breakdown
     ? Object.fromEntries(
         DIMENSIONS.map((d) => [d, (matches.reduce((sum, m) => sum + ((m.ocean_breakdown?.[d] ?? 50) / 100), 0) / matches.length)])
@@ -73,36 +73,41 @@ export default function CandidateOrbitaPage() {
 
   return (
     <main className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur-md px-6 py-4">
+      {/* Header */}
+      <header
+        className="sticky top-0 z-30 border-b px-6 py-4"
+        style={{ background: "rgba(11,31,58,0.85)", backdropFilter: "blur(14px)", borderColor: "var(--line)" }}
+      >
         <nav className="mx-auto flex max-w-6xl items-center gap-6 text-sm">
-          <span className="text-lg font-black tracking-widest text-gradient-gold uppercase">WHY ME?</span>
-          <a href={candidateId ? `/candidate/${candidateId}/profile` : "#"} className="text-muted-foreground transition-colors hover:text-foreground">Perfil</a>
+          <span className="text-sm font-black tracking-widest text-gradient-gold uppercase">WHY ME?</span>
+          <a href={candidateId ? `/candidate/${candidateId}/profile` : "#"} className="transition-colors hover:text-foreground" style={{ color: "var(--fg-3)" }}>Perfil</a>
           <a href={candidateId ? `/candidate/orbita?candidate_id=${candidateId}` : "#"} className="font-semibold text-[#3AB0FF]">ORBITA</a>
-          <a href={candidateId ? `/candidate/${candidateId}/dashboard` : "#"} className="text-muted-foreground transition-colors hover:text-foreground">Dashboard</a>
+          <a href={candidateId ? `/candidate/${candidateId}/dashboard` : "#"} className="transition-colors hover:text-foreground" style={{ color: "var(--fg-3)" }}>Dashboard</a>
         </nav>
       </header>
 
       <div className="mx-auto max-w-6xl px-4 py-10">
+        {/* Hero */}
         <div className="mb-8 text-center">
-          <span className="text-sm text-[#3AB0FF] font-semibold tracking-widest uppercase">Visualização</span>
-          <h1 className="mt-2 text-4xl font-black tracking-tight">
+          <p className="eyebrow">Visualização</p>
+          <h1 className="mt-2 text-4xl font-black tracking-[-0.03em]">
             <span className="text-gradient-gold">ORBITA</span>
           </h1>
-          <p className="mt-2 text-muted-foreground">
+          <p className="mt-2 text-sm" style={{ color: "var(--fg-3)" }}>
             Empresas com melhor compatibilidade com seu perfil
           </p>
         </div>
 
         <div className="grid gap-8 lg:grid-cols-[auto_1fr]">
           {/* OCEAN chart */}
-          <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-col items-center justify-start">
             <OrbitaChart scores={centerScores} size={280} />
-            <p className="mt-3 text-xs text-muted-foreground">Seu perfil OCEAN médio</p>
+            <p className="mt-3 text-xs" style={{ color: "var(--fg-3)" }}>Seu perfil OCEAN médio</p>
           </div>
 
           {/* Company cards */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-sm mb-2" style={{ color: "var(--fg-3)" }}>
               <Building2 className="h-4 w-4" />
               <span>{matches.length} empresa{matches.length !== 1 ? "s" : ""} compatível{matches.length !== 1 ? "is" : ""}</span>
             </div>
@@ -119,7 +124,6 @@ export default function CandidateOrbitaPage() {
         </div>
       </div>
 
-      {/* Detail modal */}
       {selectedMatch && (
         <MatchModal match={selectedMatch} onClose={() => setSelectedMatch(null)} />
       )}
@@ -129,30 +133,40 @@ export default function CandidateOrbitaPage() {
 
 function CompanyCard({ match, index, onClick }: { match: MatchDetailItem; index: number; onClick: () => void }) {
   const pct = Math.round(match.score * 100)
+  const color = scoreColor(pct)
   const initial = match.company_name?.charAt(0).toUpperCase() ?? "?"
 
   return (
     <button
       onClick={onClick}
-      className="group flex w-full items-center gap-4 rounded-2xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.7)] p-4 text-left transition-all hover:border-[#3AB0FF]/35 hover:bg-[rgba(16,34,68,0.9)] backdrop-blur"
-      style={{ animationDelay: `${index * 80}ms` }}
+      className="card-lift group flex w-full items-center gap-4 rounded-2xl border p-4 text-left transition-all"
+      style={{
+        background: "var(--surface)",
+        borderColor: "var(--line)",
+        animationDelay: `${index * 80}ms`,
+      }}
     >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#3AB0FF]/10 text-lg font-bold text-[#3AB0FF]">
+      <div
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-bold"
+        style={{ background: "rgba(58,176,255,0.10)", color: "#3AB0FF", border: "1px solid rgba(58,176,255,0.20)" }}
+      >
         {initial}
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className="truncate font-semibold">{match.company_name}</span>
-          <span className="shrink-0 text-xs text-muted-foreground">{match.company_industry}</span>
+          <span className="truncate font-semibold text-foreground">{match.company_name}</span>
+          {match.company_industry && (
+            <span className="chip shrink-0">{match.company_industry}</span>
+          )}
         </div>
-        <div className="mt-0.5 flex items-center gap-2 text-sm text-muted-foreground">
-          <Briefcase className="h-3.5 w-3.5" />
+        <div className="mt-1 flex items-center gap-1.5 text-sm" style={{ color: "var(--fg-3)" }}>
+          <Briefcase className="h-3.5 w-3.5 shrink-0" />
           <span className="truncate">{match.job_title}</span>
         </div>
       </div>
       <div className="shrink-0 text-right">
-        <div className="text-lg font-bold tabular-nums text-[#3AB0FF]">{pct}%</div>
-        <div className="text-xs text-muted-foreground">match</div>
+        <div className="font-data text-lg font-bold tabular-nums" style={{ color }}>{pct}%</div>
+        <div className="text-xs" style={{ color: "var(--fg-3)" }}>match</div>
       </div>
     </button>
   )
@@ -160,62 +174,72 @@ function CompanyCard({ match, index, onClick }: { match: MatchDetailItem; index:
 
 function MatchModal({ match, onClose }: { match: MatchDetailItem; onClose: () => void }) {
   const pct = Math.round(match.score * 100)
+  const color = scoreColor(pct)
   const breakdown = match.ocean_breakdown ?? {}
-  const candidateScores: OCEANScores = {
-    openness: ((breakdown.openness ?? 50)) / 100,
-    conscientiousness: ((breakdown.conscientiousness ?? 50)) / 100,
-    extraversion: ((breakdown.extraversion ?? 50)) / 100,
-    agreeableness: ((breakdown.agreeableness ?? 50)) / 100,
-    neuroticism: ((breakdown.neuroticism ?? 50)) / 100,
-  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative z-10 flex h-full w-full max-w-lg flex-col overflow-y-auto border-l border-[#3AB0FF]/15 bg-[#0B1F3A] p-6 shadow-2xl">
-        <button onClick={onClose} className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-white/5">
+      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
+      <div
+        className="relative z-10 flex h-full w-full max-w-lg flex-col overflow-y-auto border-l p-6 shadow-2xl"
+        style={{ background: "#0B1F3A", borderColor: "var(--line)" }}
+      >
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 rounded-lg p-1.5 transition-colors hover:bg-white/5"
+          style={{ color: "var(--fg-3)" }}
+        >
           <X className="h-5 w-5" />
         </button>
 
+        {/* Company */}
         <div className="mb-6 flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#3AB0FF]/10 text-2xl font-bold text-[#3AB0FF]">
+          <div
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-2xl font-bold"
+            style={{ background: "rgba(58,176,255,0.10)", color: "#3AB0FF", border: "1px solid rgba(58,176,255,0.20)" }}
+          >
             {match.company_name?.charAt(0).toUpperCase() ?? "?"}
           </div>
           <div>
-            <h2 className="text-xl font-bold">{match.company_name}</h2>
-            <p className="text-sm text-muted-foreground">{match.company_industry}</p>
+            <h2 className="text-xl font-bold tracking-[-0.02em]">{match.company_name}</h2>
+            <p className="text-sm" style={{ color: "var(--fg-3)" }}>{match.company_industry}</p>
           </div>
         </div>
 
-        <div className="mb-6 rounded-2xl bg-[#3AB0FF]/8 border border-[#3AB0FF]/15 p-4 text-center">
-          <div className="text-3xl font-bold text-gradient-gold">{pct}%</div>
-          <p className="text-sm text-muted-foreground">Compatibilidade OCEAN</p>
+        {/* Score */}
+        <div
+          className="mb-6 rounded-2xl border p-4 text-center"
+          style={{ background: "rgba(58,176,255,0.06)", borderColor: "var(--line)" }}
+        >
+          <div className="font-data text-3xl font-bold" style={{ color }}>{pct}%</div>
+          <p className="mt-1 text-sm" style={{ color: "var(--fg-3)" }}>Compatibilidade OCEAN</p>
         </div>
 
+        {/* Vaga */}
         <div className="mb-6">
-          <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">Vaga</h3>
-          <p className="font-medium">{match.job_title}</p>
+          <div className="section-label mb-3">Vaga</div>
+          <p className="font-medium text-foreground">{match.job_title}</p>
           {match.job_description && (
-            <p className="mt-1 text-sm text-muted-foreground">{match.job_description}</p>
+            <p className="mt-1 text-sm" style={{ color: "var(--fg-3)" }}>{match.job_description}</p>
           )}
         </div>
 
-        <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Compatibilidade por dimensão
-        </h3>
-        <div className="space-y-4">
+        {/* OCEAN dimensions */}
+        <div className="section-label mb-4">Compatibilidade por dimensão</div>
+        <div className="space-y-3">
           {DIMENSIONS.map((dim) => {
             const val = breakdown[dim] ?? 50
+            const dimColor = DIMENSION_COLORS[dim]
             return (
               <div key={dim} className="space-y-1">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium">{DIMENSION_LABELS[dim]}</span>
-                  <span className="tablular-nums text-muted-foreground">{Math.round(val)}%</span>
+                  <span className="font-medium" style={{ color: dimColor }}>{DIMENSION_LABELS[dim]}</span>
+                  <span className="font-data tabular-nums" style={{ color: "var(--fg-3)" }}>{Math.round(val)}%</span>
                 </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-white/5">
+                <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
                   <div
-                    className="h-full rounded-full transition-all"
-                    style={{ width: `${val}%`, backgroundColor: DIMENSION_COLORS[dim] }}
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ width: `${val}%`, backgroundColor: dimColor }}
                   />
                 </div>
               </div>
@@ -225,9 +249,7 @@ function MatchModal({ match, onClose }: { match: MatchDetailItem; onClose: () =>
 
         {match.job_ocean_ideal && (
           <div className="mt-6">
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Perfil OCEAN ideal da vaga
-            </h3>
+            <div className="section-label mb-4">Perfil OCEAN ideal da vaga</div>
             <div className="flex justify-center">
               <OrbitaChart scores={match.job_ocean_ideal} size={200} />
             </div>
@@ -237,4 +259,3 @@ function MatchModal({ match, onClose }: { match: MatchDetailItem; onClose: () =>
     </div>
   )
 }
-

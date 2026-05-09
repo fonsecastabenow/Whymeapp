@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
@@ -20,6 +20,14 @@ const OCEAN_LABELS: Record<OceanKey, string> = {
   e: "Extroversão",
   a: "Amabilidade",
   n: "Neuroticismo",
+}
+
+const OCEAN_COLORS: Record<OceanKey, string> = {
+  o: "#8B5CF6",
+  c: "#3B82F6",
+  e: "#F59E0B",
+  a: "#10B981",
+  n: "#EF4444",
 }
 
 const DEFAULT_SLIDERS: OceanSliders = { o: 50, c: 50, e: 50, a: 50, n: 50 }
@@ -49,10 +57,10 @@ function slidersToVector(sliders: OceanSliders): string {
 // ─── radar chart ─────────────────────────────────────────────────────────────
 
 function RadarChart({ sliders }: { sliders: OceanSliders }) {
-  const cx = 80
-  const cy = 80
-  const r = 55
-  const labelR = 68
+  const cx = 90
+  const cy = 90
+  const r = 62
+  const labelR = 78
 
   const angles = OCEAN_KEYS.map((_, i) => -Math.PI / 2 + (i * 2 * Math.PI) / 5)
 
@@ -65,9 +73,9 @@ function RadarChart({ sliders }: { sliders: OceanSliders }) {
     .join(" ")
 
   return (
-    <svg width={160} height={160} viewBox="0 0 160 160">
+    <svg width={180} height={180} viewBox="0 0 180 180">
       {[0.25, 0.5, 0.75, 1].map((s) => (
-        <polygon key={s} points={gridPoints(s)} fill="none" stroke="#3f3f46" strokeWidth="0.8" />
+        <polygon key={s} points={gridPoints(s)} fill="none" stroke="rgba(58,176,255,0.12)" strokeWidth="1" />
       ))}
       {angles.map((a, i) => (
         <line
@@ -76,31 +84,41 @@ function RadarChart({ sliders }: { sliders: OceanSliders }) {
           y1={cy}
           x2={cx + r * Math.cos(a)}
           y2={cy + r * Math.sin(a)}
-          stroke="#3f3f46"
-          strokeWidth="0.8"
+          stroke="rgba(58,176,255,0.12)"
+          strokeWidth="1"
         />
       ))}
       <polygon
         points={dataPoints}
-        fill="rgba(59,130,246,0.18)"
-        stroke="#3b82f6"
+        fill="rgba(58,176,255,0.15)"
+        stroke="#3AB0FF"
         strokeWidth="2"
         strokeLinejoin="round"
       />
-      {angles.map((a, i) => (
-        <text
-          key={OCEAN_KEYS[i]}
-          x={cx + labelR * Math.cos(a)}
-          y={cy + labelR * Math.sin(a)}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize="11"
-          fill="#71717a"
-          fontWeight="700"
-        >
-          {OCEAN_KEYS[i].toUpperCase()}
-        </text>
-      ))}
+      {angles.map((a, i) => {
+        const key = OCEAN_KEYS[i]
+        return (
+          <g key={key}>
+            <circle
+              cx={cx + r * values[i] * Math.cos(a)}
+              cy={cy + r * values[i] * Math.sin(a)}
+              r="3"
+              fill={OCEAN_COLORS[key]}
+            />
+            <text
+              x={cx + labelR * Math.cos(a)}
+              y={cy + labelR * Math.sin(a)}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontSize="10"
+              fill="rgba(200,213,234,0.8)"
+              fontWeight="700"
+            >
+              {key.toUpperCase()}
+            </text>
+          </g>
+        )
+      })}
     </svg>
   )
 }
@@ -117,14 +135,12 @@ export default function CompanyProfilePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
-  // form state
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [industry, setIndustry] = useState("")
   const [sliders, setSliders] = useState<OceanSliders>(DEFAULT_SLIDERS)
 
-  // saved originals for cancel
   const [origName, setOrigName] = useState("")
   const [origDescription, setOrigDescription] = useState("")
   const [origIndustry, setOrigIndustry] = useState("")
@@ -227,83 +243,126 @@ export default function CompanyProfilePage() {
   // ── main render ────────────────────────────────────────────────────────────
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur">
+    <div
+      className="min-h-screen bg-background text-foreground"
+      style={{
+        backgroundImage:
+          "radial-gradient(900px 500px at 80% -5%, rgba(58,176,255,0.08), transparent 60%), radial-gradient(700px 400px at -5% 110%, rgba(139,92,246,0.07), transparent 65%)",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      {/* Header */}
+      <header
+        className="sticky top-0 z-30 border-b"
+        style={{ borderColor: "rgba(58,176,255,0.10)", backgroundColor: "rgba(11,31,58,0.92)", backdropFilter: "blur(14px)" }}
+      >
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-4">
           <div>
             <div className="flex items-center gap-2">
               <a
                 href={`/company/${companyId}/dashboard`}
-                className="text-xs text-foreground0 transition-colors hover:text-foreground/85"
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
               >
                 {company?.name ?? "Empresa"}
               </a>
-              <span className="text-xs text-muted-foreground/40">/</span>
+              <span className="text-xs" style={{ color: "rgba(200,213,234,0.3)" }}>/</span>
               <h1 className="text-sm font-bold text-foreground">Perfil</h1>
             </div>
-            <p className="mt-0.5 text-xs text-foreground0">Informações e cultura organizacional</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">Informações e cultura organizacional</p>
           </div>
-          {user && <span className="text-sm text-muted-foreground">{user.name}</span>}
+          {user && (
+            <span className="text-xs font-medium text-muted-foreground">{user.name}</span>
+          )}
         </div>
       </header>
 
-      <div className="mx-auto max-w-2xl space-y-6 px-4 py-6">
-        {/* Company Info */}
-        <section className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)]">
-          <div className="flex items-center justify-between border-b border-[#3AB0FF]/10 px-5 py-4">
+      <div className="mx-auto max-w-2xl space-y-5 px-4 py-7">
+
+        {/* Company Info Card */}
+        <section
+          className="rounded-[18px] shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
+          style={{ background: "rgba(16,34,68,0.78)", border: "1px solid rgba(58,176,255,0.12)", backdropFilter: "blur(20px)" }}
+        >
+          <div
+            className="flex items-center justify-between px-6 py-4"
+            style={{ borderBottom: "1px solid rgba(58,176,255,0.08)" }}
+          >
             <div>
-              <h2 className="font-semibold text-foreground">Informações da Empresa</h2>
-              <p className="mt-0.5 text-xs text-foreground0">Nome, setor e descrição</p>
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: "rgba(58,176,255,0.7)" }}>
+                Empresa
+              </p>
+              <h2 className="mt-0.5 text-[17px] font-bold text-foreground">Informações da Empresa</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">Nome, setor e descrição</p>
             </div>
             {!editing && (
               <Button variant="outline" size="sm" onClick={handleEdit}>Editar</Button>
             )}
           </div>
 
-          <div className="space-y-4 px-5 py-5">
+          <div className="space-y-4 px-6 py-5">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Nome</label>
+              <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Nome</label>
               {editing ? (
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nome da empresa"
-                  className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
+                  className="w-full rounded-xl px-3 py-2.5 text-sm text-foreground outline-none transition-colors"
+                  style={{
+                    background: "rgba(8,22,46,0.72)",
+                    border: "1px solid rgba(58,176,255,0.15)",
+                  }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(58,176,255,0.55)" }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(58,176,255,0.15)" }}
                 />
               ) : (
-                <p className="text-sm text-foreground">{company?.name ?? "—"}</p>
+                <p className="text-sm font-medium text-foreground">{company?.name ?? "—"}</p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Setor</label>
+              <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Setor</label>
               {editing ? (
                 <input
                   type="text"
                   value={industry}
                   onChange={(e) => setIndustry(e.target.value)}
                   placeholder="ex: Tecnologia, Saúde, Educação…"
-                  className="w-full rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
+                  className="w-full rounded-xl px-3 py-2.5 text-sm text-foreground outline-none transition-colors"
+                  style={{
+                    background: "rgba(8,22,46,0.72)",
+                    border: "1px solid rgba(58,176,255,0.15)",
+                  }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(58,176,255,0.55)" }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(58,176,255,0.15)" }}
                 />
               ) : (
-                <p className="text-sm text-foreground">{company?.industry ?? <span className="text-muted-foreground/50">Não informado</span>}</p>
+                <p className="text-sm text-foreground">
+                  {company?.industry ?? <span className="text-muted-foreground">Não informado</span>}
+                </p>
               )}
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">Descrição</label>
+              <label className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">Descrição</label>
               {editing ? (
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Descreva a empresa, missão, valores…"
                   rows={4}
-                  className="w-full resize-none rounded-lg border border-[#3AB0FF]/15 bg-[rgba(16,34,68,0.6)] px-3 py-2.5 text-sm text-foreground placeholder-muted-foreground/40 outline-none transition-colors focus:border-[#3AB0FF]/60"
+                  className="w-full resize-none rounded-xl px-3 py-2.5 text-sm text-foreground outline-none transition-colors"
+                  style={{
+                    background: "rgba(8,22,46,0.72)",
+                    border: "1px solid rgba(58,176,255,0.15)",
+                  }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = "rgba(58,176,255,0.55)" }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = "rgba(58,176,255,0.15)" }}
                 />
               ) : (
                 <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground/85">
-                  {company?.description ?? <span className="text-muted-foreground/50">Não informado</span>}
+                  {company?.description ?? <span className="text-muted-foreground">Não informado</span>}
                 </p>
               )}
             </div>
@@ -311,15 +370,21 @@ export default function CompanyProfilePage() {
         </section>
 
         {/* OCEAN Culture Profile */}
-        <section className="rounded-xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.8)]">
-          <div className="border-b border-[#3AB0FF]/10 px-5 py-4">
-            <h2 className="font-semibold text-foreground">Perfil de Cultura OCEAN</h2>
-            <p className="mt-0.5 text-xs text-foreground0">
+        <section
+          className="rounded-[18px] shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
+          style={{ background: "rgba(16,34,68,0.78)", border: "1px solid rgba(58,176,255,0.12)", backdropFilter: "blur(20px)" }}
+        >
+          <div className="px-6 py-4" style={{ borderBottom: "1px solid rgba(58,176,255,0.08)" }}>
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em]" style={{ color: "rgba(58,176,255,0.7)" }}>
+              OCEAN
+            </p>
+            <h2 className="mt-0.5 text-[17px] font-bold text-foreground">Perfil de Cultura</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
               Defina os traços de personalidade que refletem a cultura da empresa
             </p>
           </div>
 
-          <div className="px-5 py-5">
+          <div className="px-6 py-5">
             <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
               {/* Radar */}
               <div className="flex shrink-0 items-center justify-center">
@@ -327,25 +392,34 @@ export default function CompanyProfilePage() {
               </div>
 
               {/* Sliders */}
-              <div className="w-full space-y-3">
+              <div className="w-full space-y-3.5">
                 {OCEAN_KEYS.map((key) => (
-                  <div key={key} className="flex items-center gap-3">
-                    <span className="w-6 shrink-0 text-center text-xs font-bold text-foreground0">
+                  <div key={key} className="group flex items-center gap-3">
+                    <span
+                      className="w-5 shrink-0 text-center text-[11px] font-black"
+                      style={{ color: OCEAN_COLORS[key] }}
+                    >
                       {key.toUpperCase()}
                     </span>
                     <span className="w-32 shrink-0 text-xs text-muted-foreground">{OCEAN_LABELS[key]}</span>
-                    <input
-                      type="range"
-                      min={0}
-                      max={100}
-                      value={sliders[key]}
-                      disabled={!editing}
-                      onChange={(e) =>
-                        setSliders((prev) => ({ ...prev, [key]: Number(e.target.value) }))
-                      }
-                      className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-white/10 accent-[#3AB0FF] disabled:cursor-default disabled:opacity-60"
-                    />
-                    <span className="w-8 shrink-0 text-right text-xs font-semibold tabular-nums text-[#3AB0FF]">
+                    <div className="relative flex-1">
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        value={sliders[key]}
+                        disabled={!editing}
+                        onChange={(e) =>
+                          setSliders((prev) => ({ ...prev, [key]: Number(e.target.value) }))
+                        }
+                        className="h-1.5 w-full cursor-pointer appearance-none rounded-full disabled:cursor-default disabled:opacity-50"
+                        style={{ accentColor: OCEAN_COLORS[key], background: "rgba(255,255,255,0.08)" }}
+                      />
+                    </div>
+                    <span
+                      className="w-9 shrink-0 text-right text-xs font-bold tabular-nums"
+                      style={{ color: OCEAN_COLORS[key] }}
+                    >
                       {sliders[key]}
                     </span>
                   </div>
@@ -357,17 +431,22 @@ export default function CompanyProfilePage() {
 
         {/* Save error */}
         {saveError && (
-          <p className="rounded-lg bg-rose-500/10 px-4 py-3 text-sm text-rose-400">{saveError}</p>
+          <p
+            className="rounded-xl px-4 py-3 text-sm"
+            style={{ background: "rgba(239,68,68,0.10)", color: "#f87171" }}
+          >
+            {saveError}
+          </p>
         )}
 
         {/* Action buttons */}
         {editing && (
           <div className="flex gap-3">
             <Button variant="secondary" onClick={handleCancel} className="flex-1">Cancelar</Button>
-            <Button loading={saving} onClick={handleSave} className="flex-1">Salvar</Button>
+            <Button loading={saving} onClick={handleSave} className="flex-1">Salvar Alterações</Button>
           </div>
         )}
       </div>
-    </main>
+    </div>
   )
 }

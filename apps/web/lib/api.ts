@@ -68,6 +68,8 @@ export type JobData = {
   salary_min: number | null
   salary_max: number | null
   location: string | null
+  profession?: string | null
+  languages_required?: { language: string; level: string }[]
   created_at: string
 }
 
@@ -484,6 +486,8 @@ export type JobCreateRequest = {
   salary_min?: number | null
   salary_max?: number | null
   location?: string | null
+  profession?: string | null
+  languages_required?: { language: string; level: string }[]
 }
 
 export type JobUpdateRequest = {
@@ -497,6 +501,8 @@ export type JobUpdateRequest = {
   salary_min?: number | null
   salary_max?: number | null
   location?: string | null
+  profession?: string | null
+  languages_required?: { language: string; level: string }[]
 }
 
 export function createJob(data: JobCreateRequest, authToken: string): Promise<JobData> {
