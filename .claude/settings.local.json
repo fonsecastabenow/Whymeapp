@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(Get-ChildItem -Path \"e:\\\\iA\\\\GitHub\\\\Whymeapp\\\\apps\\\\web\\\\components\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\"e:\\\\iA\\\\GitHub\\\\Whymeapp\\\\apps\\\\web\\\\components\\\\\", \"\"\\) })"
+      "PowerShell(Get-ChildItem -Path \"e:\\\\iA\\\\GitHub\\\\Whymeapp\\\\apps\\\\web\\\\components\" -Recurse -File | ForEach-Object { $_.FullName.Replace\\(\"e:\\\\iA\\\\GitHub\\\\Whymeapp\\\\apps\\\\web\\\\components\\\\\", \"\"\\) })",
+      "PowerShell(Get-Process -Id 2376 -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Process -Id 18128 -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Process | Where-Object { $_.Id -in @\\(2376, 18128\\) } | Format-List Id, ProcessName)"
     ]
   }
 }
