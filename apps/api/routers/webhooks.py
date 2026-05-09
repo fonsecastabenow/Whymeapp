@@ -1,16 +1,71 @@
+import hashlib
+import hmac
+import os
+import subprocess
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, HttpUrl
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from config import settings
 from database import get_session
 from models.webhook import Webhook
 
 router = APIRouter(prefix="/api/v1", tags=["webhooks"])
+
+
+# ---------------------------------------------------------------------------
+# GitHub deploy webhook (auto-deploy on push)
+# ---------------------------------------------------------------------------
+
+
+def verify_github_signature(payload: bytes, signature_header: str | None) -> bool:
+    """Verify GitHub HMAC-SHA256 signature."""
+    if not signature_header:
+        return False
+    secret = settings.webhook_github_secret
+    if not secret:
+        return False
+    expected = "sha256=" + hmac.new(
+        secret.encode(), payload, hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature_header)
+
+
+@router.post("/webhooks/github-deploy")
+async def github_deploy_webhook(request: Request):
+    """Receives GitHub push events and triggers a deploy."""
+    if request.headers.get("content-type") != "application/json":
+        raise HTTPException(status_code=415, detail="Content-Type must be application/json")
+
+    body = await request.body()
+    signature = request.headers.get("X-Hub-Signature-256")
+
+    if not verify_github_signature(body, signature):
+        raise HTTPException(status_code=401, detail="Invalid signature")
+
+    event = request.headers.get("X-GitHub-Event", "unknown")
+
+    # Only deploy on push events
+    if event != "push":
+        return {"status": "ignored", "event": event, "reason": "not a push event"}
+
+    # Run deploy in background (non-blocking)
+    subprocess.Popen(
+        ["/root/whyme/deploy.sh"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+    return {
+        "status": "deploying",
+        "event": event,
+        "message": "Deploy triggered in background",
+    }
 
 
 # ---------------------------------------------------------------------------
