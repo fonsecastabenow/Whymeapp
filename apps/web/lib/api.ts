@@ -301,6 +301,18 @@ async function apiFetch<T>(path: string, options?: RequestInit, token?: string):
   return res.json() as Promise<T>
 }
 
+// Legacy API wrapper for pages that use api.get/post pattern
+export const api = {
+  get: <T>(path: string, token?: string) => apiFetch<T>(path, undefined, token),
+  post: <T>(path: string, body?: unknown, token?: string) =>
+    apiFetch<T>(path, { method: "POST", body: body ? JSON.stringify(body) : undefined }, token),
+  put: <T>(path: string, body: unknown, token?: string) =>
+    apiFetch<T>(path, { method: "PUT", body: JSON.stringify(body) }, token),
+  patch: <T>(path: string, body: unknown, token?: string) =>
+    apiFetch<T>(path, { method: "PATCH", body: JSON.stringify(body) }, token),
+  delete: <T>(path: string, token?: string) => apiFetch<T>(path, { method: "DELETE" }, token),
+}
+
 export function loginUser(data: LoginRequest): Promise<LoginResponse> {
   return apiFetch("/auth/login", { method: "POST", body: JSON.stringify(data) })
 }
