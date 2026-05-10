@@ -60,6 +60,7 @@ export type JobData = {
   title: string
   description: string | null
   status: string
+  profession: string | null
   ocean_ideal: OCEANScores | null
   hard_skills_required: string[]
   education_level_min: string | null
@@ -68,6 +69,7 @@ export type JobData = {
   salary_min: number | null
   salary_max: number | null
   location: string | null
+  languages_required: Array<{language: string; level: string}> | null
   created_at: string
 }
 
@@ -489,6 +491,7 @@ export type JobCreateRequest = {
   company_id: string
   title: string
   description?: string | null
+  profession?: string | null
   ocean_ideal?: Record<string, number> | null
   hard_skills_required?: string[]
   education_level_min?: string | null
@@ -497,11 +500,13 @@ export type JobCreateRequest = {
   salary_min?: number | null
   salary_max?: number | null
   location?: string | null
+  languages_required?: Array<{language: string; level: string}> | null
 }
 
 export type JobUpdateRequest = {
   title?: string
   description?: string | null
+  profession?: string | null
   ocean_ideal?: Record<string, number> | null
   hard_skills_required?: string[]
   education_level_min?: string | null
@@ -510,6 +515,7 @@ export type JobUpdateRequest = {
   salary_min?: number | null
   salary_max?: number | null
   location?: string | null
+  languages_required?: Array<{language: string; level: string}> | null
 }
 
 export function createJob(data: JobCreateRequest, authToken: string): Promise<JobData> {
