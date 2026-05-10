@@ -4,34 +4,13 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ErrorState } from "@/components/ui/error-state"
+import { Card } from "@/components/ui/card"
+import { SectionLabel } from "@/components/ui/section-label"
+import { EmptyState } from "@/components/ui/empty-state"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Avatar } from "@/components/ui/avatar"
 import { OceanRadar, OceanBars } from "@/components/ocean/radar"
 import { DashboardLayout } from "@/components/layouts/dashboard-layout"
-import { scoreColor } from "@/lib/utils"
-
-// ─── Score ring (candidate dashboard) ────────────────────────────────────────
-
-function ScoreRing({ pct, size = 64 }: { pct: number; size?: number }) {
-  const r = size * 0.42
-  const cx = size / 2
-  const circ = 2 * Math.PI * r
-  const offset = circ - (pct / 100) * circ
-  const color = scoreColor(pct)
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ flexShrink: 0 }}>
-      <circle cx={cx} cy={cx} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={size * 0.09} />
-      <circle cx={cx} cy={cx} r={r} fill="none" stroke={color} strokeWidth={size * 0.09}
-        strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset}
-        transform={`rotate(-90 ${cx} ${cx})`}
-        style={{ transition: "stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1)" }} />
-      <text x={cx} y={cx - 2} textAnchor="middle" dominantBaseline="central"
-        fontSize={size * 0.22} fontWeight={800} fill={color}>{pct}</text>
-      <text x={cx} y={cx + size * 0.18} textAnchor="middle" dominantBaseline="central"
-        fontSize={size * 0.14} fontWeight={600} fill={color} opacity={0.7}>%</text>
-    </svg>
-  )
-}
 import {
   getCandidateProfile,
   getCandidateMatchDetails,
@@ -55,7 +34,16 @@ const WORK_MODEL_LABELS: Record<string, string> = {
   presencial: "Presencial",
   hibrido: "Híbrido",
   remoto: "Remoto",
+  indiferente: "Indiferente",
 }
+
+const SALARY_LEVELS = [
+  { value: "1000-1500", label: "Entre €1.000 e €1.500", min: 1000, max: 1500 },
+  { value: "1500-2000", label: "Entre €1.500 e €2.000", min: 1500, max: 2000 },
+  { value: "2000-2500", label: "Entre €2.000 e €2.500", min: 2000, max: 2500 },
+  { value: "2500-3000", label: "Entre €2.500 e €3.000", min: 2500, max: 3000 },
+  { value: "3000+", label: "Acima de €3.000 (sem limite)", min: 3000, max: null },
+]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -83,16 +71,12 @@ function CandidateSidebar({
 
   return (
     <>
-      <div className="border-b border-[rgba(58,176,255,0.10)] p-6">
+      <div className="border-b border-[#3AB0FF]/10 p-6">
         <Avatar name={candidate.name} size="lg" className="mb-4" />
-        <h1 className="text-[17px] font-bold leading-snug tracking-[-0.01em] text-foreground">
-          {candidate.name}
-        </h1>
-        {candidate.headline && (
-          <p className="mt-1 text-sm" style={{ color: "var(--fg-3)" }}>{candidate.headline}</p>
-        )}
+        <h1 className="text-lg font-bold leading-snug text-foreground">{candidate.name}</h1>
+        {candidate.headline && <p className="mt-1 text-sm text-muted-foreground">{candidate.headline}</p>}
         {locationStr && (
-          <p className="mt-2 flex items-center gap-1.5 text-xs" style={{ color: "var(--fg-3)" }}>
+          <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground/70">
             <svg className="h-3 w-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
               <circle cx="12" cy="9" r="2.5" />
@@ -105,8 +89,8 @@ function CandidateSidebar({
       <div className="flex-1 space-y-5 p-5 text-sm">
         {candidate.professional_level && (
           <div>
-            <p className="eyebrow mb-2">Nível</p>
-            <span className="chip chip-primary">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">Nível</p>
+            <span className="rounded-full border border-[#3AB0FF]/20 bg-[#3AB0FF]/10 px-2.5 py-0.5 text-xs font-medium text-[#3AB0FF]">
               {LEVEL_LABELS[candidate.professional_level] ?? candidate.professional_level}
             </span>
           </div>
@@ -114,10 +98,12 @@ function CandidateSidebar({
 
         {candidate.hard_skills && candidate.hard_skills.length > 0 && (
           <div>
-            <p className="eyebrow mb-2">Hard Skills</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">Hard Skills</p>
             <div className="flex flex-wrap gap-1.5">
               {candidate.hard_skills.map((skill) => (
-                <span key={skill} className="chip">{skill}</span>
+                <span key={skill} className="rounded-md border border-[#3AB0FF]/15 bg-[#3AB0FF]/5 px-2 py-0.5 text-xs text-foreground/80">
+                  {skill}
+                </span>
               ))}
             </div>
           </div>
@@ -125,27 +111,21 @@ function CandidateSidebar({
 
         {candidate.education && (candidate.education.course || candidate.education.institution) && (
           <div>
-            <p className="eyebrow mb-2">Formação</p>
-            {candidate.education.level && (
-              <p className="text-xs" style={{ color: "var(--fg-3)" }}>{candidate.education.level}</p>
-            )}
-            {candidate.education.course && (
-              <p style={{ color: "var(--fg-2)" }}>{candidate.education.course}</p>
-            )}
-            {candidate.education.institution && (
-              <p className="text-xs" style={{ color: "var(--fg-3)" }}>{candidate.education.institution}</p>
-            )}
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">Formação</p>
+            {candidate.education.level && <p className="text-xs text-muted-foreground/70">{candidate.education.level}</p>}
+            {candidate.education.course && <p className="text-foreground/90">{candidate.education.course}</p>}
+            {candidate.education.institution && <p className="text-xs text-muted-foreground/70">{candidate.education.institution}</p>}
           </div>
         )}
 
         {candidate.languages && candidate.languages.length > 0 && (
           <div>
-            <p className="eyebrow mb-2">Idiomas</p>
-            <div className="space-y-1.5">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">Idiomas</p>
+            <div className="space-y-1">
               {candidate.languages.map((l, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <span style={{ color: "var(--fg-2)" }}>{l.language}</span>
-                  <span className="text-xs" style={{ color: "var(--fg-3)" }}>{l.level}</span>
+                  <span className="text-foreground/90">{l.language}</span>
+                  <span className="text-xs text-muted-foreground/70">{l.level}</span>
                 </div>
               ))}
             </div>
@@ -154,17 +134,15 @@ function CandidateSidebar({
 
         {(candidate.work_model || candidate.salary_expectation) && (
           <div>
-            <p className="eyebrow mb-2">Preferências</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">Preferências</p>
             {candidate.work_model && (
-              <p style={{ color: "var(--fg-2)" }}>
-                {WORK_MODEL_LABELS[candidate.work_model] ?? candidate.work_model}
-              </p>
+              <p className="text-foreground/90">{WORK_MODEL_LABELS[candidate.work_model] ?? candidate.work_model}</p>
             )}
             {candidate.salary_expectation && (candidate.salary_expectation.min || candidate.salary_expectation.max) && (
-              <p className="mt-0.5 font-data text-xs" style={{ color: "var(--fg-3)" }}>
-                {formatCurrency(candidate.salary_expectation.min)}
-                {candidate.salary_expectation.min && candidate.salary_expectation.max ? " – " : ""}
-                {formatCurrency(candidate.salary_expectation.max)}
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {candidate.salary_expectation.max
+                  ? `${formatCurrency(candidate.salary_expectation.min)} – ${formatCurrency(candidate.salary_expectation.max)}`
+                  : `A partir de ${formatCurrency(candidate.salary_expectation.min)}`}
               </p>
             )}
           </div>
@@ -172,7 +150,7 @@ function CandidateSidebar({
 
         {candidate.linkedin_url && (
           <div>
-            <p className="eyebrow mb-2">LinkedIn</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[#3AB0FF]/70">LinkedIn</p>
             <a
               href={candidate.linkedin_url}
               target="_blank"
@@ -189,10 +167,10 @@ function CandidateSidebar({
         )}
       </div>
 
-      <div className="space-y-2 border-t border-[rgba(58,176,255,0.10)] p-5">
+      <div className="border-t border-[#3AB0FF]/10 p-5 space-y-2">
         <button
           onClick={onStartInterview}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3AB0FF] px-4 py-2.5 text-sm font-semibold text-[#0B1F3A] transition-all hover:bg-[#5BC2FF] hover:shadow-[0_0_20px_rgba(58,176,255,0.35)]"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
         >
           <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -201,21 +179,19 @@ function CandidateSidebar({
         </button>
         <a
           href={`/candidate/orbita?candidate_id=${candidateId}`}
-          className="flex w-full items-center justify-center rounded-xl border border-[rgba(139,92,246,0.30)] bg-[rgba(139,92,246,0.08)] px-4 py-2 text-sm font-medium text-[#DDD0FF] transition-all hover:border-[rgba(139,92,246,0.55)] hover:bg-[rgba(139,92,246,0.15)]"
+          className="flex w-full items-center justify-center rounded-xl border border-violet-500/30 bg-violet-500/8 px-4 py-2 text-sm font-medium text-violet-300 transition-colors hover:border-violet-500/60 hover:bg-violet-500/15"
         >
           Ver ORBITA
         </a>
         <a
           href={`/candidate/${candidateId}/report`}
-          className="flex w-full items-center justify-center rounded-xl border border-[rgba(58,176,255,0.15)] px-4 py-2 text-sm font-medium transition-all hover:border-[rgba(58,176,255,0.35)]"
-          style={{ color: "var(--fg-2)" }}
+          className="flex w-full items-center justify-center rounded-xl border border-[#3AB0FF]/15 px-4 py-2 text-sm font-medium text-foreground/90 transition-colors hover:border-[#3AB0FF]/35 hover:text-foreground"
         >
           Relatório OCEAN
         </a>
         <a
           href={`/candidate/${candidateId}/profile`}
-          className="flex w-full items-center justify-center rounded-xl border border-[rgba(58,176,255,0.10)] px-4 py-2 text-sm font-medium transition-all hover:border-[rgba(58,176,255,0.30)]"
-          style={{ color: "var(--fg-3)" }}
+          className="flex w-full items-center justify-center rounded-xl border border-[#3AB0FF]/10 px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:border-[#3AB0FF]/30 hover:text-foreground"
         >
           Editar Perfil
         </a>
@@ -236,6 +212,12 @@ export default function CandidateDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
   const [activeTab, setActiveTab] = useState<"matches" | "interview">("matches")
+  const [autoStartInterview, setAutoStartInterview] = useState(false)
+
+  function goToInterview() {
+    setActiveTab("interview")
+    setAutoStartInterview(true)
+  }
 
   async function refetchCandidate() {
     try {
@@ -247,7 +229,7 @@ export default function CandidateDashboardPage() {
       setMatches(matchData)
       setActiveTab("matches")
     } catch {
-      // silently ignore refetch errors
+      // silently ignore refetch errors — page already loaded
     }
   }
 
@@ -261,6 +243,7 @@ export default function CandidateDashboardPage() {
           getCandidateProfile(candidateId),
           getCandidateMatchDetails(candidateId).catch(() => [] as MatchDetailItem[]),
         ])
+
         if (cancelled) return
         setCandidate(candData)
         setMatches(matchData)
@@ -281,8 +264,6 @@ export default function CandidateDashboardPage() {
   if (!candidate) return null
 
   const hasOcean = !!candidate.ocean_scores
-  const bestScore = matches.length > 0 ? Math.max(...matches.map((m) => Math.round(m.score * 100))) : 0
-  const bilateralCount = matches.filter((m) => m.status === "bilateral").length
 
   return (
     <DashboardLayout
@@ -290,84 +271,31 @@ export default function CandidateDashboardPage() {
         <CandidateSidebar
           candidate={candidate}
           candidateId={candidateId}
-          onStartInterview={() => setActiveTab("interview")}
+          onStartInterview={goToInterview}
         />
       }
       title="Dashboard"
       subtitle="Seu perfil e matches"
     >
-      {/* KPI stat-cards */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="stat-card">
-          <p className="stat-k">Matches</p>
-          <p className="stat-v font-data">{matches.length}</p>
-        </div>
-        <div className="stat-card">
-          <p className="stat-k">Melhor Score</p>
-          <p
-            className="stat-v font-data"
-            style={{ color: bestScore > 0 ? scoreColor(bestScore) : "var(--fg-3)" }}
-          >
-            {bestScore > 0 ? `${bestScore}%` : "—"}
-          </p>
-        </div>
-        <div className="stat-card">
-          <p className="stat-k">Entrevista</p>
-          <p
-            className="mt-1.5 text-sm font-semibold"
-            style={{ color: hasOcean ? "#38d391" : "#f5b454" }}
-          >
-            {hasOcean ? "Completa" : "Pendente"}
-          </p>
-        </div>
-        <div className="stat-card">
-          <p className="stat-k">Bilateral</p>
-          <p className="stat-v font-data" style={{ color: bilateralCount > 0 ? "#8B5CF6" : undefined }}>
-            {bilateralCount}
-          </p>
-        </div>
-      </div>
-
       {/* OCEAN section */}
       <section>
-        <div className="section-label mb-4">Perfil OCEAN — A Órbita</div>
+        <SectionLabel>Perfil OCEAN — A Órbita</SectionLabel>
         {hasOcean ? (
-          <div
-            className="rounded-2xl border p-6"
-            style={{
-              background: "var(--surface)",
-              borderColor: "var(--line)",
-            }}
-          >
+          <Card>
             <div className="flex flex-col items-center gap-8 md:flex-row">
               <div className="shrink-0">
                 <OceanRadar scores={candidate.ocean_scores!} />
               </div>
               <OceanBars scores={candidate.ocean_scores!} />
             </div>
-          </div>
+          </Card>
         ) : (
-          <div
-            className="flex flex-col items-center gap-4 rounded-2xl border p-8 text-center"
-            style={{ background: "var(--surface-3)", borderColor: "var(--line)" }}
-          >
-            <div
-              className="flex h-12 w-12 items-center justify-center rounded-full"
-              style={{ background: "rgba(58,176,255,0.10)", border: "1px solid rgba(58,176,255,0.22)" }}
-            >
-              <svg className="h-6 w-6 text-[#3AB0FF]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-semibold text-foreground">Faça a entrevista OCEAN</p>
-              <p className="mt-1 text-sm" style={{ color: "var(--fg-3)" }}>
-                Responda 8 perguntas e descubra sua órbita de personalidade profissional
-              </p>
-            </div>
+          <div className="flex flex-col items-center gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/30 p-8 text-center">
+            <p className="font-semibold text-zinc-300">Faça a entrevista OCEAN para ver seu perfil</p>
+            <p className="text-sm text-zinc-500">Responda 8 perguntas e descubra sua órbita de personalidade profissional</p>
             <button
-              onClick={() => setActiveTab("interview")}
-              className="mt-1 flex items-center gap-2 rounded-xl bg-[#3AB0FF] px-5 py-2.5 text-sm font-semibold text-[#0B1F3A] transition-all hover:bg-[#5BC2FF] hover:shadow-[0_0_20px_rgba(58,176,255,0.35)]"
+              onClick={goToInterview}
+              className="mt-1 flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -380,30 +308,24 @@ export default function CandidateDashboardPage() {
 
       {/* Tabs: Matches / Entrevista */}
       <section>
-        {/* Tab bar */}
-        <div
-          className="mb-4 flex gap-1 rounded-xl border p-1"
-          style={{ background: "rgba(11,31,58,0.6)", borderColor: "var(--line)" }}
-        >
+        <div className="mb-4 flex gap-1 rounded-xl border border-zinc-800 bg-zinc-900/50 p-1">
           <button
             onClick={() => setActiveTab("matches")}
-            className="flex-1 rounded-lg py-2 text-sm font-medium transition-all"
-            style={
+            className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
               activeTab === "matches"
-                ? { background: "rgba(58,176,255,0.15)", color: "#BFE0FF" }
-                : { color: "var(--fg-3)" }
-            }
+                ? "bg-zinc-800 text-zinc-100 shadow-sm"
+                : "text-zinc-500 hover:text-zinc-300"
+            }`}
           >
             Matches{matches.length > 0 ? ` (${matches.length})` : ""}
           </button>
           <button
             onClick={() => setActiveTab("interview")}
-            className="flex-1 rounded-lg py-2 text-sm font-medium transition-all"
-            style={
+            className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
               activeTab === "interview"
-                ? { background: "rgba(58,176,255,0.15)", color: "#BFE0FF" }
-                : { color: "var(--fg-3)" }
-            }
+                ? "bg-zinc-800 text-zinc-100 shadow-sm"
+                : "text-zinc-500 hover:text-zinc-300"
+            }`}
           >
             Entrevista
           </button>
@@ -411,94 +333,38 @@ export default function CandidateDashboardPage() {
 
         {activeTab === "matches" && (
           matches.length === 0 ? (
-            <div
-              className="flex flex-col items-center gap-3 rounded-2xl border py-12 text-center"
-              style={{ background: "var(--surface-3)", borderColor: "var(--line)" }}
-            >
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-full text-xl"
-                style={{ background: "var(--surface-2)", border: "1px solid var(--line)" }}
-              >
-                ◎
-              </div>
-              <p className="font-semibold text-foreground">Nenhum match ainda</p>
-              <p className="text-sm" style={{ color: "var(--fg-3)" }}>
-                Complete sua entrevista OCEAN para começar
-              </p>
-            </div>
+            <EmptyState
+              title="Nenhum match ainda"
+              description="Complete sua entrevista OCEAN para começar"
+            />
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {matches.map((match, i) => {
+            <div className="space-y-3">
+              {matches.map((match) => {
                 const pct = Math.round(match.score * 100)
-                const color = scoreColor(pct)
-                const isBilateral = match.status === "bilateral"
-                const [hovered, setHovered] = useState(false)
-
+                const barColor = pct >= 80 ? "#10B981" : pct >= 60 ? "#F59E0B" : "#EF4444"
                 return (
                   <div
                     key={match.id}
-                    className="flex flex-col rounded-[18px] p-5 transition-all duration-200"
-                    style={{
-                      background: "rgba(16,34,68,0.78)",
-                      backdropFilter: "blur(20px)",
-                      border: hovered ? "1px solid rgba(58,176,255,0.28)" : "1px solid rgba(58,176,255,0.12)",
-                      boxShadow: hovered ? `0 16px 40px -16px ${color}55, 0 4px 24px rgba(0,0,0,0.30)` : "0 4px 24px rgba(0,0,0,0.28)",
-                      transform: hovered ? "translateY(-2px)" : "none",
-                    }}
-                    onMouseEnter={() => setHovered(true)}
-                    onMouseLeave={() => setHovered(false)}
+                    className="flex flex-col gap-4 rounded-2xl border border-[#3AB0FF]/10 bg-[rgba(16,34,68,0.7)] p-4 transition-all hover:border-[#3AB0FF]/25 hover:bg-[rgba(16,34,68,0.9)] sm:flex-row sm:items-center sm:gap-6"
                   >
-                    {/* Rank eyebrow */}
-                    <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: "rgba(58,176,255,0.55)" }}>
-                      #{i + 1} Match
-                    </p>
-
-                    {/* Header: avatar + info + score ring */}
-                    <div className="mb-3 flex items-start gap-3">
-                      <Avatar name={match.company_name ?? "?"} className="shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13.5px] font-bold leading-snug">{match.job_title}</p>
-                        <p className="truncate text-[11.5px]" style={{ color: "rgba(200,213,234,0.50)" }}>{match.company_name}</p>
+                    <div className="flex min-w-0 flex-1 items-center gap-3">
+                      <Avatar name={match.company_name ?? "?"} />
+                      <div className="min-w-0">
+                        <div className="truncate font-semibold text-foreground">{match.job_title}</div>
+                        <div className="truncate text-sm text-muted-foreground/70">{match.company_name}</div>
                       </div>
-                      <ScoreRing pct={pct} size={56} />
                     </div>
-
-                    {/* Status */}
-                    <div className="mb-3">
-                      {isBilateral ? (
-                        <span className="bilateral-badge"><span className="bilateral-pulse" />Match!</span>
-                      ) : (
-                        <StatusBadge status={match.status} />
-                      )}
-                    </div>
-
-                    {/* OCEAN breakdown (if available) */}
-                    {match.ocean_breakdown && (
-                      <div className="mb-3 rounded-xl p-3" style={{ background: "rgba(8,22,46,0.50)", border: "1px solid rgba(58,176,255,0.08)" }}>
-                        <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.14em]" style={{ color: "rgba(58,176,255,0.45)" }}>Compatibilidade OCEAN</p>
-                        {["openness","conscientiousness","extraversion","agreeableness","neuroticism"].map((key, ki) => {
-                          const colors = ["#8B5CF6","#3B82F6","#F59E0B","#10B981","#EF4444"]
-                          const labels = ["O","C","E","A","N"]
-                          const val = Math.min(Math.round((match.ocean_breakdown![key] ?? 0) > 1 ? match.ocean_breakdown![key] : (match.ocean_breakdown![key] ?? 0) * 100), 100)
-                          return (
-                            <div key={key} className="mb-1 flex items-center gap-1.5">
-                              <span className="w-3 text-[9px] font-bold" style={{ color: colors[ki] }}>{labels[ki]}</span>
-                              <div className="h-[3px] flex-1 overflow-hidden rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
-                                <div className="h-full rounded-full" style={{ width: `${val}%`, background: colors[ki] }} />
-                              </div>
-                              <span className="w-5 text-right text-[9px]" style={{ color: colors[ki] }}>{val}</span>
-                            </div>
-                          )
-                        })}
+                    <div className="flex shrink-0 items-center gap-4">
+                      <div className="w-24 sm:w-36">
+                        <div className="mb-1.5 flex justify-between text-xs">
+                          <span className="text-muted-foreground/70">Compatibilidade</span>
+                          <span className="font-semibold tabular-nums text-foreground/90">{pct}%</span>
+                        </div>
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-white/8">
+                          <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: barColor }} />
+                        </div>
                       </div>
-                    )}
-
-                    {/* Footer action */}
-                    <div className="mt-auto flex gap-2 border-t pt-3" style={{ borderColor: "rgba(58,176,255,0.10)" }}>
-                      <button className="flex-1 rounded-[10px] py-2 text-[12px] font-semibold transition-colors"
-                        style={{ border: "1px solid rgba(58,176,255,0.20)", color: "#BFE0FF", background: "rgba(58,176,255,0.06)" }}>
-                        Ver detalhes
-                      </button>
+                      <StatusBadge status={match.status} />
                     </div>
                   </div>
                 )
@@ -511,7 +377,11 @@ export default function CandidateDashboardPage() {
           <InterviewChat
             candidateId={candidateId}
             hasExistingScores={hasOcean}
-            onComplete={refetchCandidate}
+            onComplete={() => {
+              refetchCandidate()
+              setAutoStartInterview(false)
+            }}
+            autoStart={autoStartInterview}
           />
         )}
       </section>

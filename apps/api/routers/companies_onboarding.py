@@ -25,7 +25,7 @@ OCEAN_KEYS = {
     "neuroticism": "n",
 }
 
-WORK_MODELS = ["presencial", "hibrido", "remoto"]
+WORK_MODELS = ["presencial", "hibrido", "remoto", "indiferente"]
 LANGUAGE_LEVELS = ["Iniciante", "Basico", "Intermediario", "Avançado", "Fluente"]
 
 

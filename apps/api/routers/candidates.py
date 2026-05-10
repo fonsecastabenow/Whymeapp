@@ -20,7 +20,7 @@ router = APIRouter(prefix="/candidates", tags=["candidates"])
 # ─── Reference Data ──────────────────────────────────────────────────────
 
 PROFESSIONAL_LEVELS = ["junior", "pleno", "senior", "tech-lead", "specialist"]
-WORK_MODELS = ["presencial", "hibrido", "remoto"]
+WORK_MODELS = ["presencial", "hibrido", "remoto", "indiferente"]
 LANGUAGE_LEVELS = ["Iniciante", "Básico", "Intermediário", "Avançado", "Fluente/Nativo"]
 
 
@@ -199,6 +199,7 @@ class EducationData(BaseModel):
     level: str | None = None
     course: str | None = None
     institution: str | None = None
+    additional_courses: list[dict] | None = None
 
 
 class LanguageData(BaseModel):
