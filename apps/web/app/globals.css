@@ -55,6 +55,13 @@
 
     /* Mono font */
     --mono: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+
+    /* Sidebar colors (contextual) */
+    --sidebar-bg: #18181b;     /* zinc-900 */
+    --sidebar-fg: #e4e4e7;     /* zinc-200 */
+    --sidebar-muted: #a1a1aa;  /* zinc-400 */
+    --sidebar-hover: rgba(113, 113, 122, 0.15);  /* zinc-500/15 */
+    --sidebar-line: #27272a;   /* zinc-800 */
   }
 }
 
@@ -71,6 +78,12 @@
     background-image:
       radial-gradient(1100px 600px at 80% -10%, rgba(58, 176, 255, 0.08), transparent 60%),
       radial-gradient(900px 500px at -10% 110%, rgba(139, 92, 246, 0.07), transparent 65%);
+}
+
+.light body {
+    background-image:
+      radial-gradient(1100px 600px at 80% -10%, rgba(58, 176, 255, 0.03), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(139, 92, 246, 0.03), transparent 65%);
     background-attachment: fixed;
   }
 }
@@ -302,6 +315,42 @@
 /* ============================================================ */
 /* Accessibility mode classes                                   */
 /* ============================================================ */
+
+.light {
+  --background: 0 0% 100%;
+  --foreground: 220 40% 6%;
+  --card: 0 0% 97%;
+  --card-foreground: 220 40% 6%;
+  --popover: 0 0% 97%;
+  --popover-foreground: 220 40% 6%;
+  --primary: 204 100% 40%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 93%;
+  --secondary-foreground: 220 40% 6%;
+  --muted: 0 0% 93%;
+  --muted-foreground: 215 16% 40%;
+  --accent: 204 100% 40%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84.2% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 15% 85%;
+  --input: 220 15% 85%;
+  --ring: 204 100% 40%;
+  --surface: rgba(255, 255, 255, 0.85);
+  --surface-2: rgba(245, 247, 250, 0.90);
+  --surface-3: rgba(240, 242, 245, 0.95);
+  --line: rgba(0, 0, 0, 0.10);
+  --line-strong: rgba(0, 0, 0, 0.18);
+  --line-soft: rgba(0, 0, 0, 0.05);
+  --primary-soft: rgba(58, 176, 255, 0.12);
+  --fg-2: #1a2332;
+  --fg-3: rgba(26, 35, 50, 0.60);
+  --sidebar-bg: #f4f4f5;      /* zinc-100 */
+  --sidebar-fg: #18181b;      /* zinc-900 */
+  --sidebar-muted: #71717a;   /* zinc-500 */
+  --sidebar-hover: rgba(113, 113, 122, 0.10);
+  --sidebar-line: #e4e4e7;    /* zinc-200 */
+}
 
 .high-contrast-mode {
   --background: 0 0% 100%;

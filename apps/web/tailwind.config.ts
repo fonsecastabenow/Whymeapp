@@ -62,6 +62,11 @@ const config: Config = {
           300: "rgba(58,176,255,0.30)",
           400: "rgba(58,176,255,0.40)",
         },
+        "sidebar-bg": "var(--sidebar-bg)",
+        "sidebar-fg": "var(--sidebar-fg)",
+        "sidebar-muted": "var(--sidebar-muted)",
+        "sidebar-hover": "var(--sidebar-hover)",
+        "sidebar-line": "var(--sidebar-line)",
         navy: {
           DEFAULT: "#0B1F3A",
           light: "#102244",
