@@ -105,10 +105,10 @@
   }
 
   .glass-card {
-    background: rgba(16, 34, 68, 0.70);
+    background: var(--surface);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(58, 176, 255, 0.12);
+    border: 1px solid var(--line);
   }
 
   .glow-gold {
@@ -450,4 +450,14 @@
   height: 6px;
   border-radius: 3px;
   background: rgba(58, 176, 255, 0.15);
+}
+
+@keyframes orbitCardIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
 }

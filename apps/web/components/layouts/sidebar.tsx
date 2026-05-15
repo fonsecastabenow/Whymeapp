@@ -57,8 +57,12 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
   }
 
   const handleLogout = () => {
-    localStorage.removeItem("whyme_token")
-    localStorage.removeItem("whyme_user")
+    try {
+      localStorage.removeItem("whyme_token")
+      localStorage.removeItem("whyme_user")
+    } catch (e) {
+      console.error("Logout error:", e)
+    }
     router.push("/login")
   }
 

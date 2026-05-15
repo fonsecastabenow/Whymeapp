@@ -23,7 +23,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
+      <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="light")document.documentElement.classList.add("light")}catch(e){}})()` }} />
       <body className={`${inter.className} ${mono.variable} flex min-h-screen flex-col`}>
         <ThemeProvider>
         <DevNav />
