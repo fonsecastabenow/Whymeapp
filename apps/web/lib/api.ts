@@ -48,6 +48,7 @@ export type UserData = {
 export type LoginRequest = { email: string; password: string }
 export type LoginResponse = {
   access_token: string
+  refresh_token: string
   token_type: string
   user: { id: string; email: string; name: string; role: string }
 }
@@ -275,9 +276,68 @@ export type ResumeData = {
   resume_text: string | null
 }
 
+let isRefreshing = false
+let refreshPromise: Promise<string | null> | null = null
+
+async function tryRefreshToken(): Promise<string | null> {
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise
+  }
+  const storedRefresh = typeof window !== "undefined" ? localStorage.getItem("whyme_refresh_token") : null
+  if (!storedRefresh) return null
+
+  isRefreshing = true
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch(`${API_BASE}/auth/refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh_token: storedRefresh }),
+      })
+      if (!res.ok) {
+        localStorage.removeItem("whyme_refresh_token")
+        return null
+      }
+      const data = (await res.json()) as { access_token: string; refresh_token: string }
+      localStorage.setItem("whyme_token", data.access_token)
+      localStorage.setItem("whyme_refresh_token", data.refresh_token)
+      return data.access_token
+    } catch {
+      localStorage.removeItem("whyme_refresh_token")
+      return null
+    } finally {
+      isRefreshing = false
+      refreshPromise = null
+    }
+  })()
+
+  return refreshPromise
+}
+
+function getStoredToken(): string | null {
+  if (typeof window === "undefined") return null
+  try {
+    return localStorage.getItem("whyme_token")
+  } catch {
+    return null
+  }
+}
+
+function clearSession() {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.removeItem("whyme_token")
+    localStorage.removeItem("whyme_refresh_token")
+    localStorage.removeItem("whyme_user")
+  } catch {
+    // ignore
+  }
+}
+
 async function apiFetch<T>(path: string, options?: RequestInit, token?: string): Promise<T> {
   const headers: Record<string, string> = { "Content-Type": "application/json" }
-  if (token) headers["Authorization"] = `Bearer ${token}`
+  const effectiveToken = token ?? getStoredToken()
+  if (effectiveToken) headers["Authorization"] = `Bearer ${effectiveToken}`
 
   const res = await fetch(`${API_BASE}${path}`, {
     headers: {
@@ -287,10 +347,27 @@ async function apiFetch<T>(path: string, options?: RequestInit, token?: string):
     ...options,
   })
 
-  if (res.status === 401) {
+  // Auto-refresh on 401 — only for client-side, only if we have a refresh token
+  if (res.status === 401 && typeof window !== "undefined" && !path.startsWith("/auth/refresh")) {
+    const refreshed = await tryRefreshToken()
+    if (refreshed) {
+      // Retry the original request with the new token
+      headers["Authorization"] = `Bearer ${refreshed}`
+      const retryRes = await fetch(`${API_BASE}${path}`, {
+        headers: {
+          ...headers,
+          ...(options?.headers as Record<string, string> | undefined),
+        },
+        ...options,
+      })
+      if (retryRes.ok) {
+        return retryRes.json() as Promise<T>
+      }
+    }
+
+    // Refresh failed — clear session and redirect
+    clearSession()
     if (typeof window !== "undefined") {
-      localStorage.removeItem("whyme_token")
-      localStorage.removeItem("whyme_user")
       window.location.href = "/login?session=expired"
     }
     throw new Error("Sessão expirada. Faça login novamente.")

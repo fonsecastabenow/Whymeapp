@@ -24,6 +24,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     )
 
 
+REFRESH_TOKEN_EXPIRE_DAYS = 30
+
+
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_expire_minutes)
@@ -41,6 +44,27 @@ def decode_access_token(token: str) -> dict:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+def create_refresh_token(data: dict) -> str:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, settings.api_secret_key, algorithm=settings.jwt_algorithm)
+
+
+def decode_refresh_token(token: str) -> dict:
+    try:
+        payload = jwt.decode(
+            token, settings.api_secret_key, algorithms=[settings.jwt_algorithm]
+        )
+        return payload
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
             headers={"WWW-Authenticate": "Bearer"},
         )
 

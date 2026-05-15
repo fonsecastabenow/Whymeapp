@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth import (
     create_access_token,
+    create_refresh_token,
+    decode_refresh_token,
     get_current_user,
     hash_password,
     verify_password,
@@ -38,8 +40,13 @@ class LoginRequest(BaseModel):
 
 class LoginResponse(BaseModel):
     access_token: str
+    refresh_token: str
     token_type: str = "bearer"
     user: RegisterResponse
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
 
 
 class UserResponse(BaseModel):
@@ -120,8 +127,10 @@ async def login(request: LoginRequest, session: AsyncSession = Depends(get_sessi
         )
 
     token = create_access_token(data={"sub": str(user.id), "role": user.role})
+    refresh = create_refresh_token(data={"sub": str(user.id), "role": user.role})
     return LoginResponse(
         access_token=token,
+        refresh_token=refresh,
         user=RegisterResponse(
             id=str(user.id),
             email=user.email,
@@ -129,6 +138,38 @@ async def login(request: LoginRequest, session: AsyncSession = Depends(get_sessi
             role=user.role,
         ),
     )
+
+
+@router.post("/refresh")
+async def refresh_token(
+    request: RefreshTokenRequest,
+    session: AsyncSession = Depends(get_session),
+):
+    payload = decode_refresh_token(request.refresh_token)
+    user_id = payload.get("sub")
+    role = payload.get("role")
+    if user_id is None or role is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token payload",
+        )
+
+    result = await session.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+        )
+
+    new_access = create_access_token(data={"sub": str(user.id), "role": user.role})
+    new_refresh = create_refresh_token(data={"sub": str(user.id), "role": user.role})
+
+    return {
+        "access_token": new_access,
+        "refresh_token": new_refresh,
+        "token_type": "bearer",
+    }
 
 
 @router.get("/me", response_model=UserResponse)
