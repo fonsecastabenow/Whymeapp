@@ -336,7 +336,8 @@ function clearSession() {
 
 async function apiFetch<T>(path: string, options?: RequestInit, token?: string): Promise<T> {
   const headers: Record<string, string> = { "Content-Type": "application/json" }
-  const effectiveToken = token ?? getStoredToken()
+  const isAuthRoute = path === "/auth/login" || path === "/auth/register" || path === "/auth/refresh"
+  const effectiveToken = token ?? (isAuthRoute ? null : getStoredToken())
   if (effectiveToken) headers["Authorization"] = `Bearer ${effectiveToken}`
 
   const res = await fetch(`${API_BASE}${path}`, {
