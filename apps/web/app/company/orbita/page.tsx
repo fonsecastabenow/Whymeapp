@@ -13,6 +13,7 @@ import type { CandidateMatchData, JobData, OCEANScores, UserData } from "@/lib/a
 import { DIMENSION_LABELS, DIMENSIONS } from "@whyme/shared"
 import { LoadingSpinner, ErrorState } from "@/components/ui"
 import { StatusBadge } from "@/components/ui/status-badge"
+import { DashboardLayout } from "@/components/layouts/dashboard-layout"
 import { scoreColor } from "@/lib/utils"
 
 // ─── constants ──────────────────────────────────────────────────────────────
@@ -192,27 +193,8 @@ export default function CompanyOrbitaPage() {
         }
       `}</style>
 
-      <main className="min-h-screen bg-background">
-        {/* header */}
-        <header
-          className="sticky top-0 z-30 border-b px-6 py-4"
-          style={{ background: "rgba(11,31,58,0.85)", backdropFilter: "blur(14px)", borderColor: "var(--line)" }}
-        >
-          <div className="mx-auto flex max-w-7xl items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-[#3AB0FF]" />
-              <span className="text-sm font-black tracking-widest text-gradient-gold uppercase">WHY ME?</span>
-              <span style={{ color: "var(--fg-3)" }}>/</span>
-              <span className="text-[17px] font-bold tracking-[-0.01em] text-foreground">ORBITA</span>
-            </div>
-            {user && (
-              <div className="flex items-center gap-2 text-sm" style={{ color: "var(--fg-2)" }}>
-                <Users className="h-4 w-4" />
-                <span>{user.name}</span>
-              </div>
-            )}
-          </div>
-        </header>
+      <DashboardLayout title="Órbita" subtitle="Candidatos em órbita">
+        <main>
 
         <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
           {/* filter bar */}
@@ -445,6 +427,7 @@ export default function CompanyOrbitaPage() {
         )}
       </div>
     </>
+    </DashboardLayout>
   )
 }
 
