@@ -1,21 +1,31 @@
 "use client"
 
 import { createContext, useContext, useEffect, useState } from "react"
-import { api, type UserData, type LoginResponse } from "@/lib/api"
+import { api, type LoginResponse } from "@/lib/api"
+
+type SessionUser = {
+  id: string
+  email: string
+  name: string
+  role: string
+  company_id?: string
+  candidate_id?: string
+  created_at?: string
+}
 
 type AuthContextType = {
-  user: UserData | null
+  user: SessionUser | null
   token: string | null
   loading: boolean
-  login: (email: string, password: string) => Promise<UserData>
-  register: (name: string, email: string, password: string, role: "candidate" | "company") => Promise<UserData>
+  login: (email: string, password: string) => Promise<SessionUser>
+  register: (name: string, email: string, password: string, role: "candidate" | "company") => Promise<SessionUser>
   logout: () => void
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserData | null>(null)
+  const [user, setUser] = useState<SessionUser | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -29,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false)
   }, [])
 
-  async function login(email: string, password: string): Promise<UserData> {
+  async function login(email: string, password: string): Promise<SessionUser> {
     const data = await api.post<LoginResponse>("/auth/login", { email, password })
     localStorage.setItem("whyme_token", data.access_token)
     localStorage.setItem("whyme_refresh_token", data.refresh_token)
@@ -44,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     email: string,
     password: string,
     role: "candidate" | "company"
-  ): Promise<UserData> {
+  ): Promise<SessionUser> {
     await api.post("/auth/register", { name, email, password, role })
     return login(email, password)
   }
