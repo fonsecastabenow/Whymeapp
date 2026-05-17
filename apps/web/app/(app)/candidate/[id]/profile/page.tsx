@@ -8,8 +8,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ErrorState } from "@/components/ui/error-state"
 import { Button } from "@/components/ui/button"
 import { useAuthGuard, type AuthState } from "@/lib/hooks"
-import { DashboardLayout } from "@/components/layouts/dashboard-layout"
-import { Sidebar } from "@/components/layouts/sidebar"
+
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -185,11 +184,7 @@ export default function CandidateProfilePage({ params }: { params: { id: string 
   const userName = candidate?.name
 
   return (
-    <DashboardLayout
-      title="Perfil"
-      subtitle={candidate.headline || candidate.name}
-      sidebar={<Sidebar userRole={userRole} userName={userName} />}
-    >
+    <>
 
         {/* ── Candidate header ── */}
         <section className="rounded-2xl border bg-card p-8 shadow-sm">
@@ -531,6 +526,6 @@ export default function CandidateProfilePage({ params }: { params: { id: string 
             <p className="text-sm text-muted-foreground">Nenhum match encontrado ainda.</p>
           </section>
         )}
-    </DashboardLayout>
+    </>
   )
 }

@@ -10,7 +10,6 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { StatusBadge } from "@/components/ui/status-badge"
 import { Avatar } from "@/components/ui/avatar"
 import { OceanRadar, OceanBars } from "@/components/ocean/radar"
-import { DashboardLayout } from "@/components/layouts/dashboard-layout"
 import {
   getCandidateProfile,
   getCandidateMatchDetails,
@@ -122,10 +121,7 @@ export default function CandidateDashboardPage() {
   const hasOcean = !!candidate.ocean_scores
 
   return (
-    <DashboardLayout
-      title="Dashboard"
-      subtitle="Seu perfil e matches"
-    >
+    <>
       {/* OCEAN section */}
       <section>
         <SectionLabel>Perfil OCEAN — A Órbita</SectionLabel>
@@ -234,6 +230,6 @@ export default function CandidateDashboardPage() {
           />
         )}
       </section>
-    </DashboardLayout>
+    </>
   )
 }

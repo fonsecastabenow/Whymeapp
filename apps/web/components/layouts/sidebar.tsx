@@ -15,20 +15,15 @@ import {
 import { useTheme } from "@/components/theme-provider"
 import { useMemo } from "react"
 
-interface SidebarProps {
-  userRole: "candidate" | "company" | null
-  userName?: string
-}
-
 const NAV_ITEMS = {
   candidate: [
-    { label: "Dashboard", href: "", icon: LayoutDashboard, pattern: "/dashboard" },
+    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, pattern: "/dashboard" },
     { label: "Perfil", href: "/profile", icon: User, pattern: "/profile" },
     { label: "Órbita", href: "/orbita", icon: Orbit, pattern: "/orbita" },
     { label: "Notificações", href: "/notifications", icon: Bell, pattern: "/notifications" },
   ],
   company: [
-    { label: "Dashboard", href: "", icon: LayoutDashboard, pattern: "/dashboard" },
+    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, pattern: "/dashboard" },
     { label: "Vagas", href: "/jobs", icon: Briefcase, pattern: "/jobs" },
     { label: "Órbita", href: "/orbita", icon: Orbit, pattern: "/orbita" },
     { label: "Perfil", href: "/profile", icon: User, pattern: "/profile" },
@@ -36,19 +31,54 @@ const NAV_ITEMS = {
   ],
 }
 
-export function Sidebar({ userRole, userName }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const { theme, toggleTheme } = useTheme()
 
+  // Read user from localStorage (runs on client only)
+  let userRole: "candidate" | "company" | null = null
+  let userName: string | undefined
+  let userId: string | undefined
+
+  if (typeof window !== "undefined") {
+    try {
+      const userStr = localStorage.getItem("whyme_user")
+      if (userStr) {
+        const user = JSON.parse(userStr)
+        userRole = user.role ?? null
+        userName = user.name ?? user.email
+        userId = user.id ?? null
+      }
+    } catch {}
+  }
+
   const items = useMemo(() => {
     const base = NAV_ITEMS[userRole === "company" ? "company" : "candidate"]
-    const prefix = userRole === "company" ? "" : `/candidate`
-    return base.map((item) => ({
-      ...item,
-      fullHref: `${prefix}${item.href}`,
-    }))
-  }, [userRole])
+    return base.map((item) => {
+      let href: string
+      if (userRole === "company") {
+        if (item.href === "/orbita") {
+          href = "/company/orbita"
+        } else if (item.href === "/notifications") {
+          href = "/notifications"
+        } else if (userId) {
+          href = `/company/${userId}${item.href}`
+        } else {
+          href = `/company${item.href}`
+        }
+      } else if (item.href === "/orbita") {
+        href = "/candidate/orbita"
+      } else if (item.href === "/notifications") {
+        href = "/notifications"
+      } else if (userId) {
+        href = `/candidate/${userId}${item.href}`
+      } else {
+        href = `/candidate${item.href}`
+      }
+      return { ...item, fullHref: href }
+    })
+  }, [userRole, userId])
 
   const isActive = (pattern: string) => {
     if (pattern === "/dashboard") return pathname.includes("/dashboard")

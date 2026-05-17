@@ -9,7 +9,6 @@ import { DIMENSION_LABELS, DIMENSIONS } from "@whyme/shared"
 import { LoadingSpinner, ErrorState, EmptyState } from "@/components/ui"
 import { scoreColor } from "@/lib/utils"
 import { useAuthGuard } from "@/lib/hooks"
-import { DashboardLayout } from "@/components/layouts/dashboard-layout"
 
 const DIMENSION_COLORS: Record<string, string> = {
   openness: "#8B5CF6",
@@ -60,12 +59,12 @@ export default function CandidateOrbitaPage() {
   if (state === "loading") return <LoadingSpinner message="Carregando seu ORBITA…" />
   if (state === "error") return <ErrorState message={errorMsg} onRetry={() => window.location.reload()} />
   if (state === "empty") return (
-    <DashboardLayout title="Órbita" subtitle="Empresas compatíveis">
+    <>
       <EmptyState
         title="Nenhuma empresa encontrada ainda"
         description="Complete sua entrevista OCEAN para descobrir quais empresas combinam com seu perfil."
       />
-    </DashboardLayout>
+    </>
   )
 
   const centerScores = matches[0]?.ocean_breakdown
@@ -75,7 +74,7 @@ export default function CandidateOrbitaPage() {
     : { openness: 0.5, conscientiousness: 0.5, extraversion: 0.5, agreeableness: 0.5, neuroticism: 0.5 }
 
   return (
-    <DashboardLayout title="Órbita" subtitle="Empresas com melhor compatibilidade">
+    <>
       {/* Hero */}
       <div className="mb-8 text-center">
         <p className="eyebrow">Visualização</p>
@@ -115,7 +114,7 @@ export default function CandidateOrbitaPage() {
       {selectedMatch && (
         <MatchModal match={selectedMatch} onClose={() => setSelectedMatch(null)} />
       )}
-    </DashboardLayout>
+    </>
   )
 }
 

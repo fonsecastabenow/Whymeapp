@@ -13,7 +13,6 @@ import type { CandidateMatchData, JobData, OCEANScores, UserData } from "@/lib/a
 import { DIMENSION_LABELS, DIMENSIONS } from "@whyme/shared"
 import { LoadingSpinner, ErrorState } from "@/components/ui"
 import { StatusBadge } from "@/components/ui/status-badge"
-import { DashboardLayout } from "@/components/layouts/dashboard-layout"
 import { scoreColor } from "@/lib/utils"
 
 // ─── constants ──────────────────────────────────────────────────────────────
@@ -193,8 +192,7 @@ export default function CompanyOrbitaPage() {
         }
       `}</style>
 
-      <DashboardLayout title={"Orbita"} subtitle={"Candidatos em orbita"}>
-        <main>
+
 
         <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
           {/* filter bar */}
@@ -397,7 +395,6 @@ export default function CompanyOrbitaPage() {
             </div>
           )}
         </div>
-      </main>
 
       {/* slide-over overlay */}
       {selectedCandidate && (
@@ -426,7 +423,6 @@ export default function CompanyOrbitaPage() {
           />
         )}
       </div>
-    </DashboardLayout>
     </>
   )
 }
