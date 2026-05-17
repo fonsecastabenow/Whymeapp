@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { Inter, JetBrains_Mono } from "next/font/google"
-import Link from "next/link"
 import "./globals.css"
 import { DevNav } from "@/components/dev-panel/DevNav"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -28,19 +27,8 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="light")document.documentElement.classList.add("light")}catch(e){}})()` }} />
         <ThemeProvider>
         <DevNav />
-        <main className="flex-1">{children}</main>
+        {children}
         </ThemeProvider>
-        <footer className="border-t border-[#3AB0FF]/10 bg-background px-6 py-4">
-          <div className="mx-auto max-w-7xl flex items-center justify-between">
-            <span className="text-xs text-muted-foreground/50">© 2026 Whyme Tecnologia Ltda.</span>
-            <Link
-              href="/privacy"
-              className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
-            >
-              Política de Privacidade
-            </Link>
-          </div>
-        </footer>
       </body>
     </html>
   )
