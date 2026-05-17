@@ -67,10 +67,11 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
     font-family: "Inter", system-ui, sans-serif;
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
@@ -105,10 +106,10 @@
   }
 
   .glass-card {
-    background: var(--surface);
+    background: rgba(16, 34, 68, 0.70);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--line);
+    border: 1px solid rgba(58, 176, 255, 0.12);
   }
 
   .glow-gold {
@@ -450,14 +451,4 @@
   height: 6px;
   border-radius: 3px;
   background: rgba(58, 176, 255, 0.15);
-}
-
-@keyframes orbitCardIn {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(100%); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
 }

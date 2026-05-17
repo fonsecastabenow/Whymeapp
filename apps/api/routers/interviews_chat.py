@@ -16,7 +16,10 @@ from auth import get_current_user
 from database import get_session
 from models.candidate import Candidate
 from models.interview_session import InterviewSession
+from models.job import Job
+from models.match import Match
 from models.user import User
+from services.matching_service import compute_match_score
 
 logger = logging.getLogger(__name__)
 
@@ -373,5 +376,39 @@ async def chat_score(
 
     interview.status = "ocean_completed"
     await session.commit()
+
+    # Auto-trigger matching for this candidate
+    try:
+        jobs_result = await session.execute(
+            select(Job).where(Job.status == "active", Job.ocean_ideal.isnot(None))
+        )
+        jobs = jobs_result.scalars().all()
+        created_matches = 0
+        for job in jobs:
+            score, breakdown = await compute_match_score(flat_scores, job.ocean_ideal)
+            if score < 0.6:
+                continue
+            existing = await session.execute(
+                select(Match).where(
+                    Match.job_id == job.id,
+                    Match.candidate_id == interview.candidate_id,
+                )
+            )
+            if existing.scalar_one_or_none():
+                continue
+            match = Match(
+                job_id=job.id,
+                candidate_id=interview.candidate_id,
+                score=score,
+                ocean_breakdown=breakdown,
+                status="pending",
+            )
+            session.add(match)
+            created_matches += 1
+        interview.status = "matched"
+        await session.commit()
+        logger.info("Chat matching: %d matches for %s", created_matches, interview.candidate_id)
+    except Exception as e:
+        logger.error("Matching error after chat interview: %s", e)
 
     return ChatScoreResponse(ocean_scores=flat_scores)

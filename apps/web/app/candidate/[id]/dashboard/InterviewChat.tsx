@@ -67,7 +67,7 @@ export default function InterviewChat({ candidateId, hasExistingScores, onComple
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState("")
   const [questionNumber, setQuestionNumber] = useState(0)
-  const [totalQuestions, setTotalQuestions] = useState(8)
+  const [totalQuestions, setTotalQuestions] = useState(30)
   const [isWaiting, setIsWaiting] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
   const [allowRetake, setAllowRetake] = useState(false)
@@ -211,7 +211,7 @@ export default function InterviewChat({ candidateId, hasExistingScores, onComple
         <div>
           <p className="text-lg font-semibold text-zinc-100">Entrevista de Perfil OCEAN</p>
           <p className="mt-1.5 max-w-sm text-sm text-zinc-400">
-            Responda 8 perguntas para gerar seu perfil de personalidade profissional. Leva cerca de 5 minutos.
+            Responda perguntas para gerar seu perfil de personalidade profissional. O numero varia conforme suas respostas.
           </p>
         </div>
         <button

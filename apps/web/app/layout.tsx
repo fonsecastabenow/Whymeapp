@@ -24,8 +24,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="light")document.documentElement.classList.add("light")}catch(e){}})()` }} />
       <body className={`${inter.className} ${mono.variable} flex min-h-screen flex-col`}>
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem("theme");if(t==="light")document.documentElement.classList.add("light")}catch(e){}})()` }} />
         <ThemeProvider>
         <DevNav />
         <main className="flex-1">{children}</main>

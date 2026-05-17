@@ -2,7 +2,6 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { Sidebar } from "@/components/layouts/sidebar"
 import { Bell, User } from "lucide-react"
-import { useState, useEffect } from "react"
 
 interface DashboardLayoutProps {
   title: string
@@ -10,10 +9,10 @@ interface DashboardLayoutProps {
   logoText?: string
   logoHref?: string
   children: React.ReactNode
-  sidebar?: React.ReactNode
   sidebarWidth?: string
   className?: string
   notificationCount?: number
+  sidebar?: React.ReactNode
 }
 
 export function DashboardLayout({
@@ -22,36 +21,36 @@ export function DashboardLayout({
   logoText = "WHY ME?",
   logoHref = "/",
   children,
-  sidebar,
   sidebarWidth = "lg:w-[264px]",
   className,
   notificationCount = 0,
+  sidebar,
 }: DashboardLayoutProps) {
-  const [userRole, setUserRole] = useState<"candidate" | "company" | null>(null)
-  const [userName, setUserName] = useState<string | undefined>(undefined)
-
-  useEffect(() => {
+  // Read user from localStorage (runs on client only)
+  let userRole: "candidate" | "company" | null = null
+  let userName: string | undefined
+  if (typeof window !== "undefined") {
     try {
       const userStr = localStorage.getItem("whyme_user")
       if (userStr) {
         const user = JSON.parse(userStr)
-        setUserRole(user.role ?? null)
-        setUserName(user.name ?? user.email)
+        userRole = user.role ?? null
+        userName = user.name ?? user.email
       }
     } catch {}
-  }, [])
+  }
 
   return (
     <div className={cn("flex min-h-screen flex-col bg-background text-foreground lg:flex-row", className)}>
       {/* Sidebar */}
       <aside
         className={cn(
-          "flex flex-col border-r border-sidebar-line bg-sidebar-bg",
+          "flex flex-col border-r border-zinc-800 bg-zinc-900",
           "lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto",
           sidebarWidth,
         )}
       >
-        {sidebar || <Sidebar userRole={userRole} userName={userName} />}
+        {sidebar ?? <Sidebar userRole={userRole} userName={userName} />}
       </aside>
 
       {/* Main */}

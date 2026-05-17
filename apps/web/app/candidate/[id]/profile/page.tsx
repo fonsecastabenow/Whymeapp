@@ -7,7 +7,9 @@ import { OceanRadar, OCEAN_DIMS } from "@/components/ocean/radar"
 import { LoadingSpinner } from "@/components/ui/loading-spinner"
 import { ErrorState } from "@/components/ui/error-state"
 import { Button } from "@/components/ui/button"
-import { useAuthGuard } from "@/lib/hooks"
+import { useAuthGuard, type AuthState } from "@/lib/hooks"
+import { DashboardLayout } from "@/components/layouts/dashboard-layout"
+import { Sidebar } from "@/components/layouts/sidebar"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -42,7 +44,8 @@ function extractSkills(raw: Record<string, unknown> | null): string[] {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CandidateProfilePage({ params }: { params: { id: string } }) {
-  useAuthGuard()
+  const auth = useAuthGuard("/login")
+  const isLoggedIn = auth.ready && !!auth.token
   const [state, setState] = useState<PageState>("loading")
   const [candidate, setCandidate] = useState<CandidateProfileData | null>(null)
   const [matches, setMatches] = useState<MatchDetailItem[]>([])
@@ -99,11 +102,7 @@ export default function CandidateProfilePage({ params }: { params: { id: string 
   const skills = extractSkills(candidate.skills)
   const hasOcean = !!candidate.ocean_scores
 
-  const storedUser =
-    typeof window !== "undefined"
-      ? (() => { try { return JSON.parse(localStorage.getItem("whyme_user") ?? "{}") } catch { return {} } })()
-      : {}
-  const isOwner = storedUser?.id === candidate.user_id
+  const isOwner = isLoggedIn && auth.userId === candidate.user_id
 
   function startEditing() {
     setEditForm({
@@ -123,7 +122,7 @@ export default function CandidateProfilePage({ params }: { params: { id: string 
 
   async function handleSave() {
     if (!candidate) return
-    const token = typeof window !== "undefined" ? localStorage.getItem("whyme_token") ?? "" : ""
+    const token = auth.token
     setSaving(true)
     setSaveError("")
     try {
@@ -182,18 +181,15 @@ export default function CandidateProfilePage({ params }: { params: { id: string 
     if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
-  return (
-    <main className="min-h-screen bg-background">
-      {/* ── Nav ── */}
-      <header className="sticky top-0 z-30 border-b border-[#3AB0FF]/10 bg-background/95 backdrop-blur-md px-6 py-4">
-        <div className="mx-auto flex max-w-4xl items-center gap-3">
-          <span className="text-lg font-black tracking-widest text-gradient-gold uppercase">WHY ME?</span>
-          <span className="text-muted-foreground">/</span>
-          <span className="text-sm text-muted-foreground">Perfil</span>
-        </div>
-      </header>
+  const userRole = "candidate" as const
+  const userName = candidate?.name
 
-      <div className="mx-auto max-w-4xl space-y-8 px-4 py-10">
+  return (
+    <DashboardLayout
+      title="Perfil"
+      subtitle={candidate.headline || candidate.name}
+      sidebar={<Sidebar userRole={userRole} userName={userName} />}
+    >
 
         {/* ── Candidate header ── */}
         <section className="rounded-2xl border bg-card p-8 shadow-sm">
@@ -535,7 +531,6 @@ export default function CandidateProfilePage({ params }: { params: { id: string 
             <p className="text-sm text-muted-foreground">Nenhum match encontrado ainda.</p>
           </section>
         )}
-      </div>
-    </main>
+    </DashboardLayout>
   )
 }

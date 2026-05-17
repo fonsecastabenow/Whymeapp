@@ -3,10 +3,10 @@ import type { Config } from "tailwindcss"
 const config: Config = {
   darkMode: ["class"],
   content: [
-    "./pages/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
+    "/home/rodrigo/Whymeapp/apps/web/pages/**/*.{ts,tsx}",
+    "/home/rodrigo/Whymeapp/apps/web/components/**/*.{ts,tsx}",
+    "/home/rodrigo/Whymeapp/apps/web/app/**/*.{ts,tsx}",
+    "/home/rodrigo/Whymeapp/apps/web/src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -52,7 +52,6 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // WHY ME? electric blue accent ("gold" alias from design system)
         gold: {
           DEFAULT: "#3AB0FF",
           muted: "#1a8fdb",
@@ -72,6 +71,9 @@ const config: Config = {
           light: "#102244",
           card: "#0f2040",
         },
+      },
+      borderColor: {
+        border: "hsl(var(--border))",
       },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],

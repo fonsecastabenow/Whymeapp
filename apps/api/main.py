@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
@@ -41,6 +42,13 @@ app.include_router(resumes.router)
 app.include_router(report.router)
 app.include_router(webhooks.router)
 app.include_router(admin.router)
+
+# Serve uploaded files (resumes, etc.)
+import os as _os
+_upload_dir = _os.environ.get("UPLOAD_DIR", "/app/uploads")
+_os.makedirs(_upload_dir, exist_ok=True)
+_os.makedirs(_os.path.join(_upload_dir, "resumes"), exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=_upload_dir), name="uploads")
 
 
 @app.get("/")

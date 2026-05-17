@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_session
+from models.company import Company
 from models.job import Job
 
 router = APIRouter(prefix="/jobs", tags=["jobs"])
@@ -15,6 +16,8 @@ router = APIRouter(prefix="/jobs", tags=["jobs"])
 class JobOut(BaseModel):
     id: str
     company_id: str
+    company_name: Optional[str] = None
+    company_industry: Optional[str] = None
     title: str
     description: Optional[str]
     status: str
@@ -60,10 +63,12 @@ class JobStatusUpdate(BaseModel):
     status: str
 
 
-def _job_to_out(j: Job) -> JobOut:
+def _job_to_out(j: Job, company: Company | None = None) -> JobOut:
     return JobOut(
         id=str(j.id),
         company_id=str(j.company_id),
+        company_name=company.name if company else None,
+        company_industry=company.industry if company else None,
         title=j.title,
         description=j.description,
         status=j.status,
@@ -89,6 +94,21 @@ def _parse_uuid(value: str, field: str) -> uuid.UUID:
         )
 
 
+@router.get("", response_model=list[JobOut])
+async def list_public_jobs(
+    session: AsyncSession = Depends(get_session),
+):
+    """List all active jobs publicly (no auth needed)."""
+    result = await session.execute(
+        select(Job, Company)
+        .join(Company, Job.company_id == Company.id)
+        .where(Job.status == "active")
+        .order_by(Job.created_at.desc())
+    )
+    rows = result.all()
+    return [_job_to_out(j, c) for j, c in rows]
+
+
 @router.get("/company/{company_id}", response_model=list[JobOut])
 async def list_jobs_for_company(
     company_id: str,
@@ -96,10 +116,13 @@ async def list_jobs_for_company(
 ):
     company_uuid = _parse_uuid(company_id, "company_id")
     result = await session.execute(
-        select(Job).where(Job.company_id == company_uuid).order_by(Job.created_at.desc())
+        select(Job, Company)
+        .join(Company, Job.company_id == Company.id)
+        .where(Job.company_id == company_uuid)
+        .order_by(Job.created_at.desc())
     )
-    jobs = result.scalars().all()
-    return [_job_to_out(j) for j in jobs]
+    rows = result.all()
+    return [_job_to_out(j, c) for j, c in rows]
 
 
 @router.post("", response_model=JobOut, status_code=status.HTTP_201_CREATED)

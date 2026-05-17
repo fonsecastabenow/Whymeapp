@@ -58,6 +58,8 @@ export type RegisterResponse = { id: string; email: string; name: string; role: 
 export type JobData = {
   id: string
   company_id: string
+  company_name: string
+  company_industry: string | null
   title: string
   description: string | null
   status: string
@@ -453,6 +455,11 @@ export function convertCandidate(data: ConvertCandidateData): Promise<ConvertCan
 
 export function getCurrentUser(authToken: string): Promise<UserData> {
   return apiFetch("/auth/me", undefined, authToken)
+}
+
+
+export function listPublicJobs(): Promise<JobData[]> {
+  return apiFetch("/jobs")
 }
 
 export function getCompanyJobs(companyId: string, authToken: string): Promise<JobData[]> {
