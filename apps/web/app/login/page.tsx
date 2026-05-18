@@ -34,9 +34,9 @@ function LoginForm() {
       const data: LoginRequest = { email, password }
       const res = await loginUser(data)
       localStorage.setItem("whyme_token", res.access_token)
-      localStorage.setItem("whyme_user", JSON.stringify(res.user))
 
       const me = await getCurrentUser(res.access_token)
+      localStorage.setItem("whyme_user", JSON.stringify(me))
 
       if (me.role === "company" && me.company_id) {
         router.push(`/company/${me.company_id}/dashboard`)

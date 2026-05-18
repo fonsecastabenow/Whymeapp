@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { Sidebar } from "@/components/layouts/sidebar"
-import { Bell, User } from "lucide-react"
+import { Bell } from "lucide-react"
 
 interface DashboardLayoutProps {
   title: string
@@ -26,20 +26,6 @@ export function DashboardLayout({
   notificationCount = 0,
   sidebar,
 }: DashboardLayoutProps) {
-  // Read user from localStorage (runs on client only)
-  let userRole: "candidate" | "company" | null = null
-  let userName: string | undefined
-  if (typeof window !== "undefined") {
-    try {
-      const userStr = localStorage.getItem("whyme_user")
-      if (userStr) {
-        const user = JSON.parse(userStr)
-        userRole = user.role ?? null
-        userName = user.name ?? user.email
-      }
-    } catch {}
-  }
-
   return (
     <div className={cn("flex min-h-screen flex-col bg-background text-foreground lg:flex-row", className)}>
       {/* Sidebar */}
@@ -50,7 +36,7 @@ export function DashboardLayout({
           sidebarWidth,
         )}
       >
-        {sidebar ?? <Sidebar userRole={userRole} userName={userName} />}
+        {sidebar ?? <Sidebar />}
       </aside>
 
       {/* Main */}

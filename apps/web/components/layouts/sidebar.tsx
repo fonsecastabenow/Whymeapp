@@ -13,7 +13,7 @@ import {
   LogOut,
 } from "lucide-react"
 import { useTheme } from "@/components/theme-provider"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 const NAV_ITEMS = {
   candidate: [
@@ -36,22 +36,23 @@ export function Sidebar() {
   const router = useRouter()
   const { theme, toggleTheme } = useTheme()
 
-  // Read user from localStorage (runs on client only)
-  let userRole: "candidate" | "company" | null = null
-  let userName: string | undefined
-  let userId: string | undefined
+  const [userRole, setUserRole] = useState<"candidate" | "company" | null>(null)
+  const [userName, setUserName] = useState<string | undefined>()
+  const [userId, setUserId] = useState<string | undefined>()
+  const [companyId, setCompanyId] = useState<string | undefined>()
 
-  if (typeof window !== "undefined") {
+  useEffect(() => {
     try {
       const userStr = localStorage.getItem("whyme_user")
       if (userStr) {
         const user = JSON.parse(userStr)
-        userRole = user.role ?? null
-        userName = user.name ?? user.email
-        userId = user.id ?? null
+        setUserRole(user.role ?? null)
+        setUserName(user.name ?? user.email)
+        setUserId(user.id ?? undefined)
+        setCompanyId(user.company_id ?? undefined)
       }
     } catch {}
-  }
+  }, [])
 
   const items = useMemo(() => {
     const base = NAV_ITEMS[userRole === "company" ? "company" : "candidate"]
@@ -62,8 +63,8 @@ export function Sidebar() {
           href = "/company/orbita"
         } else if (item.href === "/notifications") {
           href = "/notifications"
-        } else if (userId) {
-          href = `/company/${userId}${item.href}`
+        } else if (companyId) {
+          href = `/company/${companyId}${item.href}`
         } else {
           href = `/company${item.href}`
         }
@@ -78,7 +79,7 @@ export function Sidebar() {
       }
       return { ...item, fullHref: href }
     })
-  }, [userRole, userId])
+  }, [userRole, userId, companyId])
 
   const isActive = (pattern: string) => {
     if (pattern === "/dashboard") return pathname.includes("/dashboard")
@@ -90,16 +91,14 @@ export function Sidebar() {
     try {
       localStorage.removeItem("whyme_token")
       localStorage.removeItem("whyme_user")
-    } catch (e) {
-      console.error("Logout error:", e)
-    }
+    } catch {}
     router.push("/login")
   }
 
   const initial = userName?.charAt(0).toUpperCase() ?? "?"
 
   return (
-    <nav className="flex h-full flex-col bg-sidebar-bg">
+    <nav className="flex flex-1 flex-col bg-sidebar-bg">
       {/* Logo */}
       <div className="flex shrink-0 items-center gap-2 px-5 pt-6 pb-4">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-xs font-black tracking-tight text-white">
