@@ -14,6 +14,7 @@ interface DashboardLayoutProps {
   sidebarWidth?: string
   className?: string
   notificationCount?: number
+  sidebar?: React.ReactNode
 }
 
 export function DashboardLayout({
@@ -26,6 +27,7 @@ export function DashboardLayout({
   sidebarWidth = "lg:w-[264px]",
   className,
   notificationCount = 0,
+  sidebar,
 }: DashboardLayoutProps) {
   const [userRole, setUserRole] = useState<"candidate" | "company" | null>(null)
   const [userName, setUserName] = useState<string | undefined>(undefined)
@@ -51,7 +53,7 @@ export function DashboardLayout({
           sidebarWidth,
         )}
       >
-        {sidebar || <Sidebar userRole={userRole} userName={userName} />}
+        {sidebar ?? <Sidebar userRole={userRole} userName={userName} />}
       </aside>
 
       {/* Main */}

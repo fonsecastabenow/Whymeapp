@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Building2, ChevronDown, Filter, Star, Users, X } from "lucide-react"
@@ -181,7 +181,19 @@ export default function CompanyOrbitaPage() {
   if (pageState === "error") return <ErrorState message={error} />
 
   return (
-    <DashboardLayout title="Órbita" subtitle="Candidatos em órbita">
+    <>
+      <style>{`
+        @keyframes orbitCardIn {
+          from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+          to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to   { transform: translateX(0);    opacity: 1; }
+        }
+      `}</style>
+
+      <DashboardLayout title={"Orbita"} subtitle={"Candidatos em orbita"}>
         <main>
 
         <div className="mx-auto max-w-7xl space-y-6 px-4 py-6">
@@ -415,6 +427,7 @@ export default function CompanyOrbitaPage() {
         )}
       </div>
     </DashboardLayout>
+    </>
   )
 }
 

@@ -73,6 +73,9 @@ const config: Config = {
           card: "#0f2040",
         },
       },
+      borderColor: {
+        border: "hsl(var(--border))",
+      },
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
         mono: ["var(--font-mono)", "JetBrains Mono", "ui-monospace", "monospace"],
