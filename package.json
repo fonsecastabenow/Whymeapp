@@ -1,0 +1,33 @@
+{
+  "name": "whyme",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "apps/web",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "packageManager": "npm@10.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "description": "Plataforma SaaS de recrutamento baseada em compatibilidade de valores e personalidade usando o modelo **OCEAN** (Big Five).",
+  "main": "qa_test.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "playwright": "^1.60.0"
+  }
+}
